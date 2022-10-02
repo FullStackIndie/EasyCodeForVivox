@@ -8,23 +8,6 @@ namespace EasyCodeForVivox
 {
     public class EasyMute
     {
-        public static event Action<bool> LocalUserMuted;
-        public static event Action<bool> LocalUserUnmuted;
-
-
-        #region User Mute Events
-
-        private void OnLocalUserMuted(bool isMuted)
-        {
-            LocalUserMuted?.Invoke(isMuted);
-        }
-
-        private void OnLocalUserUnmuted(bool isMuted)
-        {
-            LocalUserUnmuted?.Invoke(isMuted);
-        } 
-        #endregion
-
 
         public void LocalToggleMuteRemoteUser(string userName, IChannelSession channelSession)
         {
@@ -92,13 +75,13 @@ namespace EasyCodeForVivox
         public void LocalMuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = true;
-            OnLocalUserMuted(true);
+            EasyEvents.OnLocalUserMuted(true);
         }
 
         public void LocalUnmuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = false;
-            OnLocalUserUnmuted(false);
+            EasyEvents.OnLocalUserUnmuted(false);
         }
 
         public void CrossMuteUser(ILoginSession loginSession, bool mute)

@@ -7,25 +7,15 @@ namespace EasyCodeForVivox
 {
     public class EasyUsers
     {
-        public static event Action<IParticipant> UserJoinedChannel;
-        public static event Action<IParticipant> UserLeftChannel;
-        public static event Action<IParticipant> UserValuesUpdated;
 
-        public static event Action<IParticipant> UserMuted;
-        public static event Action<IParticipant> UserUnmuted;
-
-        public static event Action<IParticipant> UserSpeaking;
-        public static event Action<IParticipant> UserNotSpeaking;
-
-
-        public void SubscribeToParticipants(IChannelSession channelSession)
+        public void SubscribeToParticipantEvents(IChannelSession channelSession)
         {
             channelSession.Participants.AfterKeyAdded += OnUserJoinedChannel;
             channelSession.Participants.BeforeKeyRemoved += OnUserLeftChannel;
             channelSession.Participants.AfterValueUpdated += OnUserValuesUpdated;
         }
 
-        public void UnsubscribeFromParticipants(IChannelSession channelSession)
+        public void UnsubscribeFromParticipantEvents(IChannelSession channelSession)
         {
             channelSession.Participants.AfterKeyAdded -= OnUserJoinedChannel;
             channelSession.Participants.BeforeKeyRemoved -= OnUserLeftChannel;
@@ -33,80 +23,12 @@ namespace EasyCodeForVivox
         }
 
 
-
-        #region Participant/User Events
-
-
-        private void OnUserJoinedChannel(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserJoinedChannel?.Invoke(participant);
-            }
-        }
-
-        private void OnUserLeftChannel(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserLeftChannel?.Invoke(participant);
-            }
-        }
-
-        private void OnUserValuesUpdated(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserValuesUpdated?.Invoke(participant);
-            }
-        }
-
-
-
-        private void OnUserMuted(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserMuted?.Invoke(participant);
-            }
-        }
-
-        private void OnUserUnmuted(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserUnmuted?.Invoke(participant);
-            }
-        }
-
-        private void OnUserSpeaking(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserSpeaking?.Invoke(participant);
-            }
-        }
-
-        private void OnUserNotSpeaking(IParticipant participant)
-        {
-            if (participant != null)
-            {
-                UserNotSpeaking?.Invoke(participant);
-            }
-
-        }
-
-
-        #endregion
-
-
-
         private void OnUserJoinedChannel(object sender, KeyEventArg<string> keyArg)
         {
             var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
-            OnUserJoinedChannel(senderIParticipant);
+            EasyEvents.OnUserJoinedChannel(senderIParticipant);
         }
 
         private void OnUserLeftChannel(object sender, KeyEventArg<string> keyArg)
@@ -114,7 +36,7 @@ namespace EasyCodeForVivox
             var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
-            OnUserLeftChannel(senderIParticipant);
+            EasyEvents.OnUserLeftChannel(senderIParticipant);
         }
 
         private void OnUserValuesUpdated(object sender, ValueEventArg<string, IParticipant> valueArg)
@@ -122,7 +44,7 @@ namespace EasyCodeForVivox
             var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[valueArg.Key];
-            OnUserValuesUpdated(senderIParticipant);
+            EasyEvents.OnUserValuesUpdated(senderIParticipant);
 
             switch (valueArg.PropertyName)
             {
@@ -133,12 +55,12 @@ namespace EasyCodeForVivox
                         if (senderIParticipant.LocalMute)
                         {
                             // Fires too much
-                            OnUserMuted(senderIParticipant);
+                            EasyEvents.OnUserMuted(senderIParticipant);
                         }
                         else
                         {
                             // Fires too much
-                            OnUserUnmuted(senderIParticipant);
+                            EasyEvents.OnUserUnmuted(senderIParticipant);
                         }
                     }
                     break;
@@ -147,11 +69,11 @@ namespace EasyCodeForVivox
                     {
                         if (senderIParticipant.SpeechDetected)
                         {
-                            OnUserSpeaking(senderIParticipant);
+                            EasyEvents.OnUserSpeaking(senderIParticipant);
                         }
                         else
                         {
-                            OnUserNotSpeaking(senderIParticipant);
+                            EasyEvents.OnUserNotSpeaking(senderIParticipant);
                         }
                         break;
                     }

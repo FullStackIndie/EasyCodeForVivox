@@ -33,7 +33,7 @@ namespace EasyCodeForVivox
                     EasySession.mainClient.Initialize();
                     EasySession.isClientInitialized = true;
                     SubscribeToVivoxEvents();
-                    Debug.Log("Vivox Client Initialzed");
+                    Debug.Log("Vivox Client Initialized");
                 }
             }
         }
@@ -48,117 +48,117 @@ namespace EasyCodeForVivox
 
         public void SubscribeToVivoxEvents()
         {
-            EasyLogin.LoggingIn += OnLoggingIn;
-            EasyLogin.LoggedIn += OnLoggedIn;
-            EasyLogin.LoggedIn += OnLoggedInSetup;
-            EasyLogin.LoggingOut += OnLoggingOut;
-            EasyLogin.LoggedOut += OnLoggedOut;
+            EasyEvents.LoggingIn += OnLoggingIn;
+            EasyEvents.LoggedIn += OnLoggedIn;
+            EasyEvents.LoggedIn += OnLoggedInSetup;
+            EasyEvents.LoggingOut += OnLoggingOut;
+            EasyEvents.LoggedOut += OnLoggedOut;
 
-            EasyChannel.ChannelConnecting += OnChannelConnecting;
-            EasyChannel.ChannelConnected += OnChannelConnected;
-            EasyChannel.ChannelDisconnecting += OnChannelDisconnecting;
-            EasyChannel.ChannelDisconnected += OnChannelDisconnected;
+            EasyEvents.ChannelConnecting += OnChannelConnecting;
+            EasyEvents.ChannelConnected += OnChannelConnected;
+            EasyEvents.ChannelDisconnecting += OnChannelDisconnecting;
+            EasyEvents.ChannelDisconnected += OnChannelDisconnected;
 
-            EasyVoiceChannel.VoiceChannelConnecting += OnVoiceConnecting;
-            EasyVoiceChannel.VoiceChannelConnected += OnVoiceConnected;
-            EasyVoiceChannel.VoiceChannelDisconnecting += OnVoiceDisconnecting;
-            EasyVoiceChannel.VoiceChannelDisconnected += OnVoiceDisconnected;
+            EasyEvents.VoiceChannelConnecting += OnVoiceConnecting;
+            EasyEvents.VoiceChannelConnected += OnVoiceConnected;
+            EasyEvents.VoiceChannelDisconnecting += OnVoiceDisconnecting;
+            EasyEvents.VoiceChannelDisconnected += OnVoiceDisconnected;
 
-            EasyTextChannel.TextChannelConnecting += OnTextChannelConnecting;
-            EasyTextChannel.TextChannelConnected += OnTextChannelConnected;
-            EasyTextChannel.TextChannelDisconnecting += OnTextChannelDisconnecting;
-            EasyTextChannel.TextChannelDisconnected += OnTextChannelDisconnected;
+            EasyEvents.TextChannelConnecting += OnTextChannelConnecting;
+            EasyEvents.TextChannelConnected += OnTextChannelConnected;
+            EasyEvents.TextChannelDisconnecting += OnTextChannelDisconnecting;
+            EasyEvents.TextChannelDisconnected += OnTextChannelDisconnected;
 
-            EasyMessages.ChannelMessageRecieved += OnChannelMessageRecieved;
-            EasyMessages.EventMessageRecieved += OnEventMessageRecieved;
+            EasyEvents.ChannelMessageRecieved += OnChannelMessageRecieved;
+            EasyEvents.EventMessageRecieved += OnEventMessageRecieved;
 
-            EasyMessages.DirectMessageRecieved += OnDirectMessageRecieved;
-            EasyMessages.DirectMessageFailed += OnDirectMessageFailed;
+            EasyEvents.DirectMessageRecieved += OnDirectMessageRecieved;
+            EasyEvents.DirectMessageFailed += OnDirectMessageFailed;
 
-            EasyMute.LocalUserMuted += OnLocalUserMuted;
-            EasyMute.LocalUserUnmuted += OnLocalUserUnmuted;
+            EasyEvents.LocalUserMuted += OnLocalUserMuted;
+            EasyEvents.LocalUserUnmuted += OnLocalUserUnmuted;
 
-            EasyUsers.UserJoinedChannel += OnUserJoinedChannel;
-            EasyUsers.UserLeftChannel += OnUserLeftChannel;
-            EasyUsers.UserValuesUpdated += OnUserValuesUpdated;
+            EasyEvents.UserJoinedChannel += OnUserJoinedChannel;
+            EasyEvents.UserLeftChannel += OnUserLeftChannel;
+            EasyEvents.UserValuesUpdated += OnUserValuesUpdated;
 
-            EasyUsers.UserMuted += OnUserMuted;
-            EasyUsers.UserUnmuted += OnUserUnmuted;
-            EasyUsers.UserSpeaking += OnUserSpeaking;
-            EasyUsers.UserNotSpeaking += OnUserNotSpeaking;
+            EasyEvents.UserMuted += OnUserMuted;
+            EasyEvents.UserUnmuted += OnUserUnmuted;
+            EasyEvents.UserSpeaking += OnUserSpeaking;
+            EasyEvents.UserNotSpeaking += OnUserNotSpeaking;
 
-            EasyTextToSpeech.TTSMessageAdded += OnTTSMessageAdded;
-            EasyTextToSpeech.TTSMessageRemoved += OnTTSMessageRemoved;
-            EasyTextToSpeech.TTSMessageUpdated += OnTTSMessageUpdated;
+            EasyEvents.TTSMessageAdded += OnTTSMessageAdded;
+            EasyEvents.TTSMessageRemoved += OnTTSMessageRemoved;
+            EasyEvents.TTSMessageUpdated += OnTTSMessageUpdated;
 
-            EasySubscriptions.SubscriptionAddAllowed += OnAddAllowedSubscription;
-            EasySubscriptions.SubscriptionAddBlocked += OnAddBlockedSubscription;
-            EasySubscriptions.SubscriptionAddPresence += OnAddPresenceSubscription;
+            EasyEvents.SubscriptionAddAllowed += OnAddAllowedSubscription;
+            EasyEvents.SubscriptionAddBlocked += OnAddBlockedSubscription;
+            EasyEvents.SubscriptionAddPresence += OnAddPresenceSubscription;
 
-            EasySubscriptions.SubscriptionRemoveAllowed += OnRemoveAllowedSubscription;
-            EasySubscriptions.SubscriptionRemoveBlocked += OnRemoveBlockedSubscription;
-            EasySubscriptions.SubscriptionRemovePresence += OnRemovePresenceSubscription;
+            EasyEvents.SubscriptionRemoveAllowed += OnRemoveAllowedSubscription;
+            EasyEvents.SubscriptionRemoveBlocked += OnRemoveBlockedSubscription;
+            EasyEvents.SubscriptionRemovePresence += OnRemovePresenceSubscription;
 
-            EasySubscriptions.SubscriptionUpdatePresence += OnUpdatePresenceSubscription;
-            EasySubscriptions.SubscriptionIncomingRequest += OnIncomingSubscription;
+            EasyEvents.SubscriptionUpdatePresence += OnUpdatePresenceSubscription;
+            EasyEvents.SubscriptionIncomingRequest += OnIncomingSubscription;
 
         }
 
         public void UnsubscribeToVivoxEvents()
         {
-            EasyLogin.LoggingIn -= OnLoggingIn;
-            EasyLogin.LoggedIn -= OnLoggedIn;
-            EasyLogin.LoggedIn -= OnLoggedInSetup;
-            EasyLogin.LoggingOut -= OnLoggingOut;
-            EasyLogin.LoggedOut -= OnLoggedOut;
+            EasyEvents.LoggingIn -= OnLoggingIn;
+            EasyEvents.LoggedIn -= OnLoggedIn;
+            EasyEvents.LoggedIn -= OnLoggedInSetup;
+            EasyEvents.LoggingOut -= OnLoggingOut;
+            EasyEvents.LoggedOut -= OnLoggedOut;
 
-            EasyChannel.ChannelConnecting -= OnChannelConnecting;
-            EasyChannel.ChannelConnected -= OnChannelConnected;
-            EasyChannel.ChannelDisconnecting -= OnChannelDisconnecting;
-            EasyChannel.ChannelDisconnected -= OnChannelDisconnected;
+            EasyEvents.ChannelConnecting -= OnChannelConnecting;
+            EasyEvents.ChannelConnected -= OnChannelConnected;
+            EasyEvents.ChannelDisconnecting -= OnChannelDisconnecting;
+            EasyEvents.ChannelDisconnected -= OnChannelDisconnected;
 
-            EasyVoiceChannel.VoiceChannelConnecting -= OnVoiceConnecting;
-            EasyVoiceChannel.VoiceChannelConnected -= OnVoiceConnected;
-            EasyVoiceChannel.VoiceChannelDisconnecting -= OnVoiceDisconnecting;
-            EasyVoiceChannel.VoiceChannelDisconnected -= OnVoiceDisconnected;
+            EasyEvents.VoiceChannelConnecting -= OnVoiceConnecting;
+            EasyEvents.VoiceChannelConnected -= OnVoiceConnected;
+            EasyEvents.VoiceChannelDisconnecting -= OnVoiceDisconnecting;
+            EasyEvents.VoiceChannelDisconnected -= OnVoiceDisconnected;
 
-            EasyTextChannel.TextChannelConnecting -= OnTextChannelConnecting;
-            EasyTextChannel.TextChannelConnected -= OnTextChannelConnected;
-            EasyTextChannel.TextChannelDisconnecting -= OnTextChannelDisconnecting;
-            EasyTextChannel.TextChannelDisconnected -= OnTextChannelDisconnected;
+            EasyEvents.TextChannelConnecting -= OnTextChannelConnecting;
+            EasyEvents.TextChannelConnected -= OnTextChannelConnected;
+            EasyEvents.TextChannelDisconnecting -= OnTextChannelDisconnecting;
+            EasyEvents.TextChannelDisconnected -= OnTextChannelDisconnected;
 
-            EasyMessages.ChannelMessageRecieved -= OnChannelMessageRecieved;
-            EasyMessages.EventMessageRecieved -= OnEventMessageRecieved;
+            EasyEvents.ChannelMessageRecieved -= OnChannelMessageRecieved;
+            EasyEvents.EventMessageRecieved -= OnEventMessageRecieved;
 
-            EasyMessages.DirectMessageRecieved -= OnDirectMessageRecieved;
-            EasyMessages.DirectMessageFailed -= OnDirectMessageFailed;
+            EasyEvents.DirectMessageRecieved -= OnDirectMessageRecieved;
+            EasyEvents.DirectMessageFailed -= OnDirectMessageFailed;
 
-            EasyMute.LocalUserMuted -= OnLocalUserMuted;
-            EasyMute.LocalUserUnmuted -= OnLocalUserUnmuted;
+            EasyEvents.LocalUserMuted -= OnLocalUserMuted;
+            EasyEvents.LocalUserUnmuted -= OnLocalUserUnmuted;
 
-            EasyUsers.UserJoinedChannel -= OnUserJoinedChannel;
-            EasyUsers.UserLeftChannel -= OnUserLeftChannel;
-            EasyUsers.UserValuesUpdated -= OnUserValuesUpdated;
+            EasyEvents.UserJoinedChannel -= OnUserJoinedChannel;
+            EasyEvents.UserLeftChannel -= OnUserLeftChannel;
+            EasyEvents.UserValuesUpdated -= OnUserValuesUpdated;
 
-            EasyUsers.UserMuted -= OnUserMuted;
-            EasyUsers.UserUnmuted -= OnUserUnmuted;
-            EasyUsers.UserSpeaking -= OnUserSpeaking;
-            EasyUsers.UserNotSpeaking -= OnUserNotSpeaking;
+            EasyEvents.UserMuted -= OnUserMuted;
+            EasyEvents.UserUnmuted -= OnUserUnmuted;
+            EasyEvents.UserSpeaking -= OnUserSpeaking;
+            EasyEvents.UserNotSpeaking -= OnUserNotSpeaking;
 
-            EasyTextToSpeech.TTSMessageAdded -= OnTTSMessageAdded;
-            EasyTextToSpeech.TTSMessageRemoved -= OnTTSMessageRemoved;
-            EasyTextToSpeech.TTSMessageUpdated -= OnTTSMessageUpdated;
+            EasyEvents.TTSMessageAdded -= OnTTSMessageAdded;
+            EasyEvents.TTSMessageRemoved -= OnTTSMessageRemoved;
+            EasyEvents.TTSMessageUpdated -= OnTTSMessageUpdated;
 
-            EasySubscriptions.SubscriptionAddAllowed -= OnAddAllowedSubscription;
-            EasySubscriptions.SubscriptionAddBlocked -= OnAddBlockedSubscription;
-            EasySubscriptions.SubscriptionAddPresence -= OnAddPresenceSubscription;
+            EasyEvents.SubscriptionAddAllowed -= OnAddAllowedSubscription;
+            EasyEvents.SubscriptionAddBlocked -= OnAddBlockedSubscription;
+            EasyEvents.SubscriptionAddPresence -= OnAddPresenceSubscription;
 
-            EasySubscriptions.SubscriptionRemoveAllowed -= OnRemoveAllowedSubscription;
-            EasySubscriptions.SubscriptionRemoveBlocked -= OnRemoveBlockedSubscription;
-            EasySubscriptions.SubscriptionRemovePresence -= OnRemovePresenceSubscription;
+            EasyEvents.SubscriptionRemoveAllowed -= OnRemoveAllowedSubscription;
+            EasyEvents.SubscriptionRemoveBlocked -= OnRemoveBlockedSubscription;
+            EasyEvents.SubscriptionRemovePresence -= OnRemovePresenceSubscription;
 
-            EasySubscriptions.SubscriptionUpdatePresence -= OnUpdatePresenceSubscription;
-            EasySubscriptions.SubscriptionIncomingRequest -= OnIncomingSubscription;
+            EasyEvents.SubscriptionUpdatePresence -= OnUpdatePresenceSubscription;
+            EasyEvents.SubscriptionIncomingRequest -= OnIncomingSubscription;
 
         }
 
@@ -230,16 +230,17 @@ namespace EasyCodeForVivox
         }
 
 
-        public void JoinChannel(string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType, bool joinMuted = false)
+        public void JoinChannel(string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
+            bool joinMuted = false, Channel3DProperties channel3DProperties = null)
         {
             if (!FilterChannelAndUserName(channelName)) { return; }
-            IChannelSession channelSession = CreateNewChannel(channelName, channelType);
+            IChannelSession channelSession = CreateNewChannel(channelName, channelType, channel3DProperties);
 
             try
             {
                 _textChannel.Subscribe(channelSession);
                 _voiceChannel.Subscribe(channelSession);
-                _users.SubscribeToParticipants(channelSession);
+                _users.SubscribeToParticipantEvents(channelSession);
                 _messages.SubscribeToChannelMessages(channelSession);
 
                 _channel.JoinChannel(includeVoice, includeText, switchTransmissionToThisChannel, channelSession, joinMuted);
@@ -249,7 +250,7 @@ namespace EasyCodeForVivox
                 Debug.Log(e.StackTrace);
                 _textChannel.Unsubscribe(channelSession);
                 _voiceChannel.Unsubscribe(channelSession);
-                _users.UnsubscribeFromParticipants(channelSession);
+                _users.UnsubscribeFromParticipantEvents(channelSession);
                 _messages.UnsubscribeFromChannelMessages(channelSession);
             }
         }
@@ -258,7 +259,7 @@ namespace EasyCodeForVivox
         {
             if (EasySession.mainChannelSessions.ContainsKey(channelName))
             {
-                _users.UnsubscribeFromParticipants(EasySession.mainChannelSessions[channelName]);
+                _users.UnsubscribeFromParticipantEvents(EasySession.mainChannelSessions[channelName]);
                 _messages.UnsubscribeFromChannelMessages(EasySession.mainChannelSessions[channelName]);
                 _channel.LeaveChannel(EasySession.mainLoginSession, EasySession.mainChannelSessions[channelName]);
             }
@@ -282,9 +283,18 @@ namespace EasyCodeForVivox
 
         public void SendChannelMessage(string channelName, string msg, string title = "", string body = "")
         {
-            _messages.SendChannelMessage(GetExistingChannelSession(channelName),
-                msg, title, body);
+            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(body))
+            {
+                _messages.SendChannelMessage(GetExistingChannelSession(channelName),
+                msg);
+            }
+            else
+            {
+                _messages.SendChannelMessage(GetExistingChannelSession(channelName),
+                    msg, title, body);
+            }
         }
+
         public void SendEventMessage(string channelName, string msg, string title = "", string body = "")
         {
             _messages.SendChannelMessage(GetExistingChannelSession(channelName),
@@ -447,6 +457,7 @@ namespace EasyCodeForVivox
 
         //public void RequestIOSMicrophoneAccess()
         //{
+        // todo update and research docs / have someone without IOS test it
         //    // Refer to Vivox Documentation on how to implement this method. Currently a work in progress.NOT SURE IF IT WORKS
         //    // make sure you change the info.plist refer to Vivox documentation for this to work
         //    // Make sure NSCameraUsageDescription and NSMicrophoneUsageDescription
@@ -466,7 +477,7 @@ namespace EasyCodeForVivox
             {
                 if (!allowed.Contains(c))
                 {
-                    if(c == ' ')
+                    if (c == ' ')
                     {
                         Debug.Log($"Can't join channel, Channel name has space in it '{c}'");
                     }
@@ -490,7 +501,7 @@ namespace EasyCodeForVivox
             return EasySession.mainChannelSessions[channelName];
         }
 
-        protected IChannelSession CreateNewChannel(string channelName, ChannelType channelType)
+        protected IChannelSession CreateNewChannel(string channelName, ChannelType channelType, Channel3DProperties channel3DProperties = null)
         {
             if (channelType == ChannelType.Positional)
             {
@@ -498,12 +509,12 @@ namespace EasyCodeForVivox
                 {
                     if (channel.Value.Channel.Type == ChannelType.Positional)
                     {
-                        Debug.Log($"{channel.Value.Channel.Name} Is already a Positional Channel. Can Only Have One 3D Positional Channel. Refer To Vivox Documentation : Returning Null");
-                        return null;
+                        Debug.Log($"{channel.Value.Channel.Name} Is already a 3D Positional Channel. Can Only Have One 3D Positional Channel. Refer To Vivox Documentation :: Returning Exisiting 3D Channel : {channel.Value.Channel.Name}");
+                        return channel.Value;
                     }
                 }
 
-                EasySession.mainChannelSessions.Add(channelName, EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
+                EasySession.mainChannelSessions.Add(channelName, EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
             }
             else
             {
@@ -513,7 +524,7 @@ namespace EasyCodeForVivox
             return EasySession.mainChannelSessions[channelName];
         }
 
-        protected string GetChannelSIP(ChannelType channelType, string channelName)
+        protected string GetChannelSIP(ChannelType channelType, string channelName, Channel3DProperties channel3DProperties = null)
         {
             switch (channelType)
             {
@@ -524,7 +535,7 @@ namespace EasyCodeForVivox
                     return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
 
                 case ChannelType.Positional:
-                    return EasySIP.GetChannelSIP(ChannelType.Positional, EasySession.Issuer, channelName, EasySession.Domain, new Channel3DProperties());
+                    return EasySIP.GetChannelSIP(ChannelType.Positional, EasySession.Issuer, channelName, EasySession.Domain, channel3DProperties);
 
             }
             return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
@@ -594,7 +605,7 @@ namespace EasyCodeForVivox
         }
 
 
-        // todo add callbacks to EasyLogin
+        // todo add Extra/Multiple Login callbacks to EasyLogin
 
         public virtual void OnLoginAdded(ILoginSession loginSession)
         {

@@ -109,36 +109,22 @@ public class EasyEvents
 
     public static void OnLoggingIn(ILoginSession loginSession)
     {
-        if (loginSession != null)
-        {
-            LoggingIn?.Invoke(loginSession);
-        }
+        LoggingIn?.Invoke(loginSession);
     }
 
     public static void OnLoggedIn(ILoginSession loginSession)
     {
-        if (loginSession != null)
-        {
-            LoggedIn?.Invoke(loginSession);
-        }
+        LoggedIn?.Invoke(loginSession);
     }
-
 
     public static void OnLoggingOut(ILoginSession loginSession)
     {
-        if (loginSession != null)
-        {
-            LoggingOut?.Invoke(loginSession);
-        }
-
+        LoggingOut?.Invoke(loginSession);
     }
 
     public static void OnLoggedOut(ILoginSession loginSession)
     {
-        if (loginSession != null)
-        {
-            LoggedOut?.Invoke(loginSession);
-        }
+        LoggedOut?.Invoke(loginSession);
     }
 
 
@@ -177,34 +163,23 @@ public class EasyEvents
 
     public static void OnTextChannelConnecting(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            TextChannelConnecting?.Invoke(channelSession);
-        }
+        TextChannelConnecting?.Invoke(channelSession);
     }
+
 
     public static void OnTextChannelConnected(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            TextChannelConnected?.Invoke(channelSession);
-        }
+        TextChannelConnected?.Invoke(channelSession);
     }
 
     public static void OnTextChannelDisconnecting(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            TextChannelDisconnecting?.Invoke(channelSession);
-        }
+        TextChannelDisconnecting?.Invoke(channelSession);
     }
 
     public static void OnTextChannelDisconnected(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            TextChannelDisconnected?.Invoke(channelSession);
-        }
+        TextChannelDisconnected?.Invoke(channelSession);
     }
 
 
@@ -216,35 +191,22 @@ public class EasyEvents
 
     public static void OnAudioChannelConnecting(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            VoiceChannelConnecting?.Invoke(channelSession);
-        }
+        VoiceChannelConnecting?.Invoke(channelSession);
     }
 
     public static void OnAudioChannelConnected(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            VoiceChannelConnected?.Invoke(channelSession);
-        }
+        VoiceChannelConnected?.Invoke(channelSession);
     }
 
     public static void OnAudioChannelDisconnecting(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            VoiceChannelDisconnecting?.Invoke(channelSession);
-        }
+        VoiceChannelDisconnecting?.Invoke(channelSession);
     }
 
     public static void OnAudioChannelDisconnected(IChannelSession channelSession)
     {
-        if (channelSession != null)
-        {
-            VoiceChannelDisconnected?.Invoke(channelSession);
-
-        }
+        VoiceChannelDisconnected?.Invoke(channelSession);
     }
 
 
@@ -256,20 +218,12 @@ public class EasyEvents
 
     public static void OnChannelMessageRecieved(IChannelTextMessage channelTextMessage)
     {
-        if (channelTextMessage != null)
-        {
-            ChannelMessageRecieved?.Invoke(channelTextMessage);
-        }
-
+        ChannelMessageRecieved?.Invoke(channelTextMessage);
     }
 
     public static void OnEventMessageRecieved(IChannelTextMessage channelTextMessage)
     {
-        if (channelTextMessage != null)
-        {
-            EventMessageRecieved?.Invoke(channelTextMessage);
-        }
-
+        EventMessageRecieved?.Invoke(channelTextMessage);
     }
 
     public static void OnChannelMessageSent()
@@ -284,20 +238,12 @@ public class EasyEvents
 
     public static void OnDirectMessageRecieved(IDirectedTextMessage message)
     {
-        if (message != null)
-        {
-            DirectMessageRecieved?.Invoke(message);
-        }
-
+        DirectMessageRecieved?.Invoke(message);
     }
 
     public static void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
     {
-        if (failedMessage != null)
-        {
-            DirectMessageFailed?.Invoke(failedMessage);
-        }
-
+        DirectMessageFailed?.Invoke(failedMessage);
     }
 
 
@@ -309,61 +255,39 @@ public class EasyEvents
 
     public static void OnUserJoinedChannel(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserJoinedChannel?.Invoke(participant);
-        }
+        UserJoinedChannel?.Invoke(participant);
     }
 
     public static void OnUserLeftChannel(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserLeftChannel?.Invoke(participant);
-        }
+        UserLeftChannel?.Invoke(participant);
     }
 
     public static void OnUserValuesUpdated(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserValuesUpdated?.Invoke(participant);
-        }
+        UserValuesUpdated?.Invoke(participant);
     }
 
 
 
     public static void OnUserMuted(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserMuted?.Invoke(participant);
-        }
+        UserMuted?.Invoke(participant);
     }
 
     public static void OnUserUnmuted(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserUnmuted?.Invoke(participant);
-        }
+        UserUnmuted?.Invoke(participant);
     }
 
     public static void OnUserSpeaking(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserSpeaking?.Invoke(participant);
-        }
+        UserSpeaking?.Invoke(participant);
     }
 
     public static void OnUserNotSpeaking(IParticipant participant)
     {
-        if (participant != null)
-        {
-            UserNotSpeaking?.Invoke(participant);
-        }
-
+        UserNotSpeaking?.Invoke(participant);
     }
 
 
@@ -389,26 +313,17 @@ public class EasyEvents
 
     public static void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
     {
-        if (ttsArgs != null)
-        {
-            TTSMessageAdded?.Invoke(ttsArgs);
-        }
+        TTSMessageAdded?.Invoke(ttsArgs);
     }
 
     public static void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
     {
-        if (ttsArgs != null)
-        {
-            TTSMessageRemoved?.Invoke(ttsArgs);
-        }
+        TTSMessageRemoved?.Invoke(ttsArgs);
     }
 
     public static void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
     {
-        if (ttsArgs != null)
-        {
-            TTSMessageUpdated?.Invoke(ttsArgs);
-        }
+        TTSMessageUpdated?.Invoke(ttsArgs);
     }
 
 
@@ -420,67 +335,43 @@ public class EasyEvents
 
     public static void OnAddAllowedSubscription(AccountId accountId)
     {
-        if (accountId != null)
-        {
-            SubscriptionAddAllowed?.Invoke(accountId);
-        }
+        SubscriptionAddAllowed?.Invoke(accountId);
     }
 
     public static void OnRemoveAllowedSubscription(AccountId accountId)
     {
-        if (accountId != null)
-        {
-            SubscriptionRemoveAllowed?.Invoke(accountId);
-        }
+        SubscriptionRemoveAllowed?.Invoke(accountId);
     }
 
     public static void OnAddPresenceSubscription(AccountId accountId)
     {
-        if (accountId != null)
-        {
-            SubscriptionAddPresence?.Invoke(accountId);
-        }
+        SubscriptionAddPresence?.Invoke(accountId);
     }
 
     public static void OnRemovePresenceSubscription(AccountId accountId)
     {
-        if (accountId != null)
-        {
-            SubscriptionRemovePresence?.Invoke(accountId);
-        }
+        SubscriptionRemovePresence?.Invoke(accountId);
     }
 
     public static void OnUpdatePresenceSubscription(ValueEventArg<AccountId, IPresenceSubscription> presence)
     {
-        if (presence != null)
-        {
-            SubscriptionUpdatePresence?.Invoke(presence);
-        }
+        SubscriptionUpdatePresence?.Invoke(presence);
     }
 
     public static void OnAddBlockedSubscription(AccountId accountId)
     {
-        if (accountId != null)
-        {
-            SubscriptionAddBlocked?.Invoke(accountId);
-        }
+        SubscriptionAddBlocked?.Invoke(accountId);
     }
 
     public static void OnRemoveBlockedSubscription(AccountId accountId)
     {
-        if (accountId != null)
-        {
-            SubscriptionRemoveBlocked?.Invoke(accountId);
-        }
+        SubscriptionRemoveBlocked?.Invoke(accountId);
     }
 
 
     public static void OnIncomingSubscription(AccountId subRequest)
     {
-        if (subRequest != null)
-        {
-            SubscriptionIncomingRequest?.Invoke(subRequest);
-        }
+        SubscriptionIncomingRequest?.Invoke(subRequest);
     }
 
 

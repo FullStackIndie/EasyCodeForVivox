@@ -8,11 +8,6 @@ namespace EasyCodeForVivox
 {
     public class EasyChannel
     {
-        public static event Action<IChannelSession> ChannelConnecting;
-        public static event Action<IChannelSession> ChannelConnected;
-        public static event Action<IChannelSession> ChannelDisconnecting;
-        public static event Action<IChannelSession> ChannelDisconnected;
-
 
         public void Subscribe(IChannelSession channelSession)
         {
@@ -26,42 +21,18 @@ namespace EasyCodeForVivox
 
 
 
-        #region Channel Event Methods
-
-
-        private void OnChannelConnecting(IChannelSession channelSession)
-        {
-            ChannelConnecting?.Invoke(channelSession);
-        }
-
-        private void OnChannelConnected(IChannelSession channelSession)
-        {
-            ChannelConnected?.Invoke(channelSession);
-        }
-
-        private void OnChannelDisconnecting(IChannelSession channelSession)
-        {
-            ChannelDisconnecting?.Invoke(channelSession);
-        }
-
-        private void OnChannelDisconnected(IChannelSession channelSession)
-        {
-            ChannelDisconnected?.Invoke(channelSession);
-
-            Unsubscribe(channelSession);
-        }
-
-
-        #endregion
-
-
-
         #region Channel Methods
 
+
+  
 
         public void JoinChannel(bool includeVoice, bool includeText, bool switchTransmissionToThisChannel,
            IChannelSession channelSession, bool joinMuted = false)
         {
+
+
+
+
             Subscribe(channelSession);
             var accessToken = GetChannelToken(channelSession, joinMuted);
             channelSession.BeginConnect(includeVoice, includeText, switchTransmissionToThisChannel, accessToken, ar =>
@@ -168,16 +139,17 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.ChannelState)
                 {
                     case ConnectionState.Connecting:
-                        OnChannelConnecting(senderIChannelSession);
+                        EasyEvents.OnChannelConnecting(senderIChannelSession);
                         break;
                     case ConnectionState.Connected:
-                        OnChannelConnected(senderIChannelSession);
+                        EasyEvents.OnChannelConnected(senderIChannelSession);
                         break;
                     case ConnectionState.Disconnecting:
-                        OnChannelDisconnecting(senderIChannelSession);
+                        EasyEvents.OnChannelDisconnecting(senderIChannelSession);
                         break;
                     case ConnectionState.Disconnected:
-                        OnChannelDisconnected(senderIChannelSession);
+                        EasyEvents.OnChannelDisconnected(senderIChannelSession);
+                        Unsubscribe(senderIChannelSession);
                         break;
                 }
             }

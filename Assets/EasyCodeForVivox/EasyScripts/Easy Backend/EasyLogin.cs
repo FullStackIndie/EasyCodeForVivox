@@ -9,11 +9,6 @@ namespace EasyCodeForVivox
 {
     public class EasyLogin
     {
-        public static event Action<ILoginSession> LoggingIn;
-        public static event Action<ILoginSession> LoggedIn;
-        public static event Action<ILoginSession> LoggedOut;
-        public static event Action<ILoginSession> LoggingOut;
-
 
         public void Subscribe(ILoginSession loginSession)
         {
@@ -27,56 +22,13 @@ namespace EasyCodeForVivox
 
 
 
-        #region Login Events
-
-
-        private void OnLoggingIn(ILoginSession loginSession)
-        {
-            if (loginSession != null)
-            {
-                LoggingIn?.Invoke(loginSession);
-            }
-        }
-
-        private void OnLoggedIn(ILoginSession loginSession)
-        {
-            if (loginSession != null)
-            {
-                LoggedIn?.Invoke(loginSession);
-            }
-        }
-
-
-        private void OnLoggingOut(ILoginSession loginSession)
-        {
-            if (loginSession != null)
-            {
-                LoggingOut?.Invoke(loginSession);
-            }
-
-        }
-
-        private void OnLoggedOut(ILoginSession loginSession)
-        {
-            if (loginSession != null)
-            {
-                LoggedOut?.Invoke(loginSession);
-
-                Unsubscribe(loginSession);
-            }
-        }
-
-
-        #endregion
-
-
         #region Login Methods
 
 
         public void LoginToVivox(ILoginSession loginSession,
             Uri serverUri, string userName, bool joinMuted = false)
         {
-            loginSession = EasySession.mainClient.GetLoginSession(new AccountId("", "", ""));
+            loginSession = EasySession.mainClient.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain));
             Subscribe(loginSession);
             var accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
                 AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), "login", EasySession.UniqueCounter, null, EasySIP.GetUserSIP(
@@ -102,9 +54,9 @@ namespace EasyCodeForVivox
 
         public void Logout(ILoginSession loginSession)
         {
-            OnLoggingOut(loginSession);
+            EasyEvents.OnLoggingOut(loginSession);
             loginSession.Logout();
-            OnLoggedOut(loginSession);
+            EasyEvents.OnLoggedOut(loginSession);
             Debug.Log($"Logging Out... Vivox does not have a Logging Out event callbacks because when you disconnect from there server their is no way to send a callback." +
                 $" The events LoggingOut and LoggedOut are custom callback events. LoggingOut will be called before the Logout method is called and LoggedOut will be called after Logout method is called.");
         }
@@ -124,16 +76,16 @@ namespace EasyCodeForVivox
                 switch (senderLoginSession.State)
                 {
                     case LoginState.LoggingIn:
-                        OnLoggingIn(senderLoginSession);
+                        EasyEvents.OnLoggingIn(senderLoginSession);
                         break;
                     case LoginState.LoggedIn:
-                        OnLoggedIn(senderLoginSession);
+                        EasyEvents.OnLoggedIn(senderLoginSession);
                         break;
                     case LoginState.LoggingOut:
-                        OnLoggingOut(senderLoginSession);
+                        EasyEvents.OnLoggingOut(senderLoginSession);
                         break;
                     case LoginState.LoggedOut:
-                        OnLoggedOut(senderLoginSession);
+                        EasyEvents.OnLoggedOut(senderLoginSession);
                         break;
 
                     default:

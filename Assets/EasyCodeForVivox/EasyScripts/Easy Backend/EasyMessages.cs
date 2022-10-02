@@ -7,13 +7,6 @@ namespace EasyCodeForVivox
 {
     public class EasyMessages
     {
-        public static event Action ChannelMesssageSent;
-        public static event Action<IChannelTextMessage> ChannelMessageRecieved;
-        public static event Action<IChannelTextMessage> EventMessageRecieved;
-
-        public static event Action DirectMesssageSent;
-        public static event Action<IDirectedTextMessage> DirectMessageRecieved;
-        public static event Action<IFailedDirectedTextMessage> DirectMessageFailed;
 
 
         public void SubscribeToChannelMessages(IChannelSession channelSession)
@@ -40,63 +33,35 @@ namespace EasyCodeForVivox
 
 
 
-        #region Message Events
-
-
-        private void OnChannelMessageRecieved(IChannelTextMessage channelTextMessage)
-        {
-            if (channelTextMessage != null)
-            {
-                ChannelMessageRecieved?.Invoke(channelTextMessage);
-            }
-
-        }
-
-        private void OnEventMessageRecieved(IChannelTextMessage channelTextMessage)
-        {
-            if (channelTextMessage != null)
-            {
-                EventMessageRecieved?.Invoke(channelTextMessage);
-            }
-
-        }
-
-        private void OnChannelMessageSent()
-        {
-            ChannelMesssageSent?.Invoke();
-        }
-
-        private void OnDirectMessageSent()
-        {
-            DirectMesssageSent?.Invoke();
-        }
-
-        private void OnDirectMessageRecieved(IDirectedTextMessage message)
-        {
-            if (message != null)
-            {
-                DirectMessageRecieved?.Invoke(message);
-            }
-
-        }
-
-        private void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
-        {
-            if (failedMessage != null)
-            {
-                DirectMessageFailed?.Invoke(failedMessage);
-            }
-
-        }
-
-
-        #endregion
-
-
         #region Channel - Text Methods
 
 
-        public void SendChannelMessage(IChannelSession channel, string inputMsg, string stanzaNameSpace = "", string stanzaBody = "")
+        public void SendChannelMessage(IChannelSession channel, string inputMsg)
+        {
+            if (channel.TextState == ConnectionState.Disconnected)
+            {
+                return;
+            }
+            channel.BeginSendText(inputMsg, ar =>
+            {
+                try
+                {
+                    channel.EndSendText(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                    return;
+                }
+                finally
+                {
+                    EasyEvents.OnChannelMessageSent();
+                }
+            });
+        }
+
+
+        public void SendChannelMessage(IChannelSession channel, string inputMsg, string stanzaNameSpace, string stanzaBody)
         {
             if (channel.TextState == ConnectionState.Disconnected)
             {
@@ -116,10 +81,12 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    OnChannelMessageSent();
+                    EasyEvents.OnChannelMessageSent();
                 }
             });
         }
+
+
 
         public void SendEventMessage(IChannelSession channel, string eventMessage, string stanzaNameSpace, string stanzaBody)
         {
@@ -161,7 +128,7 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    OnDirectMessageSent();
+                    EasyEvents.OnDirectMessageSent();
                 }
             });
         }
@@ -181,7 +148,7 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    OnDirectMessageSent();
+                    EasyEvents.OnDirectMessageSent();
                 }
                 attemptedDirectMessages.Add(login.DirectedMessageResult.RequestId,
                     message);
@@ -222,7 +189,7 @@ namespace EasyCodeForVivox
                 var msg = directedMsgs.Dequeue();
                 if (msg != null)
                 {
-                    OnDirectMessageRecieved(directMessage.Value);
+                    EasyEvents.OnDirectMessageRecieved(directMessage.Value);
                 }
             }
         }
@@ -235,7 +202,7 @@ namespace EasyCodeForVivox
                 var msg = failed.Dequeue();
                 if (msg != null)
                 {
-                    OnDirectMessageFailed(msg);
+                    EasyEvents.OnDirectMessageFailed(msg);
                 }
             }
         }
@@ -248,18 +215,18 @@ namespace EasyCodeForVivox
                 var msg = messages.Dequeue();
                 if (msg != null)
                 {
-                    if (msg.ApplicationStanzaNamespace.Contains("Event"))
+                    if (!string.IsNullOrEmpty(msg.ApplicationStanzaNamespace))
                     {
-                        OnEventMessageRecieved(msg);
+                        if (msg.ApplicationStanzaNamespace.Contains("Event"))
+                        {
+                            EasyEvents.OnEventMessageRecieved(msg);
+                            return;
+                        }
                     }
-                    else
-                    {
-                        OnChannelMessageRecieved(msg);
-                    }
+                    EasyEvents.OnChannelMessageRecieved(msg);
                 }
             }
         }
-
 
         #endregion
 

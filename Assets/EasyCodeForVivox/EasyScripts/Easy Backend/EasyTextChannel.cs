@@ -8,12 +8,6 @@ namespace EasyCodeForVivox
     public class EasyTextChannel
     {
 
-        public static event Action<IChannelSession> TextChannelConnecting;
-        public static event Action<IChannelSession> TextChannelConnected;
-        public static event Action<IChannelSession> TextChannelDisconnecting;
-        public static event Action<IChannelSession> TextChannelDisconnected;
-
-
         public void Subscribe(IChannelSession channelSession)
         {
             channelSession.PropertyChanged += OnChannelTextPropertyChanged;
@@ -23,48 +17,6 @@ namespace EasyCodeForVivox
         {
             channelSession.PropertyChanged -= OnChannelTextPropertyChanged;
         }
-
-
-
-        #region Text Channel Events
-
-
-        private void OnTextChannelConnecting(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                TextChannelConnecting?.Invoke(channelSession);
-            }
-        }
-
-        private void OnTextChannelConnected(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                TextChannelConnected?.Invoke(channelSession);
-            }
-        }
-
-        private void OnTextChannelDisconnecting(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                TextChannelDisconnecting?.Invoke(channelSession);
-            }
-        }
-
-        private void OnTextChannelDisconnected(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                TextChannelDisconnected?.Invoke(channelSession);
-
-                Unsubscribe(channelSession);
-            }
-        }
-
-
-        #endregion
 
 
 
@@ -90,11 +42,6 @@ namespace EasyCodeForVivox
                     Debug.Log(e.Message);
                 }
             });
-
-            if (!join)
-            {
-                Unsubscribe(channelSession);
-            }
         }
 
 
@@ -114,19 +61,20 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.TextState)
                 {
                     case ConnectionState.Connecting:
-                        OnTextChannelConnecting(senderIChannelSession);
+                        EasyEvents.OnTextChannelConnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Connected:
-                        OnTextChannelConnected(senderIChannelSession);
+                        EasyEvents.OnTextChannelConnected(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnecting:
-                        OnTextChannelDisconnecting(senderIChannelSession);
+                        EasyEvents.OnTextChannelDisconnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnected:
-                        OnTextChannelDisconnected(senderIChannelSession);
+                        EasyEvents.OnTextChannelDisconnected(senderIChannelSession);
+                        Unsubscribe(senderIChannelSession);
                         break;
                 }
             }

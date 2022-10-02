@@ -13,10 +13,6 @@ namespace EasyCodeForVivox
         public string MaleVoice { get; } = "en_US male";
         public string FemaleVoice { get; } = "en_US female";
 
-        public static event Action<ITTSMessageQueueEventArgs> TTSMessageAdded;
-        public static event Action<ITTSMessageQueueEventArgs> TTSMessageRemoved;
-        public static event Action<ITTSMessageQueueEventArgs> TTSMessageUpdated;
-
 
         public void Subscribe(ILoginSession loginSession)
         {
@@ -31,38 +27,6 @@ namespace EasyCodeForVivox
             loginSession.TTS.Messages.BeforeMessageRemoved -= OnTTSMessageRemoved;
             loginSession.TTS.Messages.AfterMessageUpdated -= OnTTSMessageUpdated;
         }
-
-
-
-        #region Text-to-Speech Events
-
-
-        private void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
-        {
-            if (ttsArgs != null)
-            {
-                TTSMessageAdded?.Invoke(ttsArgs);
-            }
-        }
-
-        private void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
-        {
-            if (ttsArgs != null)
-            {
-                TTSMessageRemoved?.Invoke(ttsArgs);
-            }
-        }
-
-        private void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
-        {
-            if (ttsArgs != null)
-            {
-                TTSMessageUpdated?.Invoke(ttsArgs);
-            }
-        }
-
-
-        #endregion
 
 
         #region Text-To-Speech Methods
@@ -117,9 +81,10 @@ namespace EasyCodeForVivox
             var source = (ITTSMessageQueue)sender;
             if (source.Count > 9)
             {
+                 // todo update and research docs
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            OnTTSMessageAdded(ttsArgs);
+            EasyEvents.OnTTSMessageAdded(ttsArgs);
         }
 
         private void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
@@ -129,7 +94,7 @@ namespace EasyCodeForVivox
             {
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            OnTTSMessageRemoved(ttsArgs);
+            EasyEvents.OnTTSMessageRemoved(ttsArgs);
         }
 
         private void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
@@ -139,7 +104,7 @@ namespace EasyCodeForVivox
             {
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            OnTTSMessageUpdated(ttsArgs);
+            EasyEvents.OnTTSMessageUpdated(ttsArgs);
         }
 
         private void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)
@@ -148,7 +113,6 @@ namespace EasyCodeForVivox
             // if(ttsPropArgs.PropertyName == "")
             // {
             // todo check documentation and experiment
-            Debug.Log(ttsPropArgs.PropertyName);
             //}
 
         }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 using VivoxUnity;
@@ -9,12 +7,6 @@ namespace EasyCodeForVivox
 {
     public class EasyVoiceChannel
     {
-        public static event Action<IChannelSession> VoiceChannelConnecting;
-        public static event Action<IChannelSession> VoiceChannelConnected;
-        public static event Action<IChannelSession> VoiceChannelDisconnecting;
-        public static event Action<IChannelSession> VoiceChannelDisconnected;
-
-
         public void Subscribe(IChannelSession channelSession)
         {
             channelSession.PropertyChanged += OnChannelAudioPropertyChanged;
@@ -24,48 +16,6 @@ namespace EasyCodeForVivox
         {
             channelSession.PropertyChanged -= OnChannelAudioPropertyChanged;
         }
-
-
-
-        #region Voice Channel Events
-
-
-        private void OnAudioChannelConnecting(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                VoiceChannelConnecting?.Invoke(channelSession);
-            }
-        }
-
-        private void OnAudioChannelConnected(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                VoiceChannelConnected?.Invoke(channelSession);
-            }
-        }
-
-        private void OnAudioChannelDisconnecting(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                VoiceChannelDisconnecting?.Invoke(channelSession);
-            }
-        }
-
-        private void OnAudioChannelDisconnected(IChannelSession channelSession)
-        {
-            if (channelSession != null)
-            {
-                VoiceChannelDisconnected?.Invoke(channelSession);
-
-                Unsubscribe(channelSession);
-            }
-        }
-
-
-        #endregion
 
 
 
@@ -92,10 +42,6 @@ namespace EasyCodeForVivox
                 }
             });
 
-            if (!join)
-            {
-                Unsubscribe(channelSession);
-            }
         }
 
 
@@ -115,20 +61,20 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.AudioState)
                 {
                     case ConnectionState.Connecting:
-                        OnAudioChannelConnecting(senderIChannelSession);
+                        EasyEvents.OnAudioChannelConnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Connected:
-                        OnAudioChannelConnected(senderIChannelSession);
+                        EasyEvents.OnAudioChannelConnected(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnecting:
-                        OnAudioChannelDisconnecting(senderIChannelSession);
+                        EasyEvents.OnAudioChannelDisconnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnected:
+                        EasyEvents.OnAudioChannelDisconnected(senderIChannelSession);
                         Unsubscribe(senderIChannelSession);
-                        OnAudioChannelDisconnected(senderIChannelSession);
                         break;
                 }
             }

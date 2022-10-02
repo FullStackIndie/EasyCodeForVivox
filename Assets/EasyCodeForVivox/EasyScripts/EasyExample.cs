@@ -3,6 +3,7 @@ using EasyCodeForVivox;
 using UnityEngine.UI;
 using VivoxUnity;
 using TMPro;
+using System;
 
 public class EasyExample : EasyManager
 {
@@ -28,6 +29,7 @@ public class EasyExample : EasyManager
     private void Awake()
     {
         InitializeClient();
+        DontDestroyOnLoad(this);
     }
 
     void Start()
@@ -63,18 +65,31 @@ public class EasyExample : EasyManager
 
     public void JoinChannel()
     {
+        JoinChannel("3D", true, false, true, ChannelType.Positional);
         JoinChannel(channelName.text, true, true, true, ChannelType.NonPositional);
     }
 
     public void SendMessage()
     {
+        if(string.IsNullOrEmpty(channelName.text) || string.IsNullOrEmpty(message.text))
+        {
+            Debug.Log("Channel name or message is empty");
+            return;
+        }
         SendChannelMessage(channelName.text, message.text);
     }
 
     public void SendDirectMessageToPlayer()
     {
-        var selectedUser = dropdown.GetSelected();
-        SendDirectMessage(selectedUser, message.text, "test", "test");
+        var selectedUser = dropdown.GetSelected(); 
+        if (selectedUser != null)
+        {
+            SendDirectMessage(selectedUser, message.text);
+        }
+        else
+        {
+            Debug.Log("Remote Player Name is Empty or Invalid, Cannot send Message");
+        }
     }
 
     public void AddDMUser()
@@ -110,7 +125,14 @@ public class EasyExample : EasyManager
     public void ToggleMuteRemotePlayer()
     {
         var selectedUser = dropdown.GetSelected();
-        ToggleMuteRemoteUser(selectedUser, channelName.text);
+        if (selectedUser != null)
+        {
+            ToggleMuteRemoteUser(selectedUser, channelName.text);
+        }
+        else
+        {
+            Debug.Log("Remote Player Name is Empty or Invalid, Cannot mute player");
+        }
     }
 
     public void MuteAllPlayers()
@@ -131,7 +153,14 @@ public class EasyExample : EasyManager
     public void AdjustRemotePlayerVolume()
     {
         var selectedUser = dropdown.GetSelected();
-        AdjustRemoteUserVolume(selectedUser, channelName.text, Mathf.RoundToInt(remotePlayerSlider.value));
+        if(selectedUser != null)
+        {
+            AdjustRemoteUserVolume(selectedUser, channelName.text, Mathf.RoundToInt(remotePlayerSlider.value));
+        }
+        else
+        {
+            Debug.Log("Remote Player Name is Empty or Invalid, Cannot adjust player volume");
+        }
     }
 
     public void EnablePushToTalk()
@@ -221,7 +250,6 @@ public class EasyExample : EasyManager
         base.OnChannelDisconnected(channelSession);
         newMessage.text += $"\nChannel Disconnected in : {channelSession.Channel.Name}";
     }
-
 
 
     // Voice Channel Event Callbacks
