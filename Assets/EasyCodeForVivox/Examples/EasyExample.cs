@@ -1,5 +1,6 @@
 ﻿using EasyCodeForVivox;
 using System;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,7 +34,7 @@ public class EasyExample : EasyManager
         UnitializeClient();
     }
 
-    private void Awake()
+    private async void Awake()
     {
         // todo Implement Unity Remote Config to store sensitive information in the cloud. It's free
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
@@ -43,7 +44,7 @@ public class EasyExample : EasyManager
         EasySession.Issuer = issuer;
         EasySession.SecretKey = secretKey;
 
-        InitializeClient();
+        await InitializeClient();
         DontDestroyOnLoad(this);
     }
 
@@ -116,11 +117,6 @@ public class EasyExample : EasyManager
         {
             Debug.Log("Remote Player Name is Empty or Invalid, Cannot send Message");
         }
-    }
-
-    public void AddDMUser()
-    {
-        AddAllowedUser(remotePlayerName.text);
     }
 
     public void LeaveChannel()

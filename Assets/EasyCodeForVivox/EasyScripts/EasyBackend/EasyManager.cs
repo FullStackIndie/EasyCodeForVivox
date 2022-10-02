@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Android;
 using VivoxUnity;
@@ -11,7 +12,7 @@ namespace EasyCodeForVivox
     {
 
         // guarantees to only Initialize client once
-        public void InitializeClient()
+        public async Task InitializeClient()
         {
             // disable Debug.Log Statements in the build for better performance
 #if UNITY_EDITOR
@@ -35,7 +36,7 @@ namespace EasyCodeForVivox
                     SubscribeToVivoxEvents();
                     Debug.Log("Vivox Client Initialized");
 
-                    RuntimeEvents.RegisterEvents();
+                    await RuntimeEvents.RegisterEvents();
                 }
             }
         }
@@ -61,10 +62,10 @@ namespace EasyCodeForVivox
             EasyEvents.ChannelDisconnecting += OnChannelDisconnecting;
             EasyEvents.ChannelDisconnected += OnChannelDisconnected;
 
-            EasyEvents.VoiceChannelConnecting += OnVoiceConnecting;
-            EasyEvents.VoiceChannelConnected += OnVoiceConnected;
-            EasyEvents.VoiceChannelDisconnecting += OnVoiceDisconnecting;
-            EasyEvents.VoiceChannelDisconnected += OnVoiceDisconnected;
+            EasyEvents.AudioChannelConnecting += OnVoiceConnecting;
+            EasyEvents.AudioChannelConnected += OnVoiceConnected;
+            EasyEvents.AudioChannelDisconnecting += OnVoiceDisconnecting;
+            EasyEvents.AudioChannelDisconnected += OnVoiceDisconnected;
 
             EasyEvents.TextChannelConnecting += OnTextChannelConnecting;
             EasyEvents.TextChannelConnected += OnTextChannelConnected;
@@ -93,17 +94,6 @@ namespace EasyCodeForVivox
             EasyEvents.TTSMessageRemoved += OnTTSMessageRemoved;
             EasyEvents.TTSMessageUpdated += OnTTSMessageUpdated;
 
-            EasyEvents.SubscriptionAddAllowed += OnAddAllowedSubscription;
-            EasyEvents.SubscriptionAddBlocked += OnAddBlockedSubscription;
-            EasyEvents.SubscriptionAddPresence += OnAddPresenceSubscription;
-
-            EasyEvents.SubscriptionRemoveAllowed += OnRemoveAllowedSubscription;
-            EasyEvents.SubscriptionRemoveBlocked += OnRemoveBlockedSubscription;
-            EasyEvents.SubscriptionRemovePresence += OnRemovePresenceSubscription;
-
-            EasyEvents.SubscriptionUpdatePresence += OnUpdatePresenceSubscription;
-            EasyEvents.SubscriptionIncomingRequest += OnIncomingSubscription;
-
         }
 
         public void UnsubscribeToVivoxEvents()
@@ -119,10 +109,10 @@ namespace EasyCodeForVivox
             EasyEvents.ChannelDisconnecting -= OnChannelDisconnecting;
             EasyEvents.ChannelDisconnected -= OnChannelDisconnected;
 
-            EasyEvents.VoiceChannelConnecting -= OnVoiceConnecting;
-            EasyEvents.VoiceChannelConnected -= OnVoiceConnected;
-            EasyEvents.VoiceChannelDisconnecting -= OnVoiceDisconnecting;
-            EasyEvents.VoiceChannelDisconnected -= OnVoiceDisconnected;
+            EasyEvents.AudioChannelConnecting -= OnVoiceConnecting;
+            EasyEvents.AudioChannelConnected -= OnVoiceConnected;
+            EasyEvents.AudioChannelDisconnecting -= OnVoiceDisconnecting;
+            EasyEvents.AudioChannelDisconnected -= OnVoiceDisconnected;
 
             EasyEvents.TextChannelConnecting -= OnTextChannelConnecting;
             EasyEvents.TextChannelConnected -= OnTextChannelConnected;
@@ -151,17 +141,6 @@ namespace EasyCodeForVivox
             EasyEvents.TTSMessageRemoved -= OnTTSMessageRemoved;
             EasyEvents.TTSMessageUpdated -= OnTTSMessageUpdated;
 
-            EasyEvents.SubscriptionAddAllowed -= OnAddAllowedSubscription;
-            EasyEvents.SubscriptionAddBlocked -= OnAddBlockedSubscription;
-            EasyEvents.SubscriptionAddPresence -= OnAddPresenceSubscription;
-
-            EasyEvents.SubscriptionRemoveAllowed -= OnRemoveAllowedSubscription;
-            EasyEvents.SubscriptionRemoveBlocked -= OnRemoveBlockedSubscription;
-            EasyEvents.SubscriptionRemovePresence -= OnRemovePresenceSubscription;
-
-            EasyEvents.SubscriptionUpdatePresence -= OnUpdatePresenceSubscription;
-            EasyEvents.SubscriptionIncomingRequest -= OnIncomingSubscription;
-
         }
 
 
@@ -178,7 +157,6 @@ namespace EasyCodeForVivox
         private readonly EasyMessages _messages = new EasyMessages();
         private readonly EasyAudioSettings _audioSettings = new EasyAudioSettings();
         private readonly EasyMute _mute = new EasyMute();
-        private readonly EasySubscriptions _subscriptions = new EasySubscriptions();
         private readonly EasyTextToSpeech _textToSpeech = new EasyTextToSpeech();
 
 
@@ -201,7 +179,6 @@ namespace EasyCodeForVivox
                 EasySession.mainLoginSession = EasySession.mainClient.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain));
                 _messages.SubscribeToDirectMessages(EasySession.mainLoginSession);
                 _textToSpeech.Subscribe(EasySession.mainLoginSession);
-                _subscriptions.Subscribe(EasySession.mainLoginSession);
 
                 _login.LoginToVivox(EasySession.mainLoginSession, EasySession.APIEndpoint, userName, joinMuted);
             }
@@ -209,7 +186,6 @@ namespace EasyCodeForVivox
             {
                 Debug.Log(e.Message);
                 Debug.Log(e.StackTrace);
-                _subscriptions.Unsubscribe(EasySession.mainLoginSession);
                 _messages.UnsubscribeFromDirectMessages(EasySession.mainLoginSession);
                 _textToSpeech.Unsubscribe(EasySession.mainLoginSession);
             }
@@ -220,7 +196,6 @@ namespace EasyCodeForVivox
         {
             if (EasySession.mainLoginSession.State == LoginState.LoggedIn)
             {
-                _subscriptions.Unsubscribe(EasySession.mainLoginSession);
                 _messages.UnsubscribeFromDirectMessages(EasySession.mainLoginSession);
                 _textToSpeech.Unsubscribe(EasySession.mainLoginSession);
                 _login.Logout(EasySession.mainLoginSession);
@@ -358,36 +333,6 @@ namespace EasyCodeForVivox
         {
             IChannelSession channelSession = GetExistingChannelSession(channelName);
             _audioSettings.AdjustRemotePlayerAudioVolume(userName, channelSession, volume);
-        }
-
-        public void AddFriend(string userName)
-        {
-            _subscriptions.AddAllowPresence(EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain), EasySession.mainLoginSession);
-        }
-
-        public void RemoveFriend(string userName)
-        {
-            _subscriptions.RemoveAllowedPresence(EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain), EasySession.mainLoginSession);
-        }
-
-        public void AddAllowedUser(string userName)
-        {
-            _subscriptions.AddAllowedSubscription(EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain), EasySession.mainLoginSession);
-        }
-
-        public void RemoveAllowedUser(string userName)
-        {
-            _subscriptions.RemoveAllowedSubscription(EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain), EasySession.mainLoginSession);
-        }
-
-        public void BlockUser(string userName)
-        {
-            _subscriptions.AddBlockedSubscription(EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain), EasySession.mainLoginSession);
-        }
-
-        public void RemoveBlockedUser(string userName)
-        {
-            _subscriptions.RemoveBlockedSubscription(EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain), EasySession.mainLoginSession);
         }
 
         public void SpeakTTS(string msg)

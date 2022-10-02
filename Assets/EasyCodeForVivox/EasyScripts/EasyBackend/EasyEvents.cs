@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Linq;
+using System.CodeDom;
+using System.Reflection;
 using UnityEngine;
 using VivoxUnity;
 
@@ -33,10 +34,10 @@ namespace EasyCodeForVivox
         public static event Action<IChannelSession> TextChannelDisconnecting;
         public static event Action<IChannelSession> TextChannelDisconnected;
 
-        public static event Action<IChannelSession> VoiceChannelConnecting;
-        public static event Action<IChannelSession> VoiceChannelConnected;
-        public static event Action<IChannelSession> VoiceChannelDisconnecting;
-        public static event Action<IChannelSession> VoiceChannelDisconnected;
+        public static event Action<IChannelSession> AudioChannelConnecting;
+        public static event Action<IChannelSession> AudioChannelConnected;
+        public static event Action<IChannelSession> AudioChannelDisconnecting;
+        public static event Action<IChannelSession> AudioChannelDisconnected;
 
         #endregion
 
@@ -86,24 +87,6 @@ namespace EasyCodeForVivox
         #endregion
 
 
-        #region Subscription Events
-
-        public static event Action<AccountId> SubscriptionAddAllowed;
-        public static event Action<AccountId> SubscriptionRemoveAllowed;
-
-        public static event Action<AccountId> SubscriptionAddBlocked;
-        public static event Action<AccountId> SubscriptionRemoveBlocked;
-
-        public static event Action<AccountId> SubscriptionAddPresence;
-        public static event Action<AccountId> SubscriptionRemovePresence;
-
-        public static event Action<ValueEventArg<AccountId, IPresenceSubscription>> SubscriptionUpdatePresence;
-
-        public static event Action<AccountId> SubscriptionIncomingRequest;
-
-        #endregion
-
-
 
 
 
@@ -115,12 +98,11 @@ namespace EasyCodeForVivox
         {
             try
             {
-                System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 LoggingIn?.Invoke(loginSession);
 
                 foreach (var method in RuntimeEvents.LoginMethods)
                 {
-                    var attribute = (LoginEventAttribute)method.GetCustomAttributes(typeof(LoginEventAttribute), false).FirstOrDefault();
+                    var attribute = method.GetCustomAttribute<LoginEventAttribute>();
                     if (attribute != null && attribute.Options == LoginStatus.LoggingIn)
                     {
                         var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
@@ -130,13 +112,12 @@ namespace EasyCodeForVivox
                         }
                     }
                 }
-                stopwatch.Stop();
-                Debug.Log($"Invoking Events for {nameof(OnLoggingIn)} took {stopwatch.Elapsed}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Debug.Log($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingIn)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingIn)}");
                 Debug.LogException(ex);
+                throw;
             }
         }
 
@@ -144,12 +125,11 @@ namespace EasyCodeForVivox
         {
             try
             {
-                System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 LoggedIn?.Invoke(loginSession);
 
                 foreach (var method in RuntimeEvents.LoginMethods)
                 {
-                    var attribute = (LoginEventAttribute)method.GetCustomAttributes(typeof(LoginEventAttribute), false).FirstOrDefault();
+                    var attribute = method.GetCustomAttribute<LoginEventAttribute>();
                     if (attribute != null && attribute.Options == LoginStatus.LoggedIn)
                     {
                         var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
@@ -159,24 +139,68 @@ namespace EasyCodeForVivox
                         }
                     }
                 }
-                stopwatch.Stop();
-                Debug.Log($"Invoking Events for {nameof(OnLoggedIn)} took {stopwatch.Elapsed}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Debug.Log($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedIn)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedIn)}");
                 Debug.LogException(ex);
+                throw;
             }
         }
 
         public static void OnLoggingOut(ILoginSession loginSession)
         {
-            LoggingOut?.Invoke(loginSession);
+            try
+            {
+                LoggingOut?.Invoke(loginSession);
+
+                foreach (var method in RuntimeEvents.LoginMethods)
+                {
+                    var attribute = method.GetCustomAttribute<LoginEventAttribute>();
+                    if (attribute != null && attribute.Options == LoginStatus.LoggingOut)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { loginSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingOut)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnLoggedOut(ILoginSession loginSession)
         {
-            LoggedOut?.Invoke(loginSession);
+            try
+            {
+                LoggedOut?.Invoke(loginSession);
+
+                foreach (var method in RuntimeEvents.LoginMethods)
+                {
+                    var attribute = method.GetCustomAttribute<LoginEventAttribute>();
+                    if (attribute != null && attribute.Options == LoginStatus.LoggedOut)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { loginSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedOut)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
@@ -188,22 +212,114 @@ namespace EasyCodeForVivox
 
         public static void OnChannelConnecting(IChannelSession channelSession)
         {
-            ChannelConnecting?.Invoke(channelSession);
+            try
+            {
+                ChannelConnecting?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.ChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelStatus.ChannelConnecting)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnChannelConnected(IChannelSession channelSession)
         {
-            ChannelConnected?.Invoke(channelSession);
+            try
+            {
+                ChannelConnected?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.ChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelStatus.ChannelConnected)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnChannelDisconnecting(IChannelSession channelSession)
         {
-            ChannelDisconnecting?.Invoke(channelSession);
+            try
+            {
+                ChannelDisconnecting?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.ChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelStatus.ChannelDisconnecting)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnChannelDisconnected(IChannelSession channelSession)
         {
-            ChannelDisconnected?.Invoke(channelSession);
+            try
+            {
+                ChannelDisconnected?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.ChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelStatus.ChannelDisconnected)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
@@ -215,23 +331,115 @@ namespace EasyCodeForVivox
 
         public static void OnTextChannelConnecting(IChannelSession channelSession)
         {
-            TextChannelConnecting?.Invoke(channelSession);
+            try
+            {
+                TextChannelConnecting?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.TextChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == TextChannelStatus.TextChannelConnecting)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
         public static void OnTextChannelConnected(IChannelSession channelSession)
         {
-            TextChannelConnected?.Invoke(channelSession);
+            try
+            {
+                TextChannelConnected?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.TextChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == TextChannelStatus.TextChannelConnected)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnTextChannelDisconnecting(IChannelSession channelSession)
         {
-            TextChannelDisconnecting?.Invoke(channelSession);
+            try
+            {
+                TextChannelDisconnecting?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.TextChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == TextChannelStatus.TextChannelDisconnecting)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnTextChannelDisconnected(IChannelSession channelSession)
         {
-            TextChannelDisconnected?.Invoke(channelSession);
+            try
+            {
+                TextChannelDisconnected?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.TextChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == TextChannelStatus.TextChannelDisconnected)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
@@ -243,22 +451,114 @@ namespace EasyCodeForVivox
 
         public static void OnAudioChannelConnecting(IChannelSession channelSession)
         {
-            VoiceChannelConnecting?.Invoke(channelSession);
+            try
+            {
+                AudioChannelConnecting?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelConnecting)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnAudioChannelConnected(IChannelSession channelSession)
         {
-            VoiceChannelConnected?.Invoke(channelSession);
+            try
+            {
+                AudioChannelConnected?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelConnected)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnAudioChannelDisconnecting(IChannelSession channelSession)
         {
-            VoiceChannelDisconnecting?.Invoke(channelSession);
+            try
+            {
+                AudioChannelDisconnecting?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelDisconnecting)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnAudioChannelDisconnected(IChannelSession channelSession)
         {
-            VoiceChannelDisconnected?.Invoke(channelSession);
+            try
+            {
+                AudioChannelDisconnected?.Invoke(channelSession);
+
+                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                {
+                    var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
+                    if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelDisconnected)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelSession });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
@@ -270,32 +570,131 @@ namespace EasyCodeForVivox
 
         public static void OnChannelMessageRecieved(IChannelTextMessage channelTextMessage)
         {
-            ChannelMessageRecieved?.Invoke(channelTextMessage);
+            try
+            {
+                ChannelMessageRecieved?.Invoke(channelTextMessage);
+
+                foreach (var method in RuntimeEvents.ChannelMessageMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelMessageEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelMessageStatus.ChannelMessageRecieved)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelTextMessage });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageRecieved)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnEventMessageRecieved(IChannelTextMessage channelTextMessage)
         {
-            EventMessageRecieved?.Invoke(channelTextMessage);
+            try
+            {
+                EventMessageRecieved?.Invoke(channelTextMessage);
+
+                foreach (var method in RuntimeEvents.ChannelMessageMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelMessageEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelMessageStatus.EventMessageRecieved)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { channelTextMessage });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnEventMessageRecieved)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
-        public static void OnChannelMessageSent()
+        public static void OnChannelMessageSent<T>(T value) where T : class
         {
-            ChannelMesssageSent?.Invoke();
+            try
+            {
+                ChannelMesssageSent?.Invoke();
+
+                foreach (var method in RuntimeEvents.ChannelMessageMethods)
+                {
+                    var attribute = method.GetCustomAttribute<ChannelMessageEventAttribute>();
+                    if (attribute != null && attribute.Options == ChannelMessageStatus.ChannelMessageSent)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            method?.Invoke(gameObject, new[] { value });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageSent)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnDirectMessageSent()
         {
-            DirectMesssageSent?.Invoke();
+            try
+            {
+                DirectMesssageSent?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageSent)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnDirectMessageRecieved(IDirectedTextMessage message)
         {
-            DirectMessageRecieved?.Invoke(message);
+            try
+            {
+                DirectMessageRecieved?.Invoke(message);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageRecieved)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
         {
-            DirectMessageFailed?.Invoke(failedMessage);
+            try
+            {
+                DirectMessageFailed?.Invoke(failedMessage);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageFailed)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
@@ -307,39 +706,109 @@ namespace EasyCodeForVivox
 
         public static void OnUserJoinedChannel(IParticipant participant)
         {
-            UserJoinedChannel?.Invoke(participant);
+            try
+            {
+                UserJoinedChannel?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserJoinedChannel)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnUserLeftChannel(IParticipant participant)
         {
-            UserLeftChannel?.Invoke(participant);
+            try
+            {
+                UserLeftChannel?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserLeftChannel)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnUserValuesUpdated(IParticipant participant)
         {
-            UserValuesUpdated?.Invoke(participant);
+            try
+            {
+                UserValuesUpdated?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserValuesUpdated)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
 
         public static void OnUserMuted(IParticipant participant)
         {
-            UserMuted?.Invoke(participant);
+            try
+            {
+                UserMuted?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserMuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnUserUnmuted(IParticipant participant)
         {
-            UserUnmuted?.Invoke(participant);
+            try
+            {
+                UserUnmuted?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserUnmuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnUserSpeaking(IParticipant participant)
         {
-            UserSpeaking?.Invoke(participant);
+            try
+            {
+                UserSpeaking?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserSpeaking)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnUserNotSpeaking(IParticipant participant)
         {
-            UserNotSpeaking?.Invoke(participant);
+            try
+            {
+                UserNotSpeaking?.Invoke(participant);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserNotSpeaking)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
 
@@ -350,12 +819,32 @@ namespace EasyCodeForVivox
 
         public static void OnLocalUserMuted(bool isMuted)
         {
-            LocalUserMuted?.Invoke(isMuted);
+            try
+            {
+                LocalUserMuted?.Invoke(isMuted);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserMuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnLocalUserUnmuted(bool isMuted)
         {
-            LocalUserUnmuted?.Invoke(isMuted);
+            try
+            {
+                LocalUserUnmuted?.Invoke(isMuted);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserUnmuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
         #endregion
 
@@ -365,65 +854,47 @@ namespace EasyCodeForVivox
 
         public static void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
         {
-            TTSMessageAdded?.Invoke(ttsArgs);
+            try
+            {
+                TTSMessageAdded?.Invoke(ttsArgs);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageAdded)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
         {
-            TTSMessageRemoved?.Invoke(ttsArgs);
+            try
+            {
+                TTSMessageRemoved?.Invoke(ttsArgs);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageRemoved)}");
+                Debug.LogException(ex);
+                throw;
+            }
+
         }
 
         public static void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
         {
-            TTSMessageUpdated?.Invoke(ttsArgs);
-        }
+            try
+            {
+                TTSMessageUpdated?.Invoke(ttsArgs);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageUpdated)}");
+                Debug.LogException(ex);
+                throw;
+            }
 
-
-        #endregion
-
-
-        #region Subscription / Presence Events
-
-
-        public static void OnAddAllowedSubscription(AccountId accountId)
-        {
-            SubscriptionAddAllowed?.Invoke(accountId);
-        }
-
-        public static void OnRemoveAllowedSubscription(AccountId accountId)
-        {
-            SubscriptionRemoveAllowed?.Invoke(accountId);
-        }
-
-        public static void OnAddPresenceSubscription(AccountId accountId)
-        {
-            SubscriptionAddPresence?.Invoke(accountId);
-        }
-
-        public static void OnRemovePresenceSubscription(AccountId accountId)
-        {
-            SubscriptionRemovePresence?.Invoke(accountId);
-        }
-
-        public static void OnUpdatePresenceSubscription(ValueEventArg<AccountId, IPresenceSubscription> presence)
-        {
-            SubscriptionUpdatePresence?.Invoke(presence);
-        }
-
-        public static void OnAddBlockedSubscription(AccountId accountId)
-        {
-            SubscriptionAddBlocked?.Invoke(accountId);
-        }
-
-        public static void OnRemoveBlockedSubscription(AccountId accountId)
-        {
-            SubscriptionRemoveBlocked?.Invoke(accountId);
-        }
-
-
-        public static void OnIncomingSubscription(AccountId subRequest)
-        {
-            SubscriptionIncomingRequest?.Invoke(subRequest);
         }
 
 

@@ -1,0 +1,17 @@
+{
+    "name": "EasyCodeForVivox",
+    "references": [
+        "GUID:02eba5c04a1144952930aa2ef8ae6af1",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

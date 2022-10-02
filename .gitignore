@@ -82,3 +82,8 @@ crashlytics-build.properties
 
 #Visual Studio
 .vsconfig
+Assets/EasyCodeTesting/Test4.cs
+Assets/EasyCodeTesting/Test3.cs
+Assets/EasyCodeTesting/Test2.cs
+Assets/EasyCodeTesting/Test1.cs
+Assets/EasyCodeTesting/Test.cs

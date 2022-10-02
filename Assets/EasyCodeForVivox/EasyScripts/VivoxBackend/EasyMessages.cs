@@ -55,11 +55,11 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasyEvents.OnChannelMessageSent();
+                    TestModel testModel = new TestModel();
+                    EasyEvents.OnChannelMessageSent(testModel);
                 }
             });
         }
-
 
         public void SendChannelMessage(IChannelSession channel, string inputMsg, string stanzaNameSpace, string stanzaBody)
         {
@@ -81,12 +81,11 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasyEvents.OnChannelMessageSent();
+                    TestModel testModel = new TestModel();
+                    EasyEvents.OnChannelMessageSent(testModel);
                 }
             });
         }
-
-
 
         public void SendEventMessage(IChannelSession channel, string eventMessage, string stanzaNameSpace, string stanzaBody)
         {
@@ -150,28 +149,12 @@ namespace EasyCodeForVivox
                 {
                     EasyEvents.OnDirectMessageSent();
                 }
+                // todo add Coroutine that will attempt to resend failed messages
+                // provide opt-in option so user can use my implementaion or there own implementaion
                 attemptedDirectMessages.Add(login.DirectedMessageResult.RequestId,
                     message);
             });
         }
-
-        [System.Obsolete] // Vivox is Updating this functionality
-        private void ArchiveRequestQuery(ILoginSession login)
-        {
-            login.BeginAccountArchiveQuery(null, null, null, login.Key, null, 49, null, null, -1, ar =>
-            {
-                try
-                {
-                    Debug.Log(login.AccountArchiveResult.Running + "  is running");
-                    login.EndAccountArchiveQuery(ar);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e.Message);
-                }
-            });
-        }
-
 
         #endregion
 
@@ -231,17 +214,7 @@ namespace EasyCodeForVivox
         #endregion
 
 
-        [System.Obsolete] //  Vivox is Updating this functionality
-        private void OnArchiveResultAdded(object sender, QueueItemAddedEventArgs<IAccountArchiveMessage> queueArchiveMsg)
-        {
 
-            var source = (IReadOnlyQueue<IAccountArchiveMessage>)sender;
-
-            while (source.Count > 0)
-            {
-                Debug.Log(source.Dequeue().Message);
-            }
-        }
     }
 
 }

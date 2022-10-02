@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using VivoxUnity;
+﻿using VivoxUnity;
 
 
 namespace EasyCodeForVivox
@@ -25,7 +23,7 @@ namespace EasyCodeForVivox
 
         private void OnUserJoinedChannel(object sender, KeyEventArg<string> keyArg)
         {
-            var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
+            var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
             EasyEvents.OnUserJoinedChannel(senderIParticipant);
@@ -33,7 +31,7 @@ namespace EasyCodeForVivox
 
         private void OnUserLeftChannel(object sender, KeyEventArg<string> keyArg)
         {
-            var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
+            var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
             EasyEvents.OnUserLeftChannel(senderIParticipant);
@@ -41,7 +39,7 @@ namespace EasyCodeForVivox
 
         private void OnUserValuesUpdated(object sender, ValueEventArg<string, IParticipant> valueArg)
         {
-            var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
+            var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[valueArg.Key];
             EasyEvents.OnUserValuesUpdated(senderIParticipant);
