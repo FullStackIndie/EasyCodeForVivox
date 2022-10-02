@@ -203,7 +203,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: SendMessage
         m_Mode: 1
         m_Arguments:
@@ -333,7 +333,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: MuteAllPlayers
         m_Mode: 1
         m_Arguments:
@@ -1103,7 +1103,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: AdjustLocalSelfVolume
         m_Mode: 1
         m_Arguments:
@@ -1198,7 +1198,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleTextInChannel
         m_Mode: 1
         m_Arguments:
@@ -1971,7 +1971,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: SendUnmuteEventMessage
         m_Mode: 1
         m_Arguments:
@@ -3141,7 +3141,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1168399942}
         m_MethodName: LeaveChannel
-        m_Mode: 1
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3643,7 +3643,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: AdjustRemotePlayerVolume
         m_Mode: 1
         m_Arguments:
@@ -3884,7 +3884,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: SendRaiseHandEventMessage
         m_Mode: 1
         m_Arguments:
@@ -4014,7 +4014,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: ClearMessages
         m_Mode: 1
         m_Arguments:
@@ -4186,7 +4186,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1168399943}
   - component: {fileID: 1168399942}
-  - component: {fileID: 1168399944}
   m_Layer: 0
   m_Name: EasyManager
   m_TagString: Untagged
@@ -4203,9 +4202,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1168399941}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be04db975082f214ca1525a721a6ea59, type: 3}
+  m_Script: {fileID: 11500000, guid: 9819218099320dd4aa818b4aedf0e30e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  apiEndpoint: https://mt1s.www.vivox.com/api2
+  domain: mt1s.vivox.com
+  issuer: johnmu0739-vi31-dev
+  secretKey: luck408
   userName: {fileID: 723993286}
   remotePlayerName: {fileID: 759126984}
   channelName: {fileID: 923918021}
@@ -4216,7 +4219,7 @@ MonoBehaviour:
   remotePlayerSlider: {fileID: 932786185}
   newMessage: {fileID: 886477886}
   container: {fileID: 1982836512}
-  scrollbar: {fileID: 1490727355}
+  scrollbar: {fileID: 1538525291}
   dropdown: {fileID: 1496454327}
 --- !u!4 &1168399943
 Transform:
@@ -4232,18 +4235,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1168399944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1168399941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f148fa5ae6ca1e4eb0cb4e379bfd9be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1201365323
 GameObject:
   m_ObjectHideFlags: 0
@@ -4974,7 +4965,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: MuteLocalPlayer
         m_Mode: 1
         m_Arguments:
@@ -5104,7 +5095,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleMuteRemotePlayer
         m_Mode: 1
         m_Arguments:
@@ -5599,7 +5590,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: SendDirectMessageToPlayer
         m_Mode: 1
         m_Arguments:
@@ -5885,7 +5876,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: SendMuteEventMessage
         m_Mode: 1
         m_Arguments:
@@ -6461,7 +6452,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: ToggleAudioInChannel
         m_Mode: 1
         m_Arguments:
@@ -8215,7 +8206,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: UnmuteAllPlayers
         m_Mode: 1
         m_Arguments:
@@ -9362,7 +9353,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168399942}
+      - m_Target: {fileID: 0}
         m_MethodName: UnmuteLocalPlayer
         m_Mode: 1
         m_Arguments:

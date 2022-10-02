@@ -1,10 +1,12 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
+    [Obsolete("This will be removed in future versions")]
     public static class EasyOldExtensions
     {
 

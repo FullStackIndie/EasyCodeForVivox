@@ -34,6 +34,8 @@ namespace EasyCodeForVivox
                     EasySession.isClientInitialized = true;
                     SubscribeToVivoxEvents();
                     Debug.Log("Vivox Client Initialized");
+
+                    RuntimeEvents.RegisterEvents();
                 }
             }
         }

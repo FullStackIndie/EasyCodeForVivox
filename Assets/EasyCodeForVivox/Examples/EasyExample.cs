@@ -1,12 +1,18 @@
-﻿using UnityEngine;
-using EasyCodeForVivox;
+﻿using EasyCodeForVivox;
+using System;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 using VivoxUnity;
-using TMPro;
-using System;
 
 public class EasyExample : EasyManager
 {
+    [SerializeField] string apiEndpoint;
+    [SerializeField] string domain;
+    [SerializeField] string issuer;
+    [SerializeField] string secretKey;
+
+
     [SerializeField] InputField userName;
     [SerializeField] InputField remotePlayerName;
     [SerializeField] InputField channelName;
@@ -21,6 +27,7 @@ public class EasyExample : EasyManager
     [SerializeField] Scrollbar scrollbar;
     [SerializeField] TMP_Dropdown dropdown;
 
+
     private void OnApplicationQuit()
     {
         UnitializeClient();
@@ -28,6 +35,14 @@ public class EasyExample : EasyManager
 
     private void Awake()
     {
+        // todo Implement Unity Remote Config to store sensitive information in the cloud. It's free
+        // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
+        // inside of the Unity Editor because hackers can decompile there game and steal the secrets/keys
+        EasySession.APIEndpoint = new Uri(apiEndpoint);
+        EasySession.Domain = domain;
+        EasySession.Issuer = issuer;
+        EasySession.SecretKey = secretKey;
+
         InitializeClient();
         DontDestroyOnLoad(this);
     }
@@ -43,6 +58,17 @@ public class EasyExample : EasyManager
 
     }
 
+    [LoginEvent(LoginStatus.LoggedIn)]
+    public  void CustomLoginEvent(ILoginSession loginSession)
+    {
+        Debug.Log($"Invoking Event Dynamically from {nameof(CustomLoginEvent)}");
+    }
+
+    [LoginEvent(LoginStatus.LoggedIn)]
+    public static void CustomStaticLoginEvent(ILoginSession loginSession)
+    {
+        Debug.Log($"Invoking Event Dynamically from {nameof(CustomStaticLoginEvent)}");
+    }
 
     // Clears Text messages where event logs show up in demo scene
     // hooked up to ClearMessages Button in demo scene
@@ -71,7 +97,7 @@ public class EasyExample : EasyManager
 
     public void SendMessage()
     {
-        if(string.IsNullOrEmpty(channelName.text) || string.IsNullOrEmpty(message.text))
+        if (string.IsNullOrEmpty(channelName.text) || string.IsNullOrEmpty(message.text))
         {
             Debug.Log("Channel name or message is empty");
             return;
@@ -81,7 +107,7 @@ public class EasyExample : EasyManager
 
     public void SendDirectMessageToPlayer()
     {
-        var selectedUser = dropdown.GetSelected(); 
+        var selectedUser = dropdown.GetSelected();
         if (selectedUser != null)
         {
             SendDirectMessage(selectedUser, message.text);
@@ -153,7 +179,7 @@ public class EasyExample : EasyManager
     public void AdjustRemotePlayerVolume()
     {
         var selectedUser = dropdown.GetSelected();
-        if(selectedUser != null)
+        if (selectedUser != null)
         {
             AdjustRemoteUserVolume(selectedUser, channelName.text, Mathf.RoundToInt(remotePlayerSlider.value));
         }
@@ -179,8 +205,18 @@ public class EasyExample : EasyManager
     }
 
 
-    // Events Messages for Buttons to RaiseHand, Mute globally or Unmute globally in channel
+
+
+    #region  Demo Scene Events for Raise Hand, Mute Player, and Unmute Player
+
+
+    // Event Messages for Buttons in Demo Scene to RaiseHand, Mute globally or Unmute globally in channel
     // For teaching and Admin settings. Like discord or zoom call without the video
+    // This is example is if you are not using a Networking Stack like Mirror, Photon, MLAPI, 
+    // or NetCode for GameObjects by Unity. You should handle this type of logic on the server
+    // and not use Vivox's event/hidden messages for this type of feature in my opinion.
+
+
     public void SendRaiseHandEventMessage()
     {
         SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.mainLoginSession.LoginSessionId.Name);
@@ -195,6 +231,61 @@ public class EasyExample : EasyManager
     {
         SendEventMessage(channelName.text, "event", "Event:Unmute", dropdown.GetSelected());
     }
+
+
+    public override void OnEventMessageRecieved(IChannelTextMessage textMessage)
+    {
+        base.OnEventMessageRecieved(textMessage);
+        if (textMessage.ApplicationStanzaNamespace.Contains("RaiseHand"))
+        {
+            HandleRaiseHandEvent(textMessage);
+        }
+        else if (textMessage.ApplicationStanzaNamespace.Contains("Mute"))
+        {
+            HandleMuteEvent(textMessage);
+        }
+        else if (textMessage.ApplicationStanzaNamespace.Contains("Unmute"))
+        {
+            HandleUnmuteEvent(textMessage);
+        }
+    }
+
+    public void HandleRaiseHandEvent(IChannelTextMessage textMessage)
+    {
+        newMessage.text += $"\n{textMessage.ApplicationStanzaBody} has a question!";
+    }
+
+    public void HandleMuteEvent(IChannelTextMessage textMessage)
+    {
+        if (EasySession.mainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        {
+            MuteLocalPlayer();
+        }
+    }
+
+    public void HandleUnmuteEvent(IChannelTextMessage textMessage)
+    {
+        if (EasySession.mainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        {
+            UnmuteLocalPlayer();
+        }
+    }
+
+
+
+
+    #endregion
+
+
+
+    #region  Initial Setup Events for when Players Login and Join Channels
+
+    // These events will be subscribed to the common events that happen in Vivox and are inherited from the base class EasyManager.cs
+    // This is an example of inheriting from EasyManager and the methods you can override
+    // these events call the base(EasyManager) class. All that is in the base class is Debug.Logs()
+    // You can choose not to call base in your own version of a VivoxManager/EasyManager and the Debug.Logs() will not be called
+    // I will provide more explanation and alternatives to overriding base class methods in the documentation
+
 
 
 
@@ -329,45 +420,6 @@ public class EasyExample : EasyManager
     }
 
 
-    public override void OnEventMessageRecieved(IChannelTextMessage textMessage)
-    {
-        base.OnEventMessageRecieved(textMessage);
-        if (textMessage.ApplicationStanzaNamespace.Contains("RaiseHand"))
-        {
-            HandleRaiseHandEvent(textMessage);
-        }
-        else if (textMessage.ApplicationStanzaNamespace.Contains("Mute"))
-        {
-            HandleMuteEvent(textMessage);
-        }
-        else if (textMessage.ApplicationStanzaNamespace.Contains("Unmute"))
-        {
-            HandleUnmuteEvent(textMessage);
-        }
-    }
-
-    public void HandleRaiseHandEvent(IChannelTextMessage textMessage)
-    {
-        newMessage.text += $"\n{textMessage.ApplicationStanzaBody} has a question!";
-    }
-
-    public void HandleMuteEvent(IChannelTextMessage textMessage)
-    {
-        if (EasySession.mainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
-        {
-            MuteLocalPlayer();
-        }
-    }
-
-    public void HandleUnmuteEvent(IChannelTextMessage textMessage)
-    {
-        if (EasySession.mainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
-        {
-            UnmuteLocalPlayer();
-        }
-    }
-
-
     // User Event Callbacks
 
     public override void OnUserJoinedChannel(IParticipant participant)
@@ -446,6 +498,11 @@ public class EasyExample : EasyManager
         base.OnTTSMessageUpdated(ttsArgs);
         newMessage.text += $"\n Text-To-Speech Message Updated : {ttsArgs.Message.Text}";
     }
+
+
+
+    #endregion
+
 
 
 }

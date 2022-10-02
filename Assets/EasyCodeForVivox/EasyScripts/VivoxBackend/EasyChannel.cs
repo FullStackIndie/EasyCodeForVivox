@@ -29,10 +29,6 @@ namespace EasyCodeForVivox
         public void JoinChannel(bool includeVoice, bool includeText, bool switchTransmissionToThisChannel,
            IChannelSession channelSession, bool joinMuted = false)
         {
-
-
-
-
             Subscribe(channelSession);
             var accessToken = GetChannelToken(channelSession, joinMuted);
             channelSession.BeginConnect(includeVoice, includeText, switchTransmissionToThisChannel, accessToken, ar =>
