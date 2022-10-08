@@ -123,7 +123,7 @@ public class Mirror_3DPositionalAudio : NetworkBehaviour
         IEnumerator Handle3DPositionUpdates(float nextUpdate)
         {
             yield return new WaitForSeconds(nextUpdate);
-            if (EasySession.mainLoginSession.State == LoginState.LoggedIn)
+            if (EasySession.MainLoginSession.State == LoginState.LoggedIn)
             {
                 if (_positionalChannelExists)
                 {
@@ -140,15 +140,15 @@ public class Mirror_3DPositionalAudio : NetworkBehaviour
 
         public bool CheckIfChannelExists()
         {
-            foreach (KeyValuePair<string, IChannelSession> session in EasySession.mainChannelSessions)
+            foreach (KeyValuePair<string, IChannelSession> session in EasySession.MainChannelSessions)
             {
                 if (session.Value.Channel.Type == ChannelType.Positional)
                 {
                     _channelName = session.Value.Channel.Name;
-                    if (EasySession.mainChannelSessions[_channelName].ChannelState == ConnectionState.Connected)
+                    if (EasySession.MainChannelSessions[_channelName].ChannelState == ConnectionState.Connected)
                     {
                         Debug.Log($"Channel : {_channelName} is connected");
-                        if (EasySession.mainChannelSessions[_channelName].AudioState == ConnectionState.Connected)
+                        if (EasySession.MainChannelSessions[_channelName].AudioState == ConnectionState.Connected)
                         {
                             Debug.Log($"Audio is Connected in Channel : {_channelName}");
                             return true;
@@ -168,8 +168,8 @@ public class Mirror_3DPositionalAudio : NetworkBehaviour
         {
             if (listenerPosition.position != _lastListenerPosition || speakerPosition.position != _lastSpeakerPosition)
             {
-                EasySession.mainChannelSessions[_channelName].Set3DPosition(speakerPosition.position, listenerPosition.position, listenerPosition.forward, listenerPosition.up);
-                Debug.Log($"{EasySession.mainChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
+                EasySession.MainChannelSessions[_channelName].Set3DPosition(speakerPosition.position, listenerPosition.position, listenerPosition.forward, listenerPosition.up);
+                Debug.Log($"{EasySession.MainChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
             }
             _lastListenerPosition = listenerPosition.position;
             _lastSpeakerPosition = speakerPosition.position;

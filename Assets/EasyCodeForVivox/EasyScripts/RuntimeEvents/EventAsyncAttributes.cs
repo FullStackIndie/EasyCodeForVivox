@@ -4,99 +4,99 @@ namespace EasyCodeForVivox
 {
     /// <include file='Assets\EasyCodeForVivox\Documentation\XML Documentation\Attributes.xml' path='EasyCode/Attributes[@name="Login"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class LoginEventAttribute : Attribute
+    public class LoginEventAsyncAttribute : Attribute
     {
         public LoginStatus Options { get; set; }
 
-        public LoginEventAttribute(LoginStatus options)
+        public LoginEventAsyncAttribute(LoginStatus options)
         {
             Options = options;
         }
     }
-    
+
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class ChannelEventAttribute : Attribute
+    public class ChannelEventAsyncAttribute : Attribute
     {
         public ChannelStatus Options { get; set; }
 
-        public ChannelEventAttribute(ChannelStatus options)
+        public ChannelEventAsyncAttribute(ChannelStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class AudioChannelEventAttribute : Attribute
+    public class AudioChannelEventAsyncAttribute : Attribute
     {
         public AudioChannelStatus Options { get; set; }
 
-        public AudioChannelEventAttribute(AudioChannelStatus options)
+        public AudioChannelEventAsyncAttribute(AudioChannelStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class TextChannelEventAttribute : Attribute
+    public class TextChannelEventAsyncAttribute : Attribute
     {
         public TextChannelStatus Options { get; set; }
 
-        public TextChannelEventAttribute(TextChannelStatus options)
+        public TextChannelEventAsyncAttribute(TextChannelStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class ChannelMessageEventAttribute : Attribute
+    public class ChannelMessageEventAsyncAttribute : Attribute
     {
         public ChannelMessageStatus Options { get; set; }
 
-        public ChannelMessageEventAttribute(ChannelMessageStatus options)
+        public ChannelMessageEventAsyncAttribute(ChannelMessageStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class DirectMessageEventAttribute : Attribute
+    public class DirectMessageEventAsyncAttribute : Attribute
     {
         public DirectMessageStatus Options { get; set; }
 
-        public DirectMessageEventAttribute(DirectMessageStatus options)
+        public DirectMessageEventAsyncAttribute(DirectMessageStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class UserEventAttribute : Attribute
+    public class UserEventAsyncAttribute : Attribute
     {
         public UserStatus Options { get; set; }
 
-        public UserEventAttribute(UserStatus options)
+        public UserEventAsyncAttribute(UserStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class UserAudioEventAttribute : Attribute
+    public class UserAudioEventAsyncAttribute : Attribute
     {
         public UserAudioStatus Options { get; set; }
 
-        public UserAudioEventAttribute(UserAudioStatus options)
+        public UserAudioEventAsyncAttribute(UserAudioStatus options)
         {
             Options = options;
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class TextToSpeechEventAttribute : Attribute
+    public class TextToSpeechEventAsyncAttribute : Attribute
     {
         public TextToSpeechStatus Options { get; set; }
 
-        public TextToSpeechEventAttribute(TextToSpeechStatus options)
+        public TextToSpeechEventAsyncAttribute(TextToSpeechStatus options)
         {
             Options = options;
         }

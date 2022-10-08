@@ -13,7 +13,7 @@ namespace EasyCodeForVivox
 {
     "VivoxAccessToken",
     "VivoxUnity",
-    "AssetStoreTools ",
+    "AssetStoreTools",
     "mscorlib",
     "Mono.Security",
     "System",
@@ -141,16 +141,35 @@ namespace EasyCodeForVivox
     "SyntaxTree.VisualStudio.Unity.Messaging"
 };
 
-        public static List<MethodInfo> LoginMethods = new List<MethodInfo>();
-        public static List<MethodInfo> ChannelMethods = new List<MethodInfo>();
-        public static List<MethodInfo> AudioChannelMethods = new List<MethodInfo>();
-        public static List<MethodInfo> TextChannelMethods = new List<MethodInfo>();
+        public static List<MethodInfo> LoginEvents = new List<MethodInfo>();
+        public static List<MethodInfo> LoginEventsAsync = new List<MethodInfo>();
 
-        public static List<MethodInfo> ChannelMessageMethods = new List<MethodInfo>();
-        public static List<MethodInfo> DirectMessageMethods = new List<MethodInfo>();
-        public static List<MethodInfo> UserEventMethods = new List<MethodInfo>();
-        public static List<MethodInfo> UserAudioEventMethods = new List<MethodInfo>();
-        public static List<MethodInfo> TextToSpeechMethods = new List<MethodInfo>();
+        public static List<MethodInfo> ChannelEvents = new List<MethodInfo>();
+        public static List<MethodInfo> ChannelEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> AudioChannelEvents = new List<MethodInfo>();
+        public static List<MethodInfo> AudioChannelEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> TextChannelEvents = new List<MethodInfo>();
+        public static List<MethodInfo> TextChannelEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> ChannelMessageEvents = new List<MethodInfo>();
+        public static List<MethodInfo> ChannelMessageEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> DirectMessageEvents = new List<MethodInfo>();
+        public static List<MethodInfo> DirectMessageEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> UserEvents = new List<MethodInfo>();
+        public static List<MethodInfo> UserEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> UserAudioEvents = new List<MethodInfo>();
+        public static List<MethodInfo> UserAudioEventsAsync = new List<MethodInfo>();
+
+        public static List<MethodInfo> TextToSpeechEvents = new List<MethodInfo>();
+        public static List<MethodInfo> TextToSpeechEventsAsync = new List<MethodInfo>();
+
+
+
 
         public static async Task RegisterEvents()
         {
@@ -160,103 +179,226 @@ namespace EasyCodeForVivox
             foreach (Assembly assembly in assemblies)
             {
                 var assemblyName = assembly.GetName().Name;
-                //if (assembly.IsDynamic) { continue; }
+                if (assembly.IsDynamic) { continue; }
                 if (assemblyName.StartsWith("System") || assemblyName.StartsWith("Unity") || assemblyName.StartsWith("UnityEditor") ||
                     assemblyName.StartsWith("UnityEngine") || internalAssemblyNames.Contains(assemblyName) || assemblyName.StartsWith("Mono"))
                 {
-                    //continue;
+                    continue;
                 }
                 Debug.Log($"Searching Assembly [ {assembly.GetName().Name} ]");
 
                 Type[] types = assembly.GetTypes();
-                await Task.Run(() => RegisterLoginMethods(types));
-                await Task.Run(() => RegisterChannelMethods(types));
-                await Task.Run(() => RegisterVoiceChannelMethods(types));
-                await Task.Run(() => RegisterTextChannelMethods(types));
+                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
+                // methods do repeat some code but instead of for looping and awaiting on 1 thread
+                // this enables me to create many tasks to hopefully take advantage of multiple cores/threads to speed up the execution time at startup
+                await Task.Run(() => RegisterLoginEvents(types, flags));
+                await Task.Run(() => RegisterChannelEvents(types, flags));
+                await Task.Run(() => RegisterVoiceChannelEvents(types, flags));
+                await Task.Run(() => RegisterTextChannelEvents(types, flags));
+                await Task.Run(() => RegisterChannelMessageEvents(types, flags));
+                await Task.Run(() => RegisterDirectMessageEvents(types, flags));
+                await Task.Run(() => RegisterUserEvents(types, flags));
+                await Task.Run(() => RegisterUserAudioEvents(types, flags));
+                await Task.Run(() => RegisterTextToSpeechEvents(types, flags));
             }
 
             LogRegisteredEventsCount();
 
             stopwatch.Stop();
-            Debug.Log($"Registering Events for {nameof(RegisterEvents)} took {stopwatch.Elapsed}");
+            Debug.Log($"Registering Events took {stopwatch.Elapsed}");
         }
 
         public static void LogRegisteredEventsCount()
         {
-            Debug.Log($"Found {LoginMethods.Count} Login Event Methods");
-            Debug.Log($"Found {ChannelMethods.Count} Channel Event Methods");
-            Debug.Log($"Found {AudioChannelMethods.Count} Voice Channel Event Methods");
-            Debug.Log($"Found {TextChannelMethods.Count} Text Channel Event Methods");
+            Debug.Log($"Found {LoginEvents.Count} Login Event Methods");
+            Debug.Log($"Found {LoginEventsAsync.Count} Login Async Event Methods");
+            Debug.Log($"Found {ChannelEvents.Count} Channel Event Methods");
+            Debug.Log($"Found {AudioChannelEvents.Count} Voice Channel Event Methods");
+            Debug.Log($"Found {TextChannelEvents.Count} Text Channel Event Methods");
         }
 
-        public static void RegisterLoginMethods(Type[] types)
+        public static void RegisterLoginEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Login Methods to Register");
+            Debug.Log($"Searching for Login Events to Register");
             Parallel.ForEach(types, type =>
             {
-                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
                     var attribute = methodInfo.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(LoginEventAttribute));
                     if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(LoginEventAttribute)))
                     {
-                        LoginMethods.Add(methodInfo);
+                        LoginEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(LoginEventAsyncAttribute)))
+                    {
+                        LoginEventsAsync.Add(methodInfo);
                     }
                 }
             });
         }
 
-        public static void RegisterChannelMethods(Type[] types)
+        public static void RegisterChannelEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Channel Methods to Register");
+            Debug.Log($"Searching for Channel Events to Register");
             Parallel.ForEach(types, type =>
             {
-                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
                     if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelEventAttribute)))
                     {
-                        ChannelMethods.Add(methodInfo);
+                        ChannelEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelEventAsyncAttribute)))
+                    {
+                        ChannelEventsAsync.Add(methodInfo);
                     }
                 }
             });
         }
 
-        public static void RegisterVoiceChannelMethods(Type[] types)
+        public static void RegisterVoiceChannelEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Voice Channel Methods to Register");
+            Debug.Log($"Searching for Voice Channel Events to Register");
             Parallel.ForEach(types, type =>
             {
-                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
                     if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(AudioChannelEventAttribute)))
                     {
-                        ChannelMethods.Add(methodInfo);
+                        ChannelEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(AudioChannelEventAsyncAttribute)))
+                    {
+                        ChannelEventsAsync.Add(methodInfo);
                     }
                 }
             });
         }
 
-        public static void RegisterTextChannelMethods(Type[] types)
+        public static void RegisterTextChannelEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Text Channel Methods to Register");
+            Debug.Log($"Searching for Text Channel Events to Register");
             Parallel.ForEach(types, type =>
             {
-                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
                     if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextChannelEventAttribute)))
                     {
-                        ChannelMethods.Add(methodInfo);
+                        ChannelEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextChannelEventAsyncAttribute)))
+                    {
+                        ChannelEventsAsync.Add(methodInfo);
                     }
                 }
             });
         }
+
+        public static void RegisterChannelMessageEvents(Type[] types, BindingFlags flags)
+        {
+            Debug.Log($"Searching for Channel Message Events to Register");
+            Parallel.ForEach(types, type =>
+            {
+                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                {
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelMessageEventAttribute)))
+                    {
+                        ChannelMessageEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelMessageEventAsyncAttribute)))
+                    {
+                        ChannelMessageEventsAsync.Add(methodInfo);
+                    }
+                }
+            });
+        }
+
+        public static void RegisterDirectMessageEvents(Type[] types, BindingFlags flags)
+        {
+            Debug.Log($"Searching for Direct Message Events to Register");
+            Parallel.ForEach(types, type =>
+            {
+                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                {
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(DirectMessageEventAttribute)))
+                    {
+                        DirectMessageEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(DirectMessageEventAsyncAttribute)))
+                    {
+                        DirectMessageEventsAsync.Add(methodInfo);
+                    }
+                }
+            });
+        }
+
+        public static void RegisterUserEvents(Type[] types, BindingFlags flags)
+        {
+            Debug.Log($"Searching for User Events to Register");
+            Parallel.ForEach(types, type =>
+            {
+                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                {
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserEventAttribute)))
+                    {
+                        UserEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserEventAsyncAttribute)))
+                    {
+                        UserEventsAsync.Add(methodInfo);
+                    }
+                }
+            });
+        }
+
+        public static void RegisterUserAudioEvents(Type[] types, BindingFlags flags)
+        {
+            Debug.Log($"Searching for User Audio Events to Register");
+            Parallel.ForEach(types, type =>
+            {
+                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                {
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserAudioEventAttribute)))
+                    {
+                        UserAudioEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserAudioEventAsyncAttribute)))
+                    {
+                        UserAudioEventsAsync.Add(methodInfo);
+                    }
+                }
+            });
+        }
+
+        public static void RegisterTextToSpeechEvents(Type[] types, BindingFlags flags)
+        {
+            Debug.Log($"Searching for Text-To-Speech Events to Register");
+            Parallel.ForEach(types, type =>
+            {
+                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                {
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextToSpeechEventAttribute)))
+                    {
+                        TextToSpeechEvents.Add(methodInfo);
+                    }
+                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextToSpeechEventAsyncAttribute)))
+                    {
+                        TextToSpeechEventsAsync.Add(methodInfo);
+                    }
+                }
+            });
+        }
+
+
+
+
+
+
+
+
+
+
 
     }
 }

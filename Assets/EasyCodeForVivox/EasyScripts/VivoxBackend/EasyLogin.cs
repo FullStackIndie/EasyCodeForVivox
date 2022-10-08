@@ -4,10 +4,9 @@ using VivoxUnity;
 using UnityEngine;
 using VivoxAccessToken;
 
-
 namespace EasyCodeForVivox
 {
-    public class EasyLogin
+    public class EasyLogin 
     {
 
         public void Subscribe(ILoginSession loginSession)
@@ -58,7 +57,7 @@ namespace EasyCodeForVivox
             loginSession.Logout();
             EasyEvents.OnLoggedOut(loginSession);
             Debug.Log($"Logging Out... Vivox does not have a Logging Out event callbacks because when you disconnect from there server their is no way to send a callback." +
-                $" The events LoggingOut and LoggedOut are custom callback events. LoggingOut will be called before the Logout method is called and LoggedOut will be called after Logout method is called.");
+                $" The events LoggingOut and LoggedOut are custom callback events. LoggingOut event will be called before the Logout method is called and LoggedOut event will be called after Logout method is called.");
         }
 
         #endregion
@@ -67,7 +66,7 @@ namespace EasyCodeForVivox
         #region Login Callbacks
 
         // login status changed
-        private void OnLoginPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
+        private async void OnLoginPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
         {
             var senderLoginSession = (ILoginSession)sender;
 
@@ -80,6 +79,7 @@ namespace EasyCodeForVivox
                         break;
                     case LoginState.LoggedIn:
                         EasyEvents.OnLoggedIn(senderLoginSession);
+                        await EasyEvents.OnLoggedInAsync(senderLoginSession);
                         break;
                     case LoginState.LoggingOut:
                         EasyEvents.OnLoggingOut(senderLoginSession);

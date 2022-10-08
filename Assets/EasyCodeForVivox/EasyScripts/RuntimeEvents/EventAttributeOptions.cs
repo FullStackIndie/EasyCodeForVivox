@@ -1,5 +1,8 @@
 ﻿namespace EasyCodeForVivox
 {
+    /// <summary>
+    /// Login Event that you want this method to be called/subscribed to
+    /// </summary>
     public enum LoginStatus
     {
         LoggingIn,

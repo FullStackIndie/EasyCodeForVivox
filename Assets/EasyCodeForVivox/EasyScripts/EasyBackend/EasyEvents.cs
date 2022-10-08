@@ -1,6 +1,7 @@
 ﻿using System;
-using System.CodeDom;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
 
@@ -98,9 +99,11 @@ namespace EasyCodeForVivox
         {
             try
             {
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
                 LoggingIn?.Invoke(loginSession);
 
-                foreach (var method in RuntimeEvents.LoginMethods)
+                foreach (var method in RuntimeEvents.LoginEvents)
                 {
                     var attribute = method.GetCustomAttribute<LoginEventAttribute>();
                     if (attribute != null && attribute.Options == LoginStatus.LoggingIn)
@@ -108,6 +111,38 @@ namespace EasyCodeForVivox
                         var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
                         foreach (var gameObject in gameObjects)
                         {
+                            method?.Invoke(gameObject, new[] { loginSession });
+                        }
+                    }
+                }
+                stopwatch.Stop();
+                Debug.Log($"Stopwatch Elapsed Time {stopwatch.Elapsed}");
+                Debug.Log($"Stopwatch Elapsed Ticks {stopwatch.ElapsedTicks}");
+                Debug.Log($"Stopwatch Elapsed Milliseconds {stopwatch.ElapsedMilliseconds}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingIn)}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        public static void OnLoggingIn<T>(ILoginSession loginSession, T value)
+        {
+            try
+            {
+                LoggingIn?.Invoke(loginSession);
+
+                foreach (var method in RuntimeEvents.LoginEvents)
+                {
+                    var attribute = method.GetCustomAttribute<LoginEventAttribute>();
+                    if (attribute != null && attribute.Options == LoginStatus.LoggingIn)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        foreach (var gameObject in gameObjects)
+                        {
+                            // todo pass in generic type value
                             method?.Invoke(gameObject, new[] { loginSession });
                         }
                     }
@@ -125,9 +160,11 @@ namespace EasyCodeForVivox
         {
             try
             {
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
                 LoggedIn?.Invoke(loginSession);
 
-                foreach (var method in RuntimeEvents.LoginMethods)
+                foreach (var method in RuntimeEvents.LoginEvents)
                 {
                     var attribute = method.GetCustomAttribute<LoginEventAttribute>();
                     if (attribute != null && attribute.Options == LoginStatus.LoggedIn)
@@ -139,6 +176,45 @@ namespace EasyCodeForVivox
                         }
                     }
                 }
+                stopwatch.Stop();
+                Debug.Log($"Stopwatch Elapsed Time {stopwatch.Elapsed}");
+                Debug.Log($"Stopwatch Elapsed Ticks {stopwatch.ElapsedTicks}");
+                Debug.Log($"Stopwatch Elapsed Milliseconds {stopwatch.ElapsedMilliseconds}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedIn)}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        public static async Task OnLoggedInAsync(ILoginSession loginSession)
+        {
+            try
+            {
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
+
+                foreach (var method in RuntimeEvents.LoginEventsAsync)
+                {
+                    var attribute = method.GetCustomAttribute<LoginEventAsyncAttribute>();
+                    if (attribute != null && attribute.Options == LoginStatus.LoggedIn)
+                    {
+                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                        await Task.Run(() =>
+                        {
+                            Parallel.ForEach(gameObjects, gameObject =>
+                            {
+                                method?.Invoke(gameObject, new[] { loginSession });
+                            });
+                        });
+                    }
+                }
+                stopwatch.Stop();
+                Debug.Log($"Async Stopwatch Elapsed Time {stopwatch.Elapsed}");
+                Debug.Log($"Async Stopwatch Elapsed Ticks {stopwatch.ElapsedTicks}");
+                Debug.Log($"Async Stopwatch Elapsed Milliseconds {stopwatch.ElapsedMilliseconds}");
             }
             catch (Exception ex)
             {
@@ -154,7 +230,7 @@ namespace EasyCodeForVivox
             {
                 LoggingOut?.Invoke(loginSession);
 
-                foreach (var method in RuntimeEvents.LoginMethods)
+                foreach (var method in RuntimeEvents.LoginEvents)
                 {
                     var attribute = method.GetCustomAttribute<LoginEventAttribute>();
                     if (attribute != null && attribute.Options == LoginStatus.LoggingOut)
@@ -181,7 +257,7 @@ namespace EasyCodeForVivox
             {
                 LoggedOut?.Invoke(loginSession);
 
-                foreach (var method in RuntimeEvents.LoginMethods)
+                foreach (var method in RuntimeEvents.LoginEvents)
                 {
                     var attribute = method.GetCustomAttribute<LoginEventAttribute>();
                     if (attribute != null && attribute.Options == LoginStatus.LoggedOut)
@@ -216,7 +292,7 @@ namespace EasyCodeForVivox
             {
                 ChannelConnecting?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.ChannelMethods)
+                foreach (var method in RuntimeEvents.ChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelStatus.ChannelConnecting)
@@ -244,7 +320,7 @@ namespace EasyCodeForVivox
             {
                 ChannelConnected?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.ChannelMethods)
+                foreach (var method in RuntimeEvents.ChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelStatus.ChannelConnected)
@@ -272,7 +348,7 @@ namespace EasyCodeForVivox
             {
                 ChannelDisconnecting?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.ChannelMethods)
+                foreach (var method in RuntimeEvents.ChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelStatus.ChannelDisconnecting)
@@ -300,7 +376,7 @@ namespace EasyCodeForVivox
             {
                 ChannelDisconnected?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.ChannelMethods)
+                foreach (var method in RuntimeEvents.ChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelStatus.ChannelDisconnected)
@@ -335,7 +411,7 @@ namespace EasyCodeForVivox
             {
                 TextChannelConnecting?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.TextChannelMethods)
+                foreach (var method in RuntimeEvents.TextChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
                     if (attribute != null && attribute.Options == TextChannelStatus.TextChannelConnecting)
@@ -364,7 +440,7 @@ namespace EasyCodeForVivox
             {
                 TextChannelConnected?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.TextChannelMethods)
+                foreach (var method in RuntimeEvents.TextChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
                     if (attribute != null && attribute.Options == TextChannelStatus.TextChannelConnected)
@@ -392,7 +468,7 @@ namespace EasyCodeForVivox
             {
                 TextChannelDisconnecting?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.TextChannelMethods)
+                foreach (var method in RuntimeEvents.TextChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
                     if (attribute != null && attribute.Options == TextChannelStatus.TextChannelDisconnecting)
@@ -420,7 +496,7 @@ namespace EasyCodeForVivox
             {
                 TextChannelDisconnected?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.TextChannelMethods)
+                foreach (var method in RuntimeEvents.TextChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<TextChannelEventAttribute>();
                     if (attribute != null && attribute.Options == TextChannelStatus.TextChannelDisconnected)
@@ -455,7 +531,7 @@ namespace EasyCodeForVivox
             {
                 AudioChannelConnecting?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                foreach (var method in RuntimeEvents.AudioChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
                     if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelConnecting)
@@ -483,7 +559,7 @@ namespace EasyCodeForVivox
             {
                 AudioChannelConnected?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                foreach (var method in RuntimeEvents.AudioChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
                     if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelConnected)
@@ -511,7 +587,7 @@ namespace EasyCodeForVivox
             {
                 AudioChannelDisconnecting?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                foreach (var method in RuntimeEvents.AudioChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
                     if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelDisconnecting)
@@ -539,7 +615,7 @@ namespace EasyCodeForVivox
             {
                 AudioChannelDisconnected?.Invoke(channelSession);
 
-                foreach (var method in RuntimeEvents.AudioChannelMethods)
+                foreach (var method in RuntimeEvents.AudioChannelEvents)
                 {
                     var attribute = method.GetCustomAttribute<AudioChannelEventAttribute>();
                     if (attribute != null && attribute.Options == AudioChannelStatus.AudioChannelDisconnected)
@@ -574,7 +650,7 @@ namespace EasyCodeForVivox
             {
                 ChannelMessageRecieved?.Invoke(channelTextMessage);
 
-                foreach (var method in RuntimeEvents.ChannelMessageMethods)
+                foreach (var method in RuntimeEvents.ChannelMessageEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelMessageEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelMessageStatus.ChannelMessageRecieved)
@@ -602,7 +678,7 @@ namespace EasyCodeForVivox
             {
                 EventMessageRecieved?.Invoke(channelTextMessage);
 
-                foreach (var method in RuntimeEvents.ChannelMessageMethods)
+                foreach (var method in RuntimeEvents.ChannelMessageEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelMessageEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelMessageStatus.EventMessageRecieved)
@@ -624,21 +700,40 @@ namespace EasyCodeForVivox
 
         }
 
-        public static void OnChannelMessageSent<T>(T value) where T : class
+        public static void OnChannelMessageSent()
         {
             try
             {
                 ChannelMesssageSent?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageSent)}");
+                Debug.LogException(ex);
+                throw;
+            }
 
-                foreach (var method in RuntimeEvents.ChannelMessageMethods)
+        }
+
+        public static void OnChannelMessageSent<T>(T value) where T : class
+        {
+            try
+            {
+                foreach (var method in RuntimeEvents.ChannelMessageEvents)
                 {
                     var attribute = method.GetCustomAttribute<ChannelMessageEventAttribute>();
                     if (attribute != null && attribute.Options == ChannelMessageStatus.ChannelMessageSent)
                     {
-                        var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                        foreach (var gameObject in gameObjects)
+                        var parameter = method.GetParameters().FirstOrDefault();
+                        Debug.Log($"Parameter Name:Type == {parameter.Name}:{parameter.ParameterType}");
+                        if (parameter.ParameterType == typeof(T))
                         {
-                            method?.Invoke(gameObject, new[] { value });
+                            Debug.Log($"Parameter Types Matched for Generic Method. Invoking Dynamic Generic Method");
+                            var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                            foreach (var gameObject in gameObjects)
+                            {
+                                method?.Invoke(gameObject, new[] { value });
+                            }
                         }
                     }
                 }

@@ -5,7 +5,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyVoiceChannel
+    public class EasyAudioChannel
     {
         public void Subscribe(IChannelSession channelSession)
         {

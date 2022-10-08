@@ -55,7 +55,7 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    TestModel testModel = new TestModel();
+                    DynamicEventModel testModel = new DynamicEventModel();
                     EasyEvents.OnChannelMessageSent(testModel);
                 }
             });
@@ -81,7 +81,7 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    TestModel testModel = new TestModel();
+                    DynamicEventModel testModel = new DynamicEventModel();
                     EasyEvents.OnChannelMessageSent(testModel);
                 }
             });

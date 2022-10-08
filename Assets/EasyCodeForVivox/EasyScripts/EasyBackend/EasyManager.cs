@@ -12,7 +12,7 @@ namespace EasyCodeForVivox
     {
 
         // guarantees to only Initialize client once
-        public async Task InitializeClient()
+        public async Task InitializeClient(bool useDynamicEvents)
         {
             // disable Debug.Log Statements in the build for better performance
 #if UNITY_EDITOR
@@ -21,7 +21,8 @@ namespace EasyCodeForVivox
              Debug.unityLogger.logEnabled = false;
 #endif
 
-            if (EasySession.isClientInitialized)
+            EasySession.UseDynamicEvents = useDynamicEvents;
+            if (EasySession.IsClientInitialized)
             {
                 Debug.Log($"{nameof(EasyManager)} : Vivox Client is already initialized, skipping...");
                 return;
@@ -32,11 +33,13 @@ namespace EasyCodeForVivox
                 {
                     EasySession.mainClient.Uninitialize();
                     EasySession.mainClient.Initialize();
-                    EasySession.isClientInitialized = true;
+                    EasySession.IsClientInitialized = true;
                     SubscribeToVivoxEvents();
                     Debug.Log("Vivox Client Initialized");
-
-                    await RuntimeEvents.RegisterEvents();
+                    if (useDynamicEvents)
+                    {
+                        await Task.Run(async () => { await RuntimeEvents.RegisterEvents(); });
+                    }
                 }
             }
         }
@@ -151,7 +154,7 @@ namespace EasyCodeForVivox
 
         private readonly EasyLogin _login = new EasyLogin();
         private readonly EasyChannel _channel = new EasyChannel();
-        private readonly EasyVoiceChannel _voiceChannel = new EasyVoiceChannel();
+        private readonly EasyAudioChannel _voiceChannel = new EasyAudioChannel();
         private readonly EasyTextChannel _textChannel = new EasyTextChannel();
         private readonly EasyUsers _users = new EasyUsers();
         private readonly EasyMessages _messages = new EasyMessages();
@@ -176,29 +179,29 @@ namespace EasyCodeForVivox
             {
                 if (!FilterChannelAndUserName(userName)) { return; }
 
-                EasySession.mainLoginSession = EasySession.mainClient.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain));
-                _messages.SubscribeToDirectMessages(EasySession.mainLoginSession);
-                _textToSpeech.Subscribe(EasySession.mainLoginSession);
+                EasySession.MainLoginSession = EasySession.mainClient.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain));
+                _messages.SubscribeToDirectMessages(EasySession.MainLoginSession);
+                _textToSpeech.Subscribe(EasySession.MainLoginSession);
 
-                _login.LoginToVivox(EasySession.mainLoginSession, EasySession.APIEndpoint, userName, joinMuted);
+                _login.LoginToVivox(EasySession.MainLoginSession, EasySession.APIEndpoint, userName, joinMuted);
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
                 Debug.Log(e.StackTrace);
-                _messages.UnsubscribeFromDirectMessages(EasySession.mainLoginSession);
-                _textToSpeech.Unsubscribe(EasySession.mainLoginSession);
+                _messages.UnsubscribeFromDirectMessages(EasySession.MainLoginSession);
+                _textToSpeech.Unsubscribe(EasySession.MainLoginSession);
             }
         }
 
 
         public void LogoutOfVivox()
         {
-            if (EasySession.mainLoginSession.State == LoginState.LoggedIn)
+            if (EasySession.MainLoginSession.State == LoginState.LoggedIn)
             {
-                _messages.UnsubscribeFromDirectMessages(EasySession.mainLoginSession);
-                _textToSpeech.Unsubscribe(EasySession.mainLoginSession);
-                _login.Logout(EasySession.mainLoginSession);
+                _messages.UnsubscribeFromDirectMessages(EasySession.MainLoginSession);
+                _textToSpeech.Unsubscribe(EasySession.MainLoginSession);
+                _login.Logout(EasySession.MainLoginSession);
             }
             else
             {
@@ -234,11 +237,11 @@ namespace EasyCodeForVivox
 
         public void LeaveChannel(string channelName)
         {
-            if (EasySession.mainChannelSessions.ContainsKey(channelName))
+            if (EasySession.MainChannelSessions.ContainsKey(channelName))
             {
-                _users.UnsubscribeFromParticipantEvents(EasySession.mainChannelSessions[channelName]);
-                _messages.UnsubscribeFromChannelMessages(EasySession.mainChannelSessions[channelName]);
-                _channel.LeaveChannel(EasySession.mainLoginSession, EasySession.mainChannelSessions[channelName]);
+                _users.UnsubscribeFromParticipantEvents(EasySession.MainChannelSessions[channelName]);
+                _messages.UnsubscribeFromChannelMessages(EasySession.MainChannelSessions[channelName]);
+                _channel.LeaveChannel(EasySession.MainLoginSession, EasySession.MainChannelSessions[channelName]);
             }
         }
 
@@ -246,7 +249,7 @@ namespace EasyCodeForVivox
         {
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null refenrce because channel name exists but channelsession doesnt exist
-            IChannelSession channelSession = EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+            IChannelSession channelSession = EasySession.MainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
             _voiceChannel.ToggleAudioChannelActive(channelSession, connect);
         }
 
@@ -254,7 +257,7 @@ namespace EasyCodeForVivox
         {
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null refenrce because channel name exists but channelsession doesnt exist
-            IChannelSession channelSession = EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+            IChannelSession channelSession = EasySession.MainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
             _textChannel.ToggleTextChannelActive(channelSession, connect);
         }
 
@@ -281,7 +284,7 @@ namespace EasyCodeForVivox
         public void SendDirectMessage(string userToMsg, string msg, string title = "", string body = "")
         {
             // todo check if user is blocked and alert front end users
-            _messages.SendDirectMessage(EasySession.mainLoginSession, userToMsg, msg, title, body);
+            _messages.SendDirectMessage(EasySession.MainLoginSession, userToMsg, msg, title, body);
         }
 
         public void MuteSelf()
@@ -301,9 +304,9 @@ namespace EasyCodeForVivox
 
         public void MuteAllPlayers(string channelName)
         {
-            if (EasySession.mainChannelSessions.ContainsKey(channelName))
+            if (EasySession.MainChannelSessions.ContainsKey(channelName))
             {
-                _mute.MuteAllUsers(EasySession.mainChannelSessions[channelName]);
+                _mute.MuteAllUsers(EasySession.MainChannelSessions[channelName]);
             }
             else
             {
@@ -313,9 +316,9 @@ namespace EasyCodeForVivox
 
         public void UnmuteAllPlayers(string channelName)
         {
-            if (EasySession.mainChannelSessions.ContainsKey(channelName))
+            if (EasySession.MainChannelSessions.ContainsKey(channelName))
             {
-                _mute.UnmuteAllUsers(EasySession.mainChannelSessions[channelName]);
+                _mute.UnmuteAllUsers(EasySession.MainChannelSessions[channelName]);
             }
             else
             {
@@ -337,12 +340,12 @@ namespace EasyCodeForVivox
 
         public void SpeakTTS(string msg)
         {
-            _textToSpeech.TTSSpeak(msg, TTSDestination.QueuedLocalPlayback, EasySession.mainLoginSession);
+            _textToSpeech.TTSSpeak(msg, TTSDestination.QueuedLocalPlayback, EasySession.MainLoginSession);
         }
 
         public void SpeakTTS(string msg, TTSDestination playMode)
         {
-            _textToSpeech.TTSSpeak(msg, playMode, EasySession.mainLoginSession);
+            _textToSpeech.TTSSpeak(msg, playMode, EasySession.MainLoginSession);
         }
 
         public void ChooseVoiceGender(VoiceGender voiceGender)
@@ -350,11 +353,11 @@ namespace EasyCodeForVivox
             switch (voiceGender)
             {
                 case VoiceGender.male:
-                    _textToSpeech.TTSChooseVoice(_textToSpeech.MaleVoice, EasySession.mainLoginSession);
+                    _textToSpeech.TTSChooseVoice(_textToSpeech.MaleVoice, EasySession.MainLoginSession);
                     break;
 
                 case VoiceGender.female:
-                    _textToSpeech.TTSChooseVoice(_textToSpeech.FemaleVoice, EasySession.mainLoginSession);
+                    _textToSpeech.TTSChooseVoice(_textToSpeech.FemaleVoice, EasySession.MainLoginSession);
                     break;
             }
         }
@@ -440,19 +443,19 @@ namespace EasyCodeForVivox
 
         protected IChannelSession GetExistingChannelSession(string channelName)
         {
-            if (EasySession.mainChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySession.mainChannelSessions[channelName] == null)
+            if (EasySession.MainChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySession.MainChannelSessions[channelName] == null)
             {
-                EasySession.mainChannelSessions[channelName] = EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+                EasySession.MainChannelSessions[channelName] = EasySession.MainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
             }
 
-            return EasySession.mainChannelSessions[channelName];
+            return EasySession.MainChannelSessions[channelName];
         }
 
         protected IChannelSession CreateNewChannel(string channelName, ChannelType channelType, Channel3DProperties channel3DProperties = null)
         {
             if (channelType == ChannelType.Positional)
             {
-                foreach (KeyValuePair<string, IChannelSession> channel in EasySession.mainChannelSessions)
+                foreach (KeyValuePair<string, IChannelSession> channel in EasySession.MainChannelSessions)
                 {
                     if (channel.Value.Channel.Type == ChannelType.Positional)
                     {
@@ -461,14 +464,14 @@ namespace EasyCodeForVivox
                     }
                 }
 
-                EasySession.mainChannelSessions.Add(channelName, EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
+                EasySession.MainChannelSessions.Add(channelName, EasySession.MainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
             }
             else
             {
-                EasySession.mainChannelSessions.Add(channelName, EasySession.mainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
+                EasySession.MainChannelSessions.Add(channelName, EasySession.MainLoginSession.GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
             }
 
-            return EasySession.mainChannelSessions[channelName];
+            return EasySession.MainChannelSessions[channelName];
         }
 
         protected string GetChannelSIP(ChannelType channelType, string channelName, Channel3DProperties channel3DProperties = null)
@@ -491,7 +494,7 @@ namespace EasyCodeForVivox
         protected string GetChannelSIP(string channelName)
         {
             string result = "";
-            foreach (var session in EasySession.mainChannelSessions)
+            foreach (var session in EasySession.MainChannelSessions)
             {
                 if (session.Value.Channel.Name == channelName)
                 {
@@ -504,9 +507,9 @@ namespace EasyCodeForVivox
 
         public void RemoveChannelSession(string channelName)
         {
-            if (EasySession.mainChannelSessions.ContainsKey(channelName))
+            if (EasySession.MainChannelSessions.ContainsKey(channelName))
             {
-                EasySession.mainChannelSessions.Remove(channelName);
+                EasySession.MainChannelSessions.Remove(channelName);
             }
         }
 
@@ -523,22 +526,22 @@ namespace EasyCodeForVivox
         #region Login / Logout Callbacks
 
 
-        public virtual void OnLoggingIn(ILoginSession loginSession)
+        protected virtual void OnLoggingIn(ILoginSession loginSession)
         {
             Debug.Log($"Logging In : {loginSession.LoginSessionId.DisplayName}");
         }
 
-        public virtual void OnLoggedIn(ILoginSession loginSession)
+        protected virtual void OnLoggedIn(ILoginSession loginSession)
         {
             Debug.Log($"Logged in : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
-        public virtual void OnLoggingOut(ILoginSession loginSession)
+        protected virtual void OnLoggingOut(ILoginSession loginSession)
         {
             Debug.Log($"Logging out : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
-        public virtual void OnLoggedOut(ILoginSession loginSession)
+        protected virtual void OnLoggedOut(ILoginSession loginSession)
         {
             Debug.Log($"Logged out : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
@@ -554,17 +557,17 @@ namespace EasyCodeForVivox
 
         // todo add Extra/Multiple Login callbacks to EasyLogin
 
-        public virtual void OnLoginAdded(ILoginSession loginSession)
+        protected virtual void OnLoginAdded(ILoginSession loginSession)
         {
             Debug.Log($"Login Added : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
-        public virtual void OnLoginRemoved(ILoginSession loginSession)
+        protected virtual void OnLoginRemoved(ILoginSession loginSession)
         {
             Debug.Log($"Login Removed : {loginSession.LoginSessionId.DisplayName} : Presence = {loginSession.Presence.Status}");
         }
 
-        public virtual void OnLoginUpdated(ILoginSession loginSession)
+        protected virtual void OnLoginUpdated(ILoginSession loginSession)
         {
             Debug.Log($"Login Updated : Login Updated : {loginSession.LoginSessionId.DisplayName} : Presence = {loginSession.Presence.Status}");
         }
@@ -576,23 +579,23 @@ namespace EasyCodeForVivox
         #region Audio / Text / Channel Callbacks
 
 
-        public virtual void OnChannelConnecting(IChannelSession channelSession)
+        protected virtual void OnChannelConnecting(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Is Connecting");
         }
 
-        public virtual void OnChannelConnected(IChannelSession channelSession)
+        protected virtual void OnChannelConnected(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Has Connected");
             Debug.Log($"Channel Type == {channelSession.Channel.Type}");
         }
 
-        public virtual void OnChannelDisconnecting(IChannelSession channelSession)
+        protected virtual void OnChannelDisconnecting(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Is Disconnecting");
         }
 
-        public virtual void OnChannelDisconnected(IChannelSession channelSession)
+        protected virtual void OnChannelDisconnected(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Has Disconnected");
             RemoveChannelSession(channelSession.Channel.Name);
@@ -601,22 +604,22 @@ namespace EasyCodeForVivox
 
 
 
-        public virtual void OnVoiceConnecting(IChannelSession channelSession)
+        protected virtual void OnVoiceConnecting(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Audio Is Connecting In Channel");
         }
 
-        public virtual void OnVoiceConnected(IChannelSession channelSession)
+        protected virtual void OnVoiceConnected(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Audio Has Connected In Channel");
         }
 
-        public virtual void OnVoiceDisconnecting(IChannelSession channelSession)
+        protected virtual void OnVoiceDisconnecting(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Audio Is Disconnecting In Channel");
         }
 
-        public virtual void OnVoiceDisconnected(IChannelSession channelSession)
+        protected virtual void OnVoiceDisconnected(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Audio Has Disconnected In Channel");
         }
@@ -624,22 +627,22 @@ namespace EasyCodeForVivox
 
 
 
-        public virtual void OnTextChannelConnecting(IChannelSession channelSession)
+        protected virtual void OnTextChannelConnecting(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Text Is Connecting In Channel");
         }
 
-        public virtual void OnTextChannelConnected(IChannelSession channelSession)
+        protected virtual void OnTextChannelConnected(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Text Has Connected In Channel");
         }
 
-        public virtual void OnTextChannelDisconnecting(IChannelSession channelSession)
+        protected virtual void OnTextChannelDisconnecting(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Text Is Disconnecting In Channel");
         }
 
-        public virtual void OnTextChannelDisconnected(IChannelSession channelSession)
+        protected virtual void OnTextChannelDisconnected(IChannelSession channelSession)
         {
             Debug.Log($"{channelSession.Channel.Name} Text Has Disconnected In Channel");
         }
@@ -651,12 +654,12 @@ namespace EasyCodeForVivox
 
         #region Local User Mute Callbacks
 
-        public virtual void OnLocalUserMuted(bool isMuted)
+        protected virtual void OnLocalUserMuted(bool isMuted)
         {
             Debug.Log("Local User is Muted");
         }
 
-        public virtual void OnLocalUserUnmuted(bool isMuted)
+        protected virtual void OnLocalUserUnmuted(bool isMuted)
         {
             Debug.Log("Local User is Unmuted");
         }
@@ -666,43 +669,43 @@ namespace EasyCodeForVivox
         #region User Callbacks
 
 
-        public virtual void OnUserJoinedChannel(IParticipant participant)
+        protected virtual void OnUserJoinedChannel(IParticipant participant)
         {
             Debug.Log($"{participant.Account.DisplayName} Has Joined The Channel");
         }
 
-        public virtual void OnUserLeftChannel(IParticipant participant)
+        protected virtual void OnUserLeftChannel(IParticipant participant)
         {
             Debug.Log($"{participant.Account.DisplayName} Has Left The Channel");
 
         }
 
-        public virtual void OnUserValuesUpdated(IParticipant participant)
+        protected virtual void OnUserValuesUpdated(IParticipant participant)
         {
             Debug.Log($"{participant.Account.DisplayName} Has updated itself in the channel");
 
         }
 
-        public virtual void OnUserMuted(IParticipant participant)
+        protected virtual void OnUserMuted(IParticipant participant)
         {
             // todo add option if statement to display debug messages
             Debug.Log($"{participant.Account.DisplayName} Is Muted : (Muted For All : {participant.IsMutedForAll})");
 
         }
 
-        public virtual void OnUserUnmuted(IParticipant participant)
+        protected virtual void OnUserUnmuted(IParticipant participant)
         {
             Debug.Log($"{participant.Account.DisplayName} Is Unmuted : (Muted For All : {participant.IsMutedForAll})");
 
         }
 
-        public virtual void OnUserSpeaking(IParticipant participant)
+        protected virtual void OnUserSpeaking(IParticipant participant)
         {
             Debug.Log($"{participant.Account.DisplayName} Is Speaking : Audio Energy {participant.AudioEnergy}");
 
         }
 
-        public virtual void OnUserNotSpeaking(IParticipant participant)
+        protected virtual void OnUserNotSpeaking(IParticipant participant)
         {
             Debug.Log($"{participant.Account.DisplayName} Is Not Speaking");
         }
@@ -714,22 +717,22 @@ namespace EasyCodeForVivox
         #region Message Callbacks
 
 
-        public virtual void OnChannelMessageRecieved(IChannelTextMessage textMessage)
+        protected virtual void OnChannelMessageRecieved(IChannelTextMessage textMessage)
         {
             Debug.Log($"From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.Message}");
         }
 
-        public virtual void OnEventMessageRecieved(IChannelTextMessage textMessage)
+        protected virtual void OnEventMessageRecieved(IChannelTextMessage textMessage)
         {
             Debug.Log($"Event Message From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.ApplicationStanzaNamespace} : {textMessage.ApplicationStanzaBody} : {textMessage.Message}");
         }
 
-        public virtual void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
+        protected virtual void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
         {
             Debug.Log($"Recived Message From : {directedTextMessage.Sender.DisplayName} : {directedTextMessage.ReceivedTime} : {directedTextMessage.Message}");
         }
 
-        public virtual void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
+        protected virtual void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
         {
             Debug.Log($"Failed To Send Message From : {failedMessage.Sender}");
         }
@@ -742,79 +745,23 @@ namespace EasyCodeForVivox
 
         #region Text-to-Speech Callbacks
 
-        public virtual void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
+        protected virtual void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
         {
             Debug.Log($"TTS Message Has Been Added : {ttsArgs.Message.Text}");
         }
 
-        public virtual void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
+        protected virtual void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
         {
             Debug.Log($"TTS Message Has Been Removed : {ttsArgs.Message.Text}");
         }
 
-        public virtual void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
+        protected virtual void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
         {
             Debug.Log($"TTS Message Has Been Updated : {ttsArgs.Message.Text}");
         }
 
 
         #endregion
-
-
-
-
-        #region Work In Progress
-
-
-        #region Subscription / Presence Callbacks
-
-        public virtual void OnAddAllowedSubscription(AccountId accountId)
-        {
-            Debug.Log($"{accountId.DisplayName} User Has Been Allowed Has Been Added");
-        }
-
-        public virtual void OnRemoveAllowedSubscription(AccountId accountId)
-        {
-            Debug.Log($"{accountId.DisplayName} User Has Been Allowed Has Been Removed");
-        }
-
-        public virtual void OnAddBlockedSubscription(AccountId accountId)
-        {
-            Debug.Log($"{accountId.DisplayName} Block On User Has Been Added");
-        }
-
-        public virtual void OnRemoveBlockedSubscription(AccountId accountId)
-        {
-            Debug.Log($"{accountId.DisplayName} Block On User Has Been Removed");
-        }
-
-        public virtual void OnAddPresenceSubscription(AccountId accountId)
-        {
-            Debug.Log($"{accountId.DisplayName} Presence Has Been Added");
-        }
-
-        public virtual void OnRemovePresenceSubscription(AccountId accountId)
-        {
-            Debug.Log($"{accountId.DisplayName} Presence Has Been Removed");
-        }
-
-        public virtual void OnUpdatePresenceSubscription(ValueEventArg<AccountId, IPresenceSubscription> presence)
-        {
-            Debug.Log($"{presence.Value.Key.DisplayName} Presence Has Been Updated");
-        }
-
-        public virtual void OnIncomingSubscription(AccountId request)
-        {
-            Debug.Log($"Incoming subscription request from - {request.Name}");
-            Debug.Log($"Incoming subscription request from - {request.DisplayName}");
-        }
-
-        #endregion
-
-
-
-        #endregion
-
 
 
 

@@ -1,6 +1,5 @@
 ﻿using EasyCodeForVivox;
 using System;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,13 +43,13 @@ public class EasyExample : EasyManager
         EasySession.Issuer = issuer;
         EasySession.SecretKey = secretKey;
 
-        await InitializeClient();
+        await InitializeClient(true);
         DontDestroyOnLoad(this);
     }
 
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -59,17 +58,6 @@ public class EasyExample : EasyManager
 
     }
 
-    [LoginEvent(LoginStatus.LoggedIn)]
-    public  void CustomLoginEvent(ILoginSession loginSession)
-    {
-        Debug.Log($"Invoking Event Dynamically from {nameof(CustomLoginEvent)}");
-    }
-
-    [LoginEvent(LoginStatus.LoggedIn)]
-    public static void CustomStaticLoginEvent(ILoginSession loginSession)
-    {
-        Debug.Log($"Invoking Event Dynamically from {nameof(CustomStaticLoginEvent)}");
-    }
 
     // Clears Text messages where event logs show up in demo scene
     // hooked up to ClearMessages Button in demo scene
@@ -215,7 +203,7 @@ public class EasyExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.mainLoginSession.LoginSessionId.Name);
+        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.MainLoginSession.LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
@@ -229,7 +217,7 @@ public class EasyExample : EasyManager
     }
 
 
-    public override void OnEventMessageRecieved(IChannelTextMessage textMessage)
+    protected override void OnEventMessageRecieved(IChannelTextMessage textMessage)
     {
         base.OnEventMessageRecieved(textMessage);
         if (textMessage.ApplicationStanzaNamespace.Contains("RaiseHand"))
@@ -253,7 +241,7 @@ public class EasyExample : EasyManager
 
     public void HandleMuteEvent(IChannelTextMessage textMessage)
     {
-        if (EasySession.mainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (EasySession.MainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             MuteLocalPlayer();
         }
@@ -261,7 +249,7 @@ public class EasyExample : EasyManager
 
     public void HandleUnmuteEvent(IChannelTextMessage textMessage)
     {
-        if (EasySession.mainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (EasySession.MainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             UnmuteLocalPlayer();
         }
@@ -287,25 +275,25 @@ public class EasyExample : EasyManager
 
     // Login Event Callbacks
 
-    public override void OnLoggingIn(ILoginSession loginSession)
+    protected override void OnLoggingIn(ILoginSession loginSession)
     {
         base.OnLoggingIn(loginSession);
         newMessage.text += $"\nLogging In {loginSession.LoginSessionId.DisplayName}";
     }
 
-    public override void OnLoggedIn(ILoginSession loginSession)
+    protected override void OnLoggedIn(ILoginSession loginSession)
     {
         base.OnLoggedIn(loginSession);
         newMessage.text += $"\nLogged In {loginSession.LoginSessionId.DisplayName}";
     }
 
-    public override void OnLoggingOut(ILoginSession loginSession)
+    protected override void OnLoggingOut(ILoginSession loginSession)
     {
         base.OnLoggingOut(loginSession);
         newMessage.text += $"\nLogging Out {loginSession.LoginSessionId.DisplayName}";
     }
 
-    public override void OnLoggedOut(ILoginSession loginSession)
+    protected override void OnLoggedOut(ILoginSession loginSession)
     {
         base.OnLoggedOut(loginSession);
         newMessage.text += $"\nLogged Out {loginSession.LoginSessionId.DisplayName}";
@@ -314,25 +302,25 @@ public class EasyExample : EasyManager
 
     // Channel Event Callbacks
 
-    public override void OnChannelConnecting(IChannelSession channelSession)
+    protected override void OnChannelConnecting(IChannelSession channelSession)
     {
         base.OnChannelConnecting(channelSession);
         newMessage.text += $"\nChannel Connecting in : {channelSession.Channel.Name}";
     }
 
-    public override void OnChannelConnected(IChannelSession channelSession)
+    protected override void OnChannelConnected(IChannelSession channelSession)
     {
         base.OnChannelConnected(channelSession);
         newMessage.text += $"\nChannel Connected in : {channelSession.Channel.Name}";
     }
 
-    public override void OnChannelDisconnecting(IChannelSession channelSession)
+    protected override void OnChannelDisconnecting(IChannelSession channelSession)
     {
         base.OnChannelDisconnecting(channelSession);
         newMessage.text += $"\nChannel Disconnecting in : {channelSession.Channel.Name}";
     }
 
-    public override void OnChannelDisconnected(IChannelSession channelSession)
+    protected override void OnChannelDisconnected(IChannelSession channelSession)
     {
         base.OnChannelDisconnected(channelSession);
         newMessage.text += $"\nChannel Disconnected in : {channelSession.Channel.Name}";
@@ -341,25 +329,25 @@ public class EasyExample : EasyManager
 
     // Voice Channel Event Callbacks
 
-    public override void OnVoiceConnecting(IChannelSession channelSession)
+    protected override void OnVoiceConnecting(IChannelSession channelSession)
     {
         base.OnVoiceConnecting(channelSession);
         newMessage.text += $"\nVoice Connecting in Channel : {channelSession.Channel.Name}";
     }
 
-    public override void OnVoiceConnected(IChannelSession channelSession)
+    protected override void OnVoiceConnected(IChannelSession channelSession)
     {
         base.OnVoiceConnected(channelSession);
         newMessage.text += $"\nVoice Connected in Channel : {channelSession.Channel.Name}";
     }
 
-    public override void OnVoiceDisconnecting(IChannelSession channelSession)
+    protected override void OnVoiceDisconnecting(IChannelSession channelSession)
     {
         base.OnVoiceDisconnecting(channelSession);
         newMessage.text += $"\nVoice Disconnecting in Channel : {channelSession.Channel.Name}";
     }
 
-    public override void OnVoiceDisconnected(IChannelSession channelSession)
+    protected override void OnVoiceDisconnected(IChannelSession channelSession)
     {
         base.OnVoiceDisconnected(channelSession);
         newMessage.text += $"\nVoice Disconnected in Channel : {channelSession.Channel.Name}";
@@ -369,25 +357,25 @@ public class EasyExample : EasyManager
 
     // Text Channels Event Callbacks
 
-    public override void OnTextChannelConnected(IChannelSession channelSession)
+    protected override void OnTextChannelConnected(IChannelSession channelSession)
     {
         base.OnTextChannelConnected(channelSession);
         newMessage.text += $"\nText Connected in Channel : {channelSession.Channel.Name}";
     }
 
-    public override void OnTextChannelConnecting(IChannelSession channelSession)
+    protected override void OnTextChannelConnecting(IChannelSession channelSession)
     {
         base.OnTextChannelConnecting(channelSession);
         newMessage.text += $"\nText Connecting in Channel : {channelSession.Channel.Name}";
     }
 
-    public override void OnTextChannelDisconnecting(IChannelSession channelSession)
+    protected override void OnTextChannelDisconnecting(IChannelSession channelSession)
     {
         base.OnTextChannelDisconnecting(channelSession);
         newMessage.text += $"\nText Disconnecting in Channel : {channelSession.Channel.Name}";
     }
 
-    public override void OnTextChannelDisconnected(IChannelSession channelSession)
+    protected override void OnTextChannelDisconnected(IChannelSession channelSession)
     {
         base.OnTextChannelDisconnected(channelSession);
         newMessage.text += $"\nText Disconnected in Channel : {channelSession.Channel.Name}";
@@ -397,19 +385,19 @@ public class EasyExample : EasyManager
 
     // Message Event Callbacks
 
-    public override void OnChannelMessageRecieved(IChannelTextMessage textMessage)
+    protected override void OnChannelMessageRecieved(IChannelTextMessage textMessage)
     {
         base.OnChannelMessageRecieved(textMessage);
         newMessage.text += $"\nFrom {textMessage.Sender.DisplayName} : {textMessage.Message}";
     }
 
-    public override void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
+    protected override void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
     {
         base.OnDirectMessageRecieved(directedTextMessage);
         newMessage.text += $"\nFrom {directedTextMessage.Sender.DisplayName} : {directedTextMessage.Message}";
     }
 
-    public override void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
+    protected override void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
     {
         base.OnDirectMessageFailed(failedMessage);
         newMessage.text += $"\nMessage failed from {failedMessage.Sender.DisplayName} : Status Code : {failedMessage.StatusCode}";
@@ -418,7 +406,7 @@ public class EasyExample : EasyManager
 
     // User Event Callbacks
 
-    public override void OnUserJoinedChannel(IParticipant participant)
+    protected override void OnUserJoinedChannel(IParticipant participant)
     {
         base.OnUserJoinedChannel(participant);
         newMessage.text += $"\n {participant.Account.DisplayName} has joined the channel";
@@ -428,7 +416,7 @@ public class EasyExample : EasyManager
         }
     }
 
-    public override void OnUserLeftChannel(IParticipant participant)
+    protected override void OnUserLeftChannel(IParticipant participant)
     {
         base.OnUserLeftChannel(participant);
         newMessage.text += $"\n {participant.Account.DisplayName} has left the channel";
@@ -438,7 +426,7 @@ public class EasyExample : EasyManager
         }
     }
 
-    public override void OnUserValuesUpdated(IParticipant participant)
+    protected override void OnUserValuesUpdated(IParticipant participant)
     {
         base.OnUserValuesUpdated(participant);
         // fires everytime user value is updated. Fires way to much but left it here if you need access to it
@@ -448,25 +436,25 @@ public class EasyExample : EasyManager
 
     // User Audio Event Callbacks
 
-    public override void OnUserMuted(IParticipant participant)
+    protected override void OnUserMuted(IParticipant participant)
     {
         base.OnUserMuted(participant);
         newMessage.text += $"\n {participant.Account.DisplayName} has been muted";
     }
 
-    public override void OnUserUnmuted(IParticipant participant)
+    protected override void OnUserUnmuted(IParticipant participant)
     {
         base.OnUserUnmuted(participant);
         newMessage.text += $"\n {participant.Account.DisplayName} has been unmuted";
     }
 
-    public override void OnUserNotSpeaking(IParticipant participant)
+    protected override void OnUserNotSpeaking(IParticipant participant)
     {
         base.OnUserNotSpeaking(participant);
         // use to toggle speaking icons
     }
 
-    public override void OnUserSpeaking(IParticipant participant)
+    protected override void OnUserSpeaking(IParticipant participant)
     {
         base.OnUserSpeaking(participant);
         // use to toggle speaking icons
@@ -477,19 +465,19 @@ public class EasyExample : EasyManager
 
     // Text-To-Speech Event Callbacks
 
-    public override void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
+    protected override void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
     {
         base.OnTTSMessageAdded(ttsArgs);
         newMessage.text += $"\n Text-To-Speech Message Added : {ttsArgs.Message.Text}";
     }
 
-    public override void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
+    protected override void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
     {
         base.OnTTSMessageRemoved(ttsArgs);
         newMessage.text += $"\n Text-To-Speech Message Removed : {ttsArgs.Message.Text}";
     }
 
-    public override void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
+    protected override void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
     {
         base.OnTTSMessageUpdated(ttsArgs);
         newMessage.text += $"\n Text-To-Speech Message Updated : {ttsArgs.Message.Text}";
