@@ -27,7 +27,7 @@ namespace EasyCodeForVivox
         public void LoginToVivox(ILoginSession loginSession,
             Uri serverUri, string userName, bool joinMuted = false)
         {
-            loginSession = EasySession.mainClient.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain));
+            loginSession = EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain));
             Subscribe(loginSession);
             var accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
                 AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), "login", EasySession.UniqueCounter, null, EasySIP.GetUserSIP(
@@ -45,7 +45,8 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasySession.mainClient.AudioInputDevices.Muted = joinMuted;
+                    EasySession.Client.AudioInputDevices.Muted = joinMuted;
+                    EasySession.LoggedInUserName = userName;
                 }
             });
         }

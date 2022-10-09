@@ -43,13 +43,17 @@ public class EasyExample : EasyManager
         EasySession.Issuer = issuer;
         EasySession.SecretKey = secretKey;
 
-        await InitializeClient(true);
+        VivoxConfig vivoxConfig = new VivoxConfig();
+        vivoxConfig.MaxLoginsPerUser = 201;
+
+
+        await InitializeClient();
         DontDestroyOnLoad(this);
     }
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -69,19 +73,20 @@ public class EasyExample : EasyManager
 
     public void Login()
     {
-        ClearMessages();
         LoginToVivox(userName.text);
     }
 
     public void Logout()
     {
-        LogoutOfVivox();
+        LogoutOfVivox(userName.text);
     }
 
     public void JoinChannel()
     {
-        JoinChannel("3D", true, false, true, ChannelType.Positional);
-        JoinChannel(channelName.text, true, true, true, ChannelType.NonPositional);
+
+        JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
+        JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
+
     }
 
     public void SendMessage()
@@ -91,7 +96,7 @@ public class EasyExample : EasyManager
             Debug.Log("Channel name or message is empty");
             return;
         }
-        SendChannelMessage(channelName.text, message.text);
+        SendChannelMessage(userName.text, channelName.text, message.text);
     }
 
     public void SendDirectMessageToPlayer()
@@ -99,7 +104,7 @@ public class EasyExample : EasyManager
         var selectedUser = dropdown.GetSelected();
         if (selectedUser != null)
         {
-            SendDirectMessage(selectedUser, message.text);
+            SendDirectMessage(userName.text, selectedUser, message.text);
         }
         else
         {
@@ -109,17 +114,17 @@ public class EasyExample : EasyManager
 
     public void LeaveChannel()
     {
-        LeaveChannel(channelName.text);
+        LeaveChannel(channelName.text, userName.text);
     }
 
     public void ToggleAudioInChannel()
     {
-        SetVoiceActiveInChannel(channelName.text, voiceToggle.isOn);
+        SetVoiceActiveInChannel(userName.text, channelName.text, voiceToggle.isOn);
     }
 
     public void ToggleTextInChannel()
     {
-        SetTextActiveInChannel(channelName.text, textToggle.isOn);
+        SetTextActiveInChannel(userName.text, channelName.text, textToggle.isOn);
     }
 
     public void MuteLocalPlayer()
@@ -185,7 +190,7 @@ public class EasyExample : EasyManager
 
     public void TextToSpeech()
     {
-        SpeakTTS(message.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+        SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
     }
 
 
@@ -203,7 +208,7 @@ public class EasyExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.MainLoginSession.LoginSessionId.Name);
+        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.LoginSessions[EasySession.LoggedInUserName].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
@@ -226,11 +231,11 @@ public class EasyExample : EasyManager
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Mute"))
         {
-            HandleMuteEvent(textMessage);
+            HandleMuteEvent(textMessage, EasySession.LoggedInUserName);
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Unmute"))
         {
-            HandleUnmuteEvent(textMessage);
+            HandleUnmuteEvent(textMessage, EasySession.LoggedInUserName);
         }
     }
 
@@ -239,17 +244,17 @@ public class EasyExample : EasyManager
         newMessage.text += $"\n{textMessage.ApplicationStanzaBody} has a question!";
     }
 
-    public void HandleMuteEvent(IChannelTextMessage textMessage)
+    public void HandleMuteEvent(IChannelTextMessage textMessage, string userName)
     {
-        if (EasySession.MainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (EasySession.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             MuteLocalPlayer();
         }
     }
 
-    public void HandleUnmuteEvent(IChannelTextMessage textMessage)
+    public void HandleUnmuteEvent(IChannelTextMessage textMessage, string userName)
     {
-        if (EasySession.MainLoginSession.LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (EasySession.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             UnmuteLocalPlayer();
         }

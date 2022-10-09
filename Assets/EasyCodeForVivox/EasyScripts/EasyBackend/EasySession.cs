@@ -12,10 +12,12 @@ namespace EasyCodeForVivox
         public static string Issuer { get; set; }
         public static string SecretKey { get; set; } 
 
-        public static VivoxUnity.Client mainClient { get; set; } = new Client();
+        public static VivoxUnity.Client Client { get; set; } = new Client();
 
-        public static ILoginSession MainLoginSession;
-        public static Dictionary<string, IChannelSession> MainChannelSessions = new Dictionary<string, IChannelSession>();
+        public static string LoggedInUserName { get; set; }
+
+        public static Dictionary<string, ILoginSession> LoginSessions = new Dictionary<string, ILoginSession>();
+        public static Dictionary<string, IChannelSession> ChannelSessions = new Dictionary<string, IChannelSession>();
 
         public static bool IsClientInitialized = false;
 
