@@ -11,6 +11,14 @@
         LoggedOut,
     }
 
+    internal enum LoginStatusAsync
+    {
+        LoggingInAsync,
+        LoggedInAsync,
+        LoggingOutAsync,
+        LoggedOutAsync,
+    }
+
     public enum ChannelStatus
     {
         ChannelConnecting,
@@ -18,7 +26,15 @@
         ChannelDisconnecting,
         ChannelDisconnected,
     }
-    
+
+    internal enum ChannelStatusAsync
+    {
+        ChannelConnectingAsync,
+        ChannelConnectedAsync,
+        ChannelDisconnectingAsync,
+        ChannelDisconnectedAsync,
+    }
+
 
     public enum AudioChannelStatus
     {
@@ -29,6 +45,15 @@
     }
     
 
+    internal enum AudioChannelStatusAsync
+    {
+        AudioChannelConnectingAsync,
+        AudioChannelConnectedAsync,
+        AudioChannelDisconnectingAsync,
+        AudioChannelDisconnectedAsync,
+    }
+
+
     public enum TextChannelStatus
     {
         TextChannelConnecting,
@@ -36,7 +61,15 @@
         TextChannelDisconnecting,
         TextChannelDisconnected,
     }
-    
+
+    internal enum TextChannelStatusAsync
+    {
+        TextChannelConnectingAsync,
+        TextChannelConnectedAsync,
+        TextChannelDisconnectingAsync,
+        TextChannelDisconnectedAsync,
+    }
+
 
     public enum ChannelMessageStatus
     {
@@ -44,7 +77,14 @@
         ChannelMessageRecieved,
         EventMessageRecieved
     }
-    
+
+    internal enum ChannelMessageStatusAsync
+    {
+        ChannelMessageSentAsync,
+        ChannelMessageRecievedAsync,
+        EventMessageRecievedAsync
+    }
+
 
     public enum DirectMessageStatus
     {
@@ -52,7 +92,14 @@
         DirectMessageRecieved,
         DirectMessageFailed
     }
-    
+
+    internal enum DirectMessageStatusAsync
+    {
+        DirectMessageSentAsync,
+        DirectMessageRecievedAsync,
+        DirectMessageFailedAsync
+    }
+
 
     public enum UserStatus
     {
@@ -60,7 +107,14 @@
         UserLeftChannel,
         UserValuesUpdated
     }
-    
+
+    internal enum UserStatusAsync
+    {
+        UserJoinedChannelAsync,
+        UserLeftChannelAsync,
+        UserValuesUpdatedAsync
+    }
+
 
     public enum UserAudioStatus
     {
@@ -72,11 +126,28 @@
         UserNotSpeaking,
     }
 
+    internal enum UserAudioStatusAsync
+    {
+        UserMutedAsync,
+        LocalUserMutedAsync,
+        UserUnmutedAsync,
+        LocalUserUnmutedAsync,
+        UserSpeakingAsync,
+        UserNotSpeakingAsync,
+    }
+
     public enum TextToSpeechStatus
     {
         TTSMessageAdded,
         TTSMessageRemoved,
         TTSMessageUpdated,
+    }
+
+    internal enum TextToSpeechStatusAsync
+    {
+        TTSMessageAddedAsync,
+        TTSMessageRemovedAsync,
+        TTSMessageUpdatedAsync,
     }
 
 

@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
-using VivoxUnity;
 using VivoxAccessToken;
+using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyChannel
+    public class EasyChannel : IChannel
     {
 
         public void Subscribe(IChannelSession channelSession)
@@ -24,7 +25,7 @@ namespace EasyCodeForVivox
         #region Channel Methods
 
 
-  
+
 
         public void JoinChannel(string userName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel,
            IChannelSession channelSession, bool joinMuted = false)
@@ -55,7 +56,84 @@ namespace EasyCodeForVivox
             }
         }
 
-        public string GetChannelToken(string userName, IChannelSession channelSession, bool joinMuted = false, Channel3DProperties channel3DProperties = null)
+
+        public IChannelSession GetExistingChannelSession(string userName, string channelName)
+        {
+            if (EasySession.ChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySession.ChannelSessions[channelName] == null)
+            {
+                EasySession.ChannelSessions[channelName] = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+            }
+
+            return EasySession.ChannelSessions[channelName];
+        }
+
+        public IChannelSession CreateNewChannel(string userName, string channelName, ChannelType channelType, Channel3DProperties channel3DProperties = default)
+        {
+            if (channelType == ChannelType.Positional)
+            {
+                foreach (KeyValuePair<string, IChannelSession> channel in EasySession.ChannelSessions)
+                {
+                    if (channel.Value.Channel.Type == ChannelType.Positional)
+                    {
+                        Debug.Log($"{channel.Value.Channel.Name} Is already a 3D Positional Channel. Can Only Have One 3D Positional Channel. Refer To Vivox Documentation :: Returning Exisiting 3D Channel : {channel.Value.Channel.Name}");
+                        return channel.Value;
+                    }
+                }
+
+                EasySession.ChannelSessions.Add(userName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
+            }
+            else
+            {
+                if (EasySession.ChannelSessions.ContainsKey(userName)) { return EasySession.ChannelSessions[userName]; }
+                EasySession.ChannelSessions.Add(userName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
+            }
+
+            return EasySession.ChannelSessions[userName];
+        }
+
+        public string GetChannelSIP(ChannelType channelType, string channelName, Channel3DProperties channel3DProperties = default)
+        {
+            switch (channelType)
+            {
+                case ChannelType.NonPositional:
+                    return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
+
+                case ChannelType.Echo:
+                    return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
+
+                case ChannelType.Positional:
+                    return EasySIP.GetChannelSIP(ChannelType.Positional, EasySession.Issuer, channelName, EasySession.Domain, channel3DProperties);
+
+            }
+            return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
+        }
+
+        public string GetChannelSIP(string channelName)
+        {
+            string result = "";
+            foreach (var session in EasySession.ChannelSessions)
+            {
+                if (session.Value.Channel.Name == channelName)
+                {
+                    result = GetChannelSIP(session.Value.Channel.Type, channelName);
+                    return result;
+                }
+            }
+            return result;
+        }
+
+        public void RemoveChannelSession(string channelName)
+        {
+            if (EasySession.ChannelSessions.ContainsKey(channelName))
+            {
+                EasySession.ChannelSessions.Remove(channelName);
+            }
+        }
+
+
+
+
+        public string GetChannelToken(string userName, IChannelSession channelSession, bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
             var accessToken = "Error : Easy token invalid";
             var vivoxAction = "join";
@@ -87,7 +165,7 @@ namespace EasyCodeForVivox
             return accessToken;
         }
 
-        public string GetMatchChannelToken(string userName, IChannelSession channelSession, string matchRegion, string matchHash, bool joinMuted = false, Channel3DProperties channel3DProperties = null)
+        public string GetMatchChannelToken(string userName, IChannelSession channelSession, string matchRegion, string matchHash, bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
             var accessToken = "Error : Easy token invalid";
             var vivoxAction = "join";
@@ -126,7 +204,7 @@ namespace EasyCodeForVivox
         #region Channel Callbacks
 
 
-        private void OnChannelStatePropertyChanged(object sender, PropertyChangedEventArgs channelArgs)
+        public void OnChannelStatePropertyChanged(object sender, PropertyChangedEventArgs channelArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 

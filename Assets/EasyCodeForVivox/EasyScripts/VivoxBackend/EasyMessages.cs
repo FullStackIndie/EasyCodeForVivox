@@ -5,9 +5,8 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyMessages
+    public class EasyMessages : IMessages
     {
-
 
         public void SubscribeToChannelMessages(IChannelSession channelSession)
         {
@@ -162,7 +161,7 @@ namespace EasyCodeForVivox
         #region Message Callbacks
 
 
-        private void OnDirectMessageRecieved(object sender, QueueItemAddedEventArgs<IDirectedTextMessage> directMessage)
+        public void OnDirectMessageRecieved(object sender, QueueItemAddedEventArgs<IDirectedTextMessage> directMessage)
         {
             var directedMsgs = (IReadOnlyQueue<IDirectedTextMessage>)sender;
 
@@ -177,7 +176,7 @@ namespace EasyCodeForVivox
             }
         }
 
-        private void OnDirectMessageFailedCallback(object sender, QueueItemAddedEventArgs<IFailedDirectedTextMessage> failedMessage)
+        public void OnDirectMessageFailedCallback(object sender, QueueItemAddedEventArgs<IFailedDirectedTextMessage> failedMessage)
         {
             var failed = (IReadOnlyQueue<IFailedDirectedTextMessage>)sender;
             while (failed.Count > 0)
@@ -190,7 +189,7 @@ namespace EasyCodeForVivox
             }
         }
 
-        private void OnChannelMessageRecieved(object sender, QueueItemAddedEventArgs<IChannelTextMessage> channelMessage)
+        public void OnChannelMessageRecieved(object sender, QueueItemAddedEventArgs<IChannelTextMessage> channelMessage)
         {
             var messages = (IReadOnlyQueue<IChannelTextMessage>)sender;
             while (messages.Count > 0)

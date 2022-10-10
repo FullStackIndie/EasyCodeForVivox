@@ -13,7 +13,7 @@ namespace EasyCodeForVivox
             Options = options;
         }
     }
-    
+
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class ChannelEventAttribute : Attribute
     {

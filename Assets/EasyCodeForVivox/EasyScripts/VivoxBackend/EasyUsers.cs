@@ -3,7 +3,7 @@
 
 namespace EasyCodeForVivox
 {
-    public class EasyUsers
+    public class EasyUsers : IUsers
     {
 
         public void SubscribeToParticipantEvents(IChannelSession channelSession)
@@ -21,7 +21,7 @@ namespace EasyCodeForVivox
         }
 
 
-        private void OnUserJoinedChannel(object sender, KeyEventArg<string> keyArg)
+        public void OnUserJoinedChannel(object sender, KeyEventArg<string> keyArg)
         {
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
@@ -29,7 +29,7 @@ namespace EasyCodeForVivox
             EasyEvents.OnUserJoinedChannel(senderIParticipant);
         }
 
-        private void OnUserLeftChannel(object sender, KeyEventArg<string> keyArg)
+        public void OnUserLeftChannel(object sender, KeyEventArg<string> keyArg)
         {
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
@@ -37,7 +37,7 @@ namespace EasyCodeForVivox
             EasyEvents.OnUserLeftChannel(senderIParticipant);
         }
 
-        private void OnUserValuesUpdated(object sender, ValueEventArg<string, IParticipant> valueArg)
+        public void OnUserValuesUpdated(object sender, ValueEventArg<string, IParticipant> valueArg)
         {
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 

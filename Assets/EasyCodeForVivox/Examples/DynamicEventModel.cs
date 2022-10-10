@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class DynamicEventModel
+﻿public class DynamicEventModel
 {
     public string Name { get; set; }
 

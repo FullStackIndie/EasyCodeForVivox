@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyTextToSpeech
+    public class EasyTextToSpeech : ITextToSpeech
     {
         public string MaleVoice { get; } = "en_US male";
         public string FemaleVoice { get; } = "en_US female";
@@ -76,18 +73,18 @@ namespace EasyCodeForVivox
         #region Text-To-Speech Callbacks
 
 
-        private void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        public void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count > 9)
             {
-                 // todo update and research docs
+                // todo update and research docs
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
             EasyEvents.OnTTSMessageAdded(ttsArgs);
         }
 
-        private void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        public void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count >= 9)
@@ -97,7 +94,7 @@ namespace EasyCodeForVivox
             EasyEvents.OnTTSMessageRemoved(ttsArgs);
         }
 
-        private void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        public void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count >= 9)
@@ -107,7 +104,7 @@ namespace EasyCodeForVivox
             EasyEvents.OnTTSMessageUpdated(ttsArgs);
         }
 
-        private void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)
+        public void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)
         {
             Debug.Log($"TTS Property Name == {ttsPropArgs.PropertyName}");
             // if(ttsPropArgs.PropertyName == "")

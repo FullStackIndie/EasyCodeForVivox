@@ -5,7 +5,8 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyAudioChannel
+
+    public class EasyAudioChannel : IAudioChannel
     {
         public void Subscribe(IChannelSession channelSession)
         {
@@ -52,7 +53,7 @@ namespace EasyCodeForVivox
         #region Channel - Voice Callbacks
 
 
-        private void OnChannelAudioPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
+        public void OnChannelAudioPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 

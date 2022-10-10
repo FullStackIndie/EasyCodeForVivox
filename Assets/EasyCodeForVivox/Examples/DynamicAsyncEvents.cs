@@ -26,9 +26,9 @@ public class DynamicAsyncEvents : MonoBehaviour
     [LoginEventAsync(LoginStatus.LoggedIn)]
     public async Task AsyncMethod(ILoginSession loginSession)
     {
-        await Task.Run(() => 
+        await Task.Run(() =>
         {
-            for(int i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
                 Debug.Log($"Async Method Event has been invoked");
             }

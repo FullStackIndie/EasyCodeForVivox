@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VivoxAccessToken;
 using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyMute
+    public class EasyMute : IMute
     {
 
         public void LocalToggleMuteRemoteUser(string userName, IChannelSession channelSession)
@@ -27,7 +26,7 @@ namespace EasyCodeForVivox
             }
             else
             {
-                Debug.Log($"Failed to mute {participants[userToMute].Account.DisplayName}");
+                Debug.Log($"Failed to mute {participants[userToMute].Account.DisplayName}".Color(EasyDebug.Red));
             }
         }
 
@@ -47,7 +46,7 @@ namespace EasyCodeForVivox
                 }
                 else
                 {
-                    Debug.Log($"Failed to mute {player.Account.DisplayName}, Might be local player");
+                    Debug.Log($"Failed to mute {player.Account.DisplayName}, Might be local player".Color(EasyDebug.Red));
                 }
             }
         }
@@ -66,7 +65,7 @@ namespace EasyCodeForVivox
                 }
                 else
                 {
-                    Debug.Log($"Failed to mute {player.Account.DisplayName}, Might be local player");
+                    Debug.Log($"Failed to mute {player.Account.DisplayName}, Might be local player".Color(EasyDebug.Red));
                 }
             }
         }
@@ -88,11 +87,11 @@ namespace EasyCodeForVivox
         {
             if (mute)
             {
-                Debug.Log($"Muting {loginSession.LoginSessionId.DisplayName}");
+                Debug.Log($"Muting {loginSession.LoginSessionId.DisplayName}".Color(EasyDebug.Lightblue));
             }
             else
             {
-                Debug.Log($"Unmuting {loginSession.LoginSessionId.DisplayName}");
+                Debug.Log($"Unmuting {loginSession.LoginSessionId.DisplayName}".Color(EasyDebug.Lightblue));
             }
             // todo check if it works
             loginSession.SetCrossMutedCommunications(loginSession.LoginSessionId, mute, CrossMuteResult);
@@ -118,7 +117,7 @@ namespace EasyCodeForVivox
             {
                 if (ar.IsCompleted)
                 {
-                    Debug.Log("Clear Cross Muted Communications has Completed : Not sure if it works");
+                    Debug.Log("Clear Cross Muted Communications has Completed : Not sure if it works".Color(EasyDebug.Red));
                 }
             }
             catch (Exception e)

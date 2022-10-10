@@ -5,7 +5,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyTextChannel
+    public class EasyTextChannel : ITextChannel
     {
 
         public void Subscribe(IChannelSession channelSession)
@@ -52,7 +52,7 @@ namespace EasyCodeForVivox
         #region Channel - Text Callbacks
 
 
-        private void OnChannelTextPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
+        public void OnChannelTextPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 

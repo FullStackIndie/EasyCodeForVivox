@@ -17,7 +17,7 @@ public class NormalEvents : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void PlayerLoggingIn(ILoginSession loginSession)

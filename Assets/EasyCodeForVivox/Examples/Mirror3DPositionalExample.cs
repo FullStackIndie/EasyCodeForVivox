@@ -3,8 +3,6 @@
 using Mirror;
 #endif
 
-using UnityEngine.SceneManagement;
-using VivoxUnity;
 
 #if MIRROR_3_12_OR_NEWER
 

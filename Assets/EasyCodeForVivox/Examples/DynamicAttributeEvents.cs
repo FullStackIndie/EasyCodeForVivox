@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using VivoxUnity;
-using static UnityEngine.Application;
 
 namespace EasyCodeForVivox
 {

@@ -27,13 +27,12 @@ public class EasyExample : EasyManager
     [SerializeField] Scrollbar scrollbar;
     [SerializeField] TMP_Dropdown dropdown;
 
-
     private void OnApplicationQuit()
     {
         UnitializeClient();
     }
 
-    private async void Awake()
+    private void Awake()
     {
         // todo Implement Unity Remote Config to store sensitive information in the cloud. It's free
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
@@ -42,18 +41,16 @@ public class EasyExample : EasyManager
         EasySession.Domain = domain;
         EasySession.Issuer = issuer;
         EasySession.SecretKey = secretKey;
+    }
 
+    async void Start()
+    {
         VivoxConfig vivoxConfig = new VivoxConfig();
         vivoxConfig.MaxLoginsPerUser = 201;
 
-
         await InitializeClient();
+
         DontDestroyOnLoad(this);
-    }
-
-    void Start()
-    {
-
     }
 
     // Update is called once per frame
@@ -62,6 +59,11 @@ public class EasyExample : EasyManager
 
     }
 
+    [LoginEvent(LoginStatus.LoggedIn)]
+    public void DynamicEvent(ILoginSession loginSession, EasyPlayer easyPlayer)
+    {
+        Debug.Log($"PlayerName = {easyPlayer.PlayerName} : LoginName = {loginSession.LoginSessionId.Name}");
+    }
 
     // Clears Text messages where event logs show up in demo scene
     // hooked up to ClearMessages Button in demo scene
@@ -83,10 +85,8 @@ public class EasyExample : EasyManager
 
     public void JoinChannel()
     {
-
         JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
         JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
-
     }
 
     public void SendMessage()

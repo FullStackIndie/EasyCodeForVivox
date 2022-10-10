@@ -40,7 +40,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <returns></returns>
         public static string GetChannelSip(IChannelSession channelSession,
-            Channel3DProperties channel3DProperties = null)
+            Channel3DProperties channel3DProperties = default)
         {
             string channelToken = "Channel Token Invalid";
             string issuer = channelSession.Channel.Issuer;
@@ -71,7 +71,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <returns></returns>
         public static string GetChannelSIP(ChannelType channelType, string issuer, string channelName, string domain, string region, string hash,
-            Channel3DProperties channel3DProperties = null)
+            Channel3DProperties channel3DProperties = default)
         {
             string channelToken = "Channel Token Invalid";
             switch (channelType)
@@ -98,7 +98,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <returns></returns>
         public static string GetChannelSIP(ChannelType channelType, string issuer, string channelName, string domain,
-            Channel3DProperties channel3DProperties = null)
+            Channel3DProperties channel3DProperties = default)
         {
             string channelToken = "Channel Token Invalid";
             switch (channelType)

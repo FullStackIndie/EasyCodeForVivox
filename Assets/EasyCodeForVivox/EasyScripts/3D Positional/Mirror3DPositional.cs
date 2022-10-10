@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using VivoxUnity;
-
-#if MIRROR_3_12_OR_NEWER
+﻿#if MIRROR_3_12_OR_NEWER
 using Mirror;
 #endif
 

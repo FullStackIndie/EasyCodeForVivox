@@ -11,6 +11,15 @@ namespace EasyCodeForVivox
     {
         private static readonly HashSet<string> internalAssemblyNames = new HashSet<string>()
 {
+    "Zenject-Editor",
+    "Zenject-ReflectionBaking-Editor",
+    "Zenject",
+    "Zenject-TestFramework",
+    "Zenject.ReflectionBaking.Mono.Cecil",
+    "Zenject.ReflectionBaking.Mono.Cecil.Mdb",
+    "Zenject.ReflectionBaking.Mono.Cecil.Pdb",
+    "Zenject.ReflectionBaking.Mono.Cecil.Rocks",
+    "Zenject-usage",
     "VivoxAccessToken",
     "VivoxUnity",
     "AssetStoreTools",
@@ -141,37 +150,10 @@ namespace EasyCodeForVivox
     "SyntaxTree.VisualStudio.Unity.Messaging"
 };
 
-        public static List<MethodInfo> LoginEvents = new List<MethodInfo>();
-        public static List<MethodInfo> LoginEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> ChannelEvents = new List<MethodInfo>();
-        public static List<MethodInfo> ChannelEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> AudioChannelEvents = new List<MethodInfo>();
-        public static List<MethodInfo> AudioChannelEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> TextChannelEvents = new List<MethodInfo>();
-        public static List<MethodInfo> TextChannelEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> ChannelMessageEvents = new List<MethodInfo>();
-        public static List<MethodInfo> ChannelMessageEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> DirectMessageEvents = new List<MethodInfo>();
-        public static List<MethodInfo> DirectMessageEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> UserEvents = new List<MethodInfo>();
-        public static List<MethodInfo> UserEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> UserAudioEvents = new List<MethodInfo>();
-        public static List<MethodInfo> UserAudioEventsAsync = new List<MethodInfo>();
-
-        public static List<MethodInfo> TextToSpeechEvents = new List<MethodInfo>();
-        public static List<MethodInfo> TextToSpeechEventsAsync = new List<MethodInfo>();
+        public static Dictionary<Enum, List<MethodInfo>> DynamicEvents = new Dictionary<Enum, List<MethodInfo>>();
 
 
-
-
-        public static async Task RegisterEvents()
+        public static async Task RegisterEvents(bool logAssemblySearches = true, bool logAllDynamicMethods = false)
         {
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -181,17 +163,22 @@ namespace EasyCodeForVivox
                 var assemblyName = assembly.GetName().Name;
                 if (assembly.IsDynamic) { continue; }
                 if (assemblyName.StartsWith("System") || assemblyName.StartsWith("Unity") || assemblyName.StartsWith("UnityEditor") ||
-                    assemblyName.StartsWith("UnityEngine") || internalAssemblyNames.Contains(assemblyName) || assemblyName.StartsWith("Mono"))
+                    assemblyName.StartsWith("UnityEngine") || internalAssemblyNames.Contains(assemblyName) || assemblyName.StartsWith("Mono")
+                    )
                 {
                     continue;
                 }
-                Debug.Log($"Searching Assembly [ {assembly.GetName().Name} ]");
+                if (logAssemblySearches)
+                {
+                    Debug.Log($"Searching Assembly [ {assembly.GetName().Name} ] for Dynamic Events".Color(EasyDebug.Teal));
+                }
 
                 Type[] types = assembly.GetTypes();
                 BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
                 // methods do repeat some code but instead of for looping and awaiting on 1 thread
-                // this enables me to create many tasks to hopefully take advantage of multiple cores/threads to speed up the execution time at startup
+                // this enables me to create many tasks to hopefully run at the same time and
+                // take advantage of multiple cores/threads to speed up the execution time at startup
                 await Task.Run(() => RegisterLoginEvents(types, flags));
                 await Task.Run(() => RegisterChannelEvents(types, flags));
                 await Task.Run(() => RegisterVoiceChannelEvents(types, flags));
@@ -203,36 +190,103 @@ namespace EasyCodeForVivox
                 await Task.Run(() => RegisterTextToSpeechEvents(types, flags));
             }
 
-            LogRegisteredEventsCount();
+            LogRegisteredEventsCount(logAllDynamicMethods);
 
             stopwatch.Stop();
-            Debug.Log($"Registering Events took {stopwatch.Elapsed}");
+            Debug.Log($"Registering Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Teal));
         }
 
-        public static void LogRegisteredEventsCount()
+        public static void LogRegisteredEventsCount(bool logAllDynamicMethods)
         {
-            Debug.Log($"Found {LoginEvents.Count} Login Event Methods");
-            Debug.Log($"Found {LoginEventsAsync.Count} Login Async Event Methods");
-            Debug.Log($"Found {ChannelEvents.Count} Channel Event Methods");
-            Debug.Log($"Found {AudioChannelEvents.Count} Voice Channel Event Methods");
-            Debug.Log($"Found {TextChannelEvents.Count} Text Channel Event Methods");
+            if (logAllDynamicMethods)
+            {
+                foreach (var events in DynamicEvents)
+                {
+                    foreach (var method in events.Value)
+                    {
+                        Debug.Log($"Dynamic Event = {events.Key} : MethodName = {method.Name} : From Class {method.DeclaringType}");
+                    }
+                }
+
+                var loginEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Logg")).Select(m => m.Value.Count);
+                Debug.Log($"Found {loginEvents.Count()} Login Event Methods".Color(EasyDebug.Lightblue));
+
+                var channelEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Channel")).Select(m => m.Value.Count);
+                Debug.Log($"Found {channelEvents.Count()} Channel Event Methods".Color(EasyDebug.Lightblue));
+
+                var audioChannelEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Audio")).Select(m => m.Value.Count);
+                Debug.Log($"Found {audioChannelEvents.Count()} Audio Channel Event Methods".Color(EasyDebug.Lightblue));
+
+                var textChannelEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Text")).Select(m => m.Value.Count);
+                Debug.Log($"Found {textChannelEvents.Count()} Text Channel Event Methods".Color(EasyDebug.Lightblue));
+
+                var channelMessageEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("ChannelMessage") || e.Key.ToString().StartsWith("EventMessage")).Select(m => m.Value.Count);
+                Debug.Log($"Found {channelMessageEvents.Count()} Channel Message Event Methods".Color(EasyDebug.Lightblue));
+
+                var directMessageEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Direct")).Select(m => m.Value.Count);
+                Debug.Log($"Found {directMessageEvents.Count()} Direct Message Event Methods".Color(EasyDebug.Lightblue));
+
+                var userEvents = DynamicEvents.Where(e => e.Key.ToString().Contains("User") || e.Key.ToString().Contains("LocalUser")).Select(m => m.Value.Count);
+                Debug.Log($"Found {userEvents.Count()} User Events/User Audio Event Methods".Color(EasyDebug.Lightblue));
+
+                var ttsEvents = DynamicEvents.Where(e => e.Key.ToString().Contains("TTS")).Select(m => m.Value.Count);
+                Debug.Log($"Found {ttsEvents.Count()} Text To Speech Event Methods".Color(EasyDebug.Lightblue));
+            }
+        }
+
+        public static void AddDynamicEvent(Enum value, MethodInfo methodInfo)
+        {
+            if (!DynamicEvents.ContainsKey(value))
+            {
+                DynamicEvents.Add(value, new List<MethodInfo>());
+            }
+            DynamicEvents[value].Add(methodInfo);
         }
 
         public static void RegisterLoginEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Login Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    var attribute = methodInfo.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(LoginEventAttribute));
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(LoginEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<LoginEventAttribute>();
+                    if (attribute != null)
                     {
-                        LoginEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case LoginStatus.LoggingIn:
+                                AddDynamicEvent(LoginStatus.LoggingIn, methodInfo);
+                                break;
+                            case LoginStatus.LoggedIn:
+                                AddDynamicEvent(LoginStatus.LoggedIn, methodInfo);
+                                break;
+                            case LoginStatus.LoggingOut:
+                                AddDynamicEvent(LoginStatus.LoggingOut, methodInfo);
+                                break;
+                            case LoginStatus.LoggedOut:
+                                AddDynamicEvent(LoginStatus.LoggedOut, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(LoginEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<LoginEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        LoginEventsAsync.Add(methodInfo);
+                        switch (asyncAttribute.Options)
+                        {
+                            case LoginStatus.LoggingIn:
+                                AddDynamicEvent(LoginStatusAsync.LoggingInAsync, methodInfo);
+                                break;
+                            case LoginStatus.LoggedIn:
+                                AddDynamicEvent(LoginStatusAsync.LoggedInAsync, methodInfo);
+                                break;
+                            case LoginStatus.LoggingOut:
+                                AddDynamicEvent(LoginStatusAsync.LoggingOutAsync, methodInfo);
+                                break;
+                            case LoginStatus.LoggedOut:
+                                AddDynamicEvent(LoginStatusAsync.LoggedOutAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -240,18 +294,48 @@ namespace EasyCodeForVivox
 
         public static void RegisterChannelEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Channel Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<ChannelEventAttribute>();
+                    if (attribute != null)
                     {
-                        ChannelEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case ChannelStatus.ChannelConnecting:
+                                AddDynamicEvent(ChannelStatus.ChannelConnecting, methodInfo);
+                                break;
+                            case ChannelStatus.ChannelConnected:
+                                AddDynamicEvent(ChannelStatus.ChannelConnected, methodInfo);
+                                break;
+                            case ChannelStatus.ChannelDisconnecting:
+                                AddDynamicEvent(ChannelStatus.ChannelDisconnecting, methodInfo);
+                                break;
+                            case ChannelStatus.ChannelDisconnected:
+                                AddDynamicEvent(ChannelStatus.ChannelDisconnected, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<ChannelEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        ChannelEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case ChannelStatus.ChannelConnecting:
+                                AddDynamicEvent(ChannelStatusAsync.ChannelConnectingAsync, methodInfo);
+                                break;
+                            case ChannelStatus.ChannelConnected:
+                                AddDynamicEvent(ChannelStatusAsync.ChannelConnectedAsync, methodInfo);
+                                break;
+                            case ChannelStatus.ChannelDisconnecting:
+                                AddDynamicEvent(ChannelStatusAsync.ChannelDisconnectingAsync, methodInfo);
+                                break;
+                            case ChannelStatus.ChannelDisconnected:
+                                AddDynamicEvent(ChannelStatusAsync.ChannelDisconnectedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -259,18 +343,48 @@ namespace EasyCodeForVivox
 
         public static void RegisterVoiceChannelEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Voice Channel Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(AudioChannelEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<AudioChannelEventAttribute>();
+                    if (attribute != null)
                     {
-                        ChannelEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case AudioChannelStatus.AudioChannelConnecting:
+                                AddDynamicEvent(AudioChannelStatus.AudioChannelConnecting, methodInfo);
+                                break;
+                            case AudioChannelStatus.AudioChannelConnected:
+                                AddDynamicEvent(AudioChannelStatus.AudioChannelConnected, methodInfo);
+                                break;
+                            case AudioChannelStatus.AudioChannelDisconnecting:
+                                AddDynamicEvent(AudioChannelStatus.AudioChannelDisconnecting, methodInfo);
+                                break;
+                            case AudioChannelStatus.AudioChannelDisconnected:
+                                AddDynamicEvent(AudioChannelStatus.AudioChannelDisconnected, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(AudioChannelEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<AudioChannelEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        ChannelEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case AudioChannelStatus.AudioChannelConnecting:
+                                AddDynamicEvent(AudioChannelStatusAsync.AudioChannelConnectingAsync, methodInfo);
+                                break;
+                            case AudioChannelStatus.AudioChannelConnected:
+                                AddDynamicEvent(AudioChannelStatusAsync.AudioChannelConnectedAsync, methodInfo);
+                                break;
+                            case AudioChannelStatus.AudioChannelDisconnecting:
+                                AddDynamicEvent(AudioChannelStatusAsync.AudioChannelDisconnectingAsync, methodInfo);
+                                break;
+                            case AudioChannelStatus.AudioChannelDisconnected:
+                                AddDynamicEvent(AudioChannelStatusAsync.AudioChannelDisconnectedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -278,18 +392,48 @@ namespace EasyCodeForVivox
 
         public static void RegisterTextChannelEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Text Channel Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextChannelEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<TextChannelEventAttribute>();
+                    if (attribute != null)
                     {
-                        ChannelEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case TextChannelStatus.TextChannelConnecting:
+                                AddDynamicEvent(TextChannelStatus.TextChannelConnecting, methodInfo);
+                                break;
+                            case TextChannelStatus.TextChannelConnected:
+                                AddDynamicEvent(TextChannelStatus.TextChannelConnected, methodInfo);
+                                break;
+                            case TextChannelStatus.TextChannelDisconnecting:
+                                AddDynamicEvent(TextChannelStatus.TextChannelDisconnecting, methodInfo);
+                                break;
+                            case TextChannelStatus.TextChannelDisconnected:
+                                AddDynamicEvent(TextChannelStatus.TextChannelDisconnected, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextChannelEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<TextChannelEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        ChannelEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case TextChannelStatus.TextChannelConnecting:
+                                AddDynamicEvent(TextChannelStatusAsync.TextChannelConnectingAsync, methodInfo);
+                                break;
+                            case TextChannelStatus.TextChannelConnected:
+                                AddDynamicEvent(TextChannelStatusAsync.TextChannelConnectedAsync, methodInfo);
+                                break;
+                            case TextChannelStatus.TextChannelDisconnecting:
+                                AddDynamicEvent(TextChannelStatusAsync.TextChannelDisconnectingAsync, methodInfo);
+                                break;
+                            case TextChannelStatus.TextChannelDisconnected:
+                                AddDynamicEvent(TextChannelStatusAsync.TextChannelDisconnectedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -297,18 +441,42 @@ namespace EasyCodeForVivox
 
         public static void RegisterChannelMessageEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Channel Message Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelMessageEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<ChannelMessageEventAttribute>();
+                    if (attribute != null)
                     {
-                        ChannelMessageEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case ChannelMessageStatus.ChannelMessageSent:
+                                AddDynamicEvent(ChannelMessageStatus.ChannelMessageSent, methodInfo);
+                                break;
+                            case ChannelMessageStatus.ChannelMessageRecieved:
+                                AddDynamicEvent(ChannelMessageStatus.ChannelMessageRecieved, methodInfo);
+                                break;
+                            case ChannelMessageStatus.EventMessageRecieved:
+                                AddDynamicEvent(ChannelMessageStatus.EventMessageRecieved, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(ChannelMessageEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<ChannelMessageEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        ChannelMessageEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case ChannelMessageStatus.ChannelMessageSent:
+                                AddDynamicEvent(ChannelMessageStatusAsync.ChannelMessageSentAsync, methodInfo);
+                                break;
+                            case ChannelMessageStatus.ChannelMessageRecieved:
+                                AddDynamicEvent(ChannelMessageStatusAsync.ChannelMessageRecievedAsync, methodInfo);
+                                break;
+                            case ChannelMessageStatus.EventMessageRecieved:
+                                AddDynamicEvent(ChannelMessageStatusAsync.EventMessageRecievedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -316,18 +484,42 @@ namespace EasyCodeForVivox
 
         public static void RegisterDirectMessageEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Direct Message Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(DirectMessageEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<DirectMessageEventAttribute>();
+                    if (attribute != null)
                     {
-                        DirectMessageEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case DirectMessageStatus.DirectMessageSent:
+                                AddDynamicEvent(DirectMessageStatus.DirectMessageSent, methodInfo);
+                                break;
+                            case DirectMessageStatus.DirectMessageRecieved:
+                                AddDynamicEvent(DirectMessageStatus.DirectMessageRecieved, methodInfo);
+                                break;
+                            case DirectMessageStatus.DirectMessageFailed:
+                                AddDynamicEvent(DirectMessageStatus.DirectMessageFailed, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(DirectMessageEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<DirectMessageEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        DirectMessageEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case DirectMessageStatus.DirectMessageSent:
+                                AddDynamicEvent(DirectMessageStatusAsync.DirectMessageSentAsync, methodInfo);
+                                break;
+                            case DirectMessageStatus.DirectMessageRecieved:
+                                AddDynamicEvent(DirectMessageStatusAsync.DirectMessageRecievedAsync, methodInfo);
+                                break;
+                            case DirectMessageStatus.DirectMessageFailed:
+                                AddDynamicEvent(DirectMessageStatusAsync.DirectMessageFailedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -335,18 +527,42 @@ namespace EasyCodeForVivox
 
         public static void RegisterUserEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for User Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<UserEventAttribute>();
+                    if (attribute != null)
                     {
-                        UserEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case UserStatus.UserLeftChannel:
+                                AddDynamicEvent(UserStatus.UserLeftChannel, methodInfo);
+                                break;
+                            case UserStatus.UserJoinedChannel:
+                                AddDynamicEvent(UserStatus.UserJoinedChannel, methodInfo);
+                                break;
+                            case UserStatus.UserValuesUpdated:
+                                AddDynamicEvent(UserStatus.UserValuesUpdated, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<UserEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        UserEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case UserStatus.UserLeftChannel:
+                                AddDynamicEvent(UserStatusAsync.UserLeftChannelAsync, methodInfo);
+                                break;
+                            case UserStatus.UserJoinedChannel:
+                                AddDynamicEvent(UserStatusAsync.UserJoinedChannelAsync, methodInfo);
+                                break;
+                            case UserStatus.UserValuesUpdated:
+                                AddDynamicEvent(UserStatusAsync.UserValuesUpdatedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -354,18 +570,60 @@ namespace EasyCodeForVivox
 
         public static void RegisterUserAudioEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for User Audio Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserAudioEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<UserAudioEventAttribute>();
+                    if (attribute != null)
                     {
-                        UserAudioEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case UserAudioStatus.UserMuted:
+                                AddDynamicEvent(UserAudioStatus.UserMuted, methodInfo);
+                                break;
+                            case UserAudioStatus.UserUnmuted:
+                                AddDynamicEvent(UserAudioStatus.UserUnmuted, methodInfo);
+                                break;
+                            case UserAudioStatus.UserNotSpeaking:
+                                AddDynamicEvent(UserAudioStatus.UserNotSpeaking, methodInfo);
+                                break;
+                            case UserAudioStatus.UserSpeaking:
+                                AddDynamicEvent(UserAudioStatus.UserSpeaking, methodInfo);
+                                break;
+                            case UserAudioStatus.LocalUserMuted:
+                                AddDynamicEvent(UserAudioStatus.LocalUserMuted, methodInfo);
+                                break;
+                            case UserAudioStatus.LocalUserUnmuted:
+                                AddDynamicEvent(UserAudioStatus.LocalUserUnmuted, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(UserAudioEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<UserAudioEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        UserAudioEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case UserAudioStatus.UserMuted:
+                                AddDynamicEvent(UserAudioStatusAsync.UserMutedAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.UserUnmuted:
+                                AddDynamicEvent(UserAudioStatusAsync.UserUnmutedAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.UserNotSpeaking:
+                                AddDynamicEvent(UserAudioStatusAsync.UserNotSpeakingAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.UserSpeaking:
+                                AddDynamicEvent(UserAudioStatusAsync.UserSpeakingAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.LocalUserMuted:
+                                AddDynamicEvent(UserAudioStatusAsync.LocalUserMutedAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.LocalUserUnmuted:
+                                AddDynamicEvent(UserAudioStatusAsync.LocalUserUnmutedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
@@ -373,18 +631,42 @@ namespace EasyCodeForVivox
 
         public static void RegisterTextToSpeechEvents(Type[] types, BindingFlags flags)
         {
-            Debug.Log($"Searching for Text-To-Speech Events to Register");
             Parallel.ForEach(types, type =>
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextToSpeechEventAttribute)))
+                    var attribute = methodInfo.GetCustomAttribute<TextToSpeechEventAttribute>();
+                    if (attribute != null)
                     {
-                        TextToSpeechEvents.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case TextToSpeechStatus.TTSMessageAdded:
+                                AddDynamicEvent(TextToSpeechStatus.TTSMessageAdded, methodInfo);
+                                break;
+                            case TextToSpeechStatus.TTSMessageRemoved:
+                                AddDynamicEvent(TextToSpeechStatus.TTSMessageRemoved, methodInfo);
+                                break;
+                            case TextToSpeechStatus.TTSMessageUpdated:
+                                AddDynamicEvent(TextToSpeechStatus.TTSMessageUpdated, methodInfo);
+                                break;
+                        }
+                        continue;
                     }
-                    if (methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(TextToSpeechEventAsyncAttribute)))
+                    var asyncAttribute = methodInfo.GetCustomAttribute<UserAudioEventAsyncAttribute>();
+                    if (asyncAttribute != null)
                     {
-                        TextToSpeechEventsAsync.Add(methodInfo);
+                        switch (attribute.Options)
+                        {
+                            case TextToSpeechStatus.TTSMessageAdded:
+                                AddDynamicEvent(TextToSpeechStatusAsync.TTSMessageAddedAsync, methodInfo);
+                                break;
+                            case TextToSpeechStatus.TTSMessageRemoved:
+                                AddDynamicEvent(TextToSpeechStatusAsync.TTSMessageRemovedAsync, methodInfo);
+                                break;
+                            case TextToSpeechStatus.TTSMessageUpdated:
+                                AddDynamicEvent(TextToSpeechStatusAsync.TTSMessageUpdatedAsync, methodInfo);
+                                break;
+                        }
                     }
                 }
             });
