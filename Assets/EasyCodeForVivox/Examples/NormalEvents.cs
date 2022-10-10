@@ -1,4 +1,4 @@
-﻿using EasyCodeForVivox;
+﻿using EasyCodeForVivox.Events;
 using UnityEngine;
 using VivoxUnity;
 

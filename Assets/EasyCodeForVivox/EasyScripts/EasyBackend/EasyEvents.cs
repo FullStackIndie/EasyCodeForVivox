@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using VivoxUnity;
 
-namespace EasyCodeForVivox
+namespace EasyCodeForVivox.Events
 {
     /// <summary>
     /// All EasyCodeForVivox Events
