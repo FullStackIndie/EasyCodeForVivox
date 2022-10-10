@@ -42,7 +42,7 @@ namespace EasyCodeForVivox
             {
                 return;
             }
-            channel.BeginSendText(inputMsg, ar =>
+            channel.BeginSendText(inputMsg, async ar =>
             {
                 try
                 {
@@ -55,8 +55,11 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    DynamicEventModel testModel = new DynamicEventModel();
-                    EasyEvents.OnChannelMessageSent(testModel);
+                    EasyEvents.OnChannelMessageSent();
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnChannelMessageSentAsync();
+                    }
                 }
             });
         }
@@ -68,7 +71,7 @@ namespace EasyCodeForVivox
                 return;
             }
 
-            channel.BeginSendText(null, inputMsg, stanzaNameSpace, stanzaBody, ar =>
+            channel.BeginSendText(null, inputMsg, stanzaNameSpace, stanzaBody, async ar =>
             {
                 try
                 {
@@ -81,8 +84,11 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    DynamicEventModel testModel = new DynamicEventModel();
-                    EasyEvents.OnChannelMessageSent(testModel);
+                    EasyEvents.OnChannelMessageSent();
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnChannelMessageSentAsync();
+                    }
                 }
             });
         }
@@ -115,7 +121,7 @@ namespace EasyCodeForVivox
             Debug.Log(targetAccountID.DisplayName);
             Debug.Log(targetAccountID.Issuer);
             Debug.Log(targetAccountID.Domain);
-            loginSession.BeginSendDirectedMessage(targetAccountID, null, message, null, null, ar =>
+            loginSession.BeginSendDirectedMessage(targetAccountID, null, message, null, null, async ar =>
             {
                 try
                 {
@@ -128,6 +134,10 @@ namespace EasyCodeForVivox
                 finally
                 {
                     EasyEvents.OnDirectMessageSent();
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnDirectMessageSentAsync();
+                    }
                 }
             });
         }
@@ -135,7 +145,7 @@ namespace EasyCodeForVivox
         public void SendDirectMessage(ILoginSession login, Dictionary<string, string> attemptedDirectMessages, string targetID, string message, string stanzaNameSpace = null, string stanzaBody = null)
         {
             var targetAccountID = new AccountId(login.LoginSessionId.Issuer, targetID, login.LoginSessionId.Domain);
-            login.BeginSendDirectedMessage(targetAccountID, null, message, stanzaNameSpace, stanzaBody, ar =>
+            login.BeginSendDirectedMessage(targetAccountID, null, message, stanzaNameSpace, stanzaBody, async ar =>
             {
                 try
                 {
@@ -148,6 +158,10 @@ namespace EasyCodeForVivox
                 finally
                 {
                     EasyEvents.OnDirectMessageSent();
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnDirectMessageSentAsync();
+                    }
                 }
                 // todo add Coroutine that will attempt to resend failed messages
                 // provide opt-in option so user can use my implementaion or there own implementaion
@@ -162,7 +176,7 @@ namespace EasyCodeForVivox
         #region Message Callbacks
 
 
-        public void OnDirectMessageRecieved(object sender, QueueItemAddedEventArgs<IDirectedTextMessage> directMessage)
+        public async void OnDirectMessageRecieved(object sender, QueueItemAddedEventArgs<IDirectedTextMessage> directMessage)
         {
             var directedMsgs = (IReadOnlyQueue<IDirectedTextMessage>)sender;
 
@@ -173,11 +187,15 @@ namespace EasyCodeForVivox
                 if (msg != null)
                 {
                     EasyEvents.OnDirectMessageRecieved(directMessage.Value);
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnDirectMessageRecievedAsync(directMessage.Value);
+                    }
                 }
             }
         }
 
-        public void OnDirectMessageFailedCallback(object sender, QueueItemAddedEventArgs<IFailedDirectedTextMessage> failedMessage)
+        public async void OnDirectMessageFailedCallback(object sender, QueueItemAddedEventArgs<IFailedDirectedTextMessage> failedMessage)
         {
             var failed = (IReadOnlyQueue<IFailedDirectedTextMessage>)sender;
             while (failed.Count > 0)
@@ -186,11 +204,15 @@ namespace EasyCodeForVivox
                 if (msg != null)
                 {
                     EasyEvents.OnDirectMessageFailed(msg);
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnDirectMessageFailedAsync(msg);
+                    }
                 }
             }
         }
 
-        public void OnChannelMessageRecieved(object sender, QueueItemAddedEventArgs<IChannelTextMessage> channelMessage)
+        public async void OnChannelMessageRecieved(object sender, QueueItemAddedEventArgs<IChannelTextMessage> channelMessage)
         {
             var messages = (IReadOnlyQueue<IChannelTextMessage>)sender;
             while (messages.Count > 0)
@@ -203,10 +225,18 @@ namespace EasyCodeForVivox
                         if (msg.ApplicationStanzaNamespace.Contains("Event"))
                         {
                             EasyEvents.OnEventMessageRecieved(msg);
+                            if (EasySession.UseDynamicEvents)
+                            {
+                                await EasyEventsAsync.OnEventMessageRecievedAsync(msg);
+                            }
                             return;
                         }
                     }
                     EasyEvents.OnChannelMessageRecieved(msg);
+                    if (EasySession.UseDynamicEvents)
+                    {
+                        await EasyEventsAsync.OnChannelMessageRecievedAsync(msg);
+                    }
                 }
             }
         }

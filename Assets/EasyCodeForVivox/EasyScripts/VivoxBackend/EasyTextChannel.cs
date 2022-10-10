@@ -1,6 +1,7 @@
 ﻿using EasyCodeForVivox.Events;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
 
@@ -53,7 +54,7 @@ namespace EasyCodeForVivox
         #region Channel - Text Callbacks
 
 
-        public void OnChannelTextPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
+        public async void OnChannelTextPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 
@@ -78,9 +79,35 @@ namespace EasyCodeForVivox
                         Unsubscribe(senderIChannelSession);
                         break;
                 }
+                if (EasySession.UseDynamicEvents)
+                {
+                    await HandleDynamicAsyncEvents(propArgs, senderIChannelSession);
+                }
             }
         }
 
+
+        private async Task HandleDynamicAsyncEvents(PropertyChangedEventArgs propArgs, IChannelSession channelSession)
+        {
+            switch (channelSession.TextState)
+            {
+                case ConnectionState.Connecting:
+                    await EasyEventsAsync.OnTextChannelConnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Connected:
+                    await EasyEventsAsync.OnTextChannelConnectedAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnecting:
+                    await EasyEventsAsync.OnTextChannelDisconnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnected:
+                    await EasyEventsAsync.OnTextChannelDisconnectedAsync(channelSession);
+                    break;
+            }
+        }
 
 
         #endregion

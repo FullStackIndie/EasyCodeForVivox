@@ -72,16 +72,24 @@ namespace EasyCodeForVivox
         }
 
 
-        public void LocalMuteSelf(VivoxUnity.Client client)
+        public async void LocalMuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = true;
             EasyEvents.OnLocalUserMuted(true);
+            if (EasySession.UseDynamicEvents)
+            {
+                await EasyEventsAsync.OnLocalUserMutedAsync(true);
+            }
         }
 
-        public void LocalUnmuteSelf(VivoxUnity.Client client)
+        public async void LocalUnmuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = false;
-            EasyEvents.OnLocalUserUnmuted(false);
+            EasyEvents.OnLocalUserUnmuted(true);
+            if (EasySession.UseDynamicEvents)
+            {
+                await EasyEventsAsync.OnLocalUserUnmutedAsync(true);
+            }
         }
 
         public void CrossMuteUser(ILoginSession loginSession, bool mute)

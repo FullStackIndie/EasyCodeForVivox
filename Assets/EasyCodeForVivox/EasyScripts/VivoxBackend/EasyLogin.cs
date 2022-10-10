@@ -87,6 +87,7 @@ namespace EasyCodeForVivox
                         break;
                     case LoginState.LoggedOut:
                         EasyEvents.OnLoggedOut(senderLoginSession);
+                        Unsubscribe(senderLoginSession);
                         break;
 
                     default:

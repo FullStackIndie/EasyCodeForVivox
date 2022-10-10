@@ -1,6 +1,7 @@
 ﻿using EasyCodeForVivox.Events;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
 
@@ -54,7 +55,7 @@ namespace EasyCodeForVivox
         #region Channel - Voice Callbacks
 
 
-        public void OnChannelAudioPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
+        public async void OnChannelAudioPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 
@@ -79,6 +80,33 @@ namespace EasyCodeForVivox
                         Unsubscribe(senderIChannelSession);
                         break;
                 }
+                if (EasySession.UseDynamicEvents)
+                {
+                    await HandleDynamicEventsAsync(propArgs, senderIChannelSession);
+                }
+            }
+        }
+
+        private async Task HandleDynamicEventsAsync(PropertyChangedEventArgs propArgs, IChannelSession channelSession)
+        {
+            switch (channelSession.AudioState)
+            {
+                case ConnectionState.Connecting:
+                    await EasyEventsAsync.OnAudioChannelConnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Connected:
+                   await  EasyEventsAsync.OnAudioChannelConnectedAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnecting:
+                    await EasyEventsAsync.OnAudioChannelDisconnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnected:
+                    await EasyEventsAsync.OnAudioChannelDisconnectedAsync(channelSession);
+                    Unsubscribe(channelSession);
+                    break;
             }
         }
 

@@ -74,7 +74,7 @@ namespace EasyCodeForVivox
         #region Text-To-Speech Callbacks
 
 
-        public void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        public async void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count > 9)
@@ -83,9 +83,13 @@ namespace EasyCodeForVivox
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
             EasyEvents.OnTTSMessageAdded(ttsArgs);
+            if (EasySession.UseDynamicEvents)
+            {
+                await EasyEventsAsync.OnTTSMessageAddedAsync(ttsArgs);
+            }
         }
 
-        public void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        public async void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count >= 9)
@@ -93,9 +97,13 @@ namespace EasyCodeForVivox
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
             EasyEvents.OnTTSMessageRemoved(ttsArgs);
+            if (EasySession.UseDynamicEvents)
+            {
+                await EasyEventsAsync.OnTTSMessageRemovedAsync(ttsArgs);
+            }
         }
 
-        public void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        public async void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count >= 9)
@@ -103,6 +111,10 @@ namespace EasyCodeForVivox
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
             EasyEvents.OnTTSMessageUpdated(ttsArgs);
+            if (EasySession.UseDynamicEvents)
+            {
+                await EasyEventsAsync.OnTTSMessageUpdatedAsync(ttsArgs);
+            }
         }
 
         public void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)

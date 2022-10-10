@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using UnityEngine;
 using VivoxAccessToken;
 using VivoxUnity;
@@ -205,7 +206,7 @@ namespace EasyCodeForVivox
         #region Channel Callbacks
 
 
-        public void OnChannelStatePropertyChanged(object sender, PropertyChangedEventArgs channelArgs)
+        public async void OnChannelStatePropertyChanged(object sender, PropertyChangedEventArgs channelArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 
@@ -227,6 +228,30 @@ namespace EasyCodeForVivox
                         Unsubscribe(senderIChannelSession);
                         break;
                 }
+                if (EasySession.UseDynamicEvents)
+                {
+                    await HandleDynamicEventsAsync(channelArgs, senderIChannelSession);
+                }
+            }
+        }
+
+
+        private async Task HandleDynamicEventsAsync(PropertyChangedEventArgs channelArgs, IChannelSession channelSession)
+        {
+            switch (channelSession.ChannelState)
+            {
+                case ConnectionState.Connecting:
+                    await EasyEventsAsync.OnChannelConnectingAsync(channelSession);
+                    break;
+                case ConnectionState.Connected:
+                    await EasyEventsAsync.OnChannelConnectedAsync(channelSession);
+                    break;
+                case ConnectionState.Disconnecting:
+                    await EasyEventsAsync.OnChannelDisconnectingAsync(channelSession);
+                    break;
+                case ConnectionState.Disconnected:
+                    await EasyEventsAsync.OnChannelDisconnectedAsync(channelSession);
+                    break;
             }
         }
 
