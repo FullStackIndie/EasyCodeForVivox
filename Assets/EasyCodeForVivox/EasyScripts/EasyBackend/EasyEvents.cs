@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace EasyCodeForVivox
     /// <summary>
     /// All EasyCodeForVivox Events
     /// </summary>
-    public class EasyEvents
+    public static class EasyEvents
     {
 
         #region Login Events
@@ -88,7 +89,41 @@ namespace EasyCodeForVivox
 
 
 
+        private static void InvokeMethods<T>(this List<MethodInfo> methods, T value)
+        {
 
+            foreach (var method in methods)
+            {
+                var parameters = method.GetParameters();
+                if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(T))
+                {
+                    continue;
+                }
+                var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                foreach (var gameObject in gameObjects)
+                {
+                    method?.Invoke(gameObject, new object[] { value });
+                }
+            }
+        }
+
+        private static void InvokeMethods<T1, T2>(this List<MethodInfo> methods, T1 value1, T2 value2)
+        {
+
+            foreach (var method in methods)
+            {
+                var parameters = method.GetParameters();
+                if (parameters.Length != 2 || parameters[0].ParameterType != typeof(T1) && parameters[1].ParameterType != typeof(T2))
+                {
+                    continue;
+                }
+                var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                foreach (var gameObject in gameObjects)
+                {
+                    method?.Invoke(gameObject, new object[] { value1, value2 });
+                }
+            }
+        }
 
 
         #region Login Events
@@ -98,26 +133,11 @@ namespace EasyCodeForVivox
         {
             try
             {
-                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-                stopwatch.Start();
                 LoggingIn?.Invoke(loginSession);
-                if (EasySession.UseDynamicEvents == false) { return; }
-
-                foreach (var method in RuntimeEvents.DynamicEvents[LoginStatus.LoggingIn])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(ILoginSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { loginSession });
-                    }
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingIn].InvokeMethods(loginSession);
                 }
-                stopwatch.Stop();
-                Debug.Log($"Async Runtime Events Elapsed Time [hours:minutes:seconds.milliseconds] {stopwatch.Elapsed}");
             }
             catch (Exception ex)
             {
@@ -131,20 +151,9 @@ namespace EasyCodeForVivox
         {
             try
             {
-                if (EasySession.UseDynamicEvents == false) { return; }
-
-                foreach (var method in RuntimeEvents.DynamicEvents[LoginStatus.LoggingIn])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 2 || parameters.FirstOrDefault().ParameterType != typeof(ILoginSession) && parameters[1].ParameterType != typeof(T))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { loginSession, value });
-                    }
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingIn].InvokeMethods(loginSession, value);
                 }
             }
             catch (Exception ex)
@@ -159,25 +168,11 @@ namespace EasyCodeForVivox
         {
             try
             {
-                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-                stopwatch.Start();
                 LoggedIn?.Invoke(loginSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[LoginStatus.LoggedIn])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(ILoginSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { loginSession });
-                    }
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedIn].InvokeMethods(loginSession);
                 }
-                stopwatch.Stop();
-                Debug.Log($"Async Runtime Events Elapsed Time [hours:minutes:seconds.milliseconds] {stopwatch.Elapsed}");
             }
             catch (Exception ex)
             {
@@ -191,25 +186,10 @@ namespace EasyCodeForVivox
         {
             try
             {
-                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-                stopwatch.Start();
-                LoggedIn?.Invoke(loginSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[LoginStatus.LoggedIn])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 2 || parameters[0].ParameterType != typeof(ILoginSession) && parameters[1].ParameterType != typeof(T))
-                    {
-                        return;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { loginSession, value });
-                    }
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedIn].InvokeMethods(loginSession, value);
                 }
-                stopwatch.Stop();
-                Debug.Log($"Async Runtime Events Elapsed Time [hours:minutes:seconds.milliseconds] {stopwatch.Elapsed}");
             }
             catch (Exception ex)
             {
@@ -226,19 +206,26 @@ namespace EasyCodeForVivox
             try
             {
                 LoggingOut?.Invoke(loginSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[LoginStatus.LoggingOut])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(ILoginSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { loginSession });
-                    }
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingOut].InvokeMethods(loginSession);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingOut)}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        public static void OnLoggingOut<T>(ILoginSession loginSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingOut].InvokeMethods(loginSession, value);
                 }
             }
             catch (Exception ex)
@@ -254,19 +241,9 @@ namespace EasyCodeForVivox
             try
             {
                 LoggedOut?.Invoke(loginSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[LoginStatus.LoggedOut])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(ILoginSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { loginSession });
-                    }
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedOut].InvokeMethods(loginSession);
                 }
             }
             catch (Exception ex)
@@ -275,7 +252,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnLoggedOut<T>(ILoginSession loginSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedOut].InvokeMethods(loginSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedOut)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -290,19 +283,9 @@ namespace EasyCodeForVivox
             try
             {
                 ChannelConnecting?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnecting].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -311,7 +294,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnChannelConnecting<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnecting].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnChannelConnected(IChannelSession channelSession)
@@ -319,19 +318,9 @@ namespace EasyCodeForVivox
             try
             {
                 ChannelConnected?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnected])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnected].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -340,7 +329,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnChannelConnected<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnected].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnChannelDisconnecting(IChannelSession channelSession)
@@ -348,19 +353,9 @@ namespace EasyCodeForVivox
             try
             {
                 ChannelDisconnecting?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnecting].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -369,7 +364,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnChannelDisconnecting<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnecting].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnChannelDisconnected(IChannelSession channelSession)
@@ -377,19 +388,9 @@ namespace EasyCodeForVivox
             try
             {
                 ChannelDisconnected?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnected])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnected].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -398,7 +399,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnChannelDisconnected<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnected].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -413,19 +430,9 @@ namespace EasyCodeForVivox
             try
             {
                 TextChannelConnecting?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnecting].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -434,7 +441,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTextChannelConnecting<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnecting].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -443,19 +466,9 @@ namespace EasyCodeForVivox
             try
             {
                 TextChannelConnected?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnected])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnected].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -464,7 +477,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTextChannelConnected<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnected].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnTextChannelDisconnecting(IChannelSession channelSession)
@@ -472,19 +501,9 @@ namespace EasyCodeForVivox
             try
             {
                 TextChannelDisconnecting?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnecting].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -493,7 +512,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTextChannelDisconnecting<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnecting].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnTextChannelDisconnected(IChannelSession channelSession)
@@ -501,19 +536,9 @@ namespace EasyCodeForVivox
             try
             {
                 TextChannelDisconnected?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnected])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnected].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -522,7 +547,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTextChannelDisconnected<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnected].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -537,19 +578,9 @@ namespace EasyCodeForVivox
             try
             {
                 AudioChannelConnecting?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnecting].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -558,7 +589,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnAudioChannelConnecting<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnecting].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnAudioChannelConnected(IChannelSession channelSession)
@@ -566,19 +613,9 @@ namespace EasyCodeForVivox
             try
             {
                 AudioChannelConnected?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnected])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnected].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -587,7 +624,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnAudioChannelConnected<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnected].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnAudioChannelDisconnecting(IChannelSession channelSession)
@@ -595,19 +648,9 @@ namespace EasyCodeForVivox
             try
             {
                 AudioChannelDisconnecting?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnecting].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -616,7 +659,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnAudioChannelDisconnecting<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnecting].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnecting)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnAudioChannelDisconnected(IChannelSession channelSession)
@@ -624,19 +683,9 @@ namespace EasyCodeForVivox
             try
             {
                 AudioChannelDisconnected?.Invoke(channelSession);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnecting])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelSession))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelSession });
-                    }
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnected].InvokeMethods(channelSession);
                 }
             }
             catch (Exception ex)
@@ -645,7 +694,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnAudioChannelDisconnected<T>(IChannelSession channelSession, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnected].InvokeMethods(channelSession, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnected)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -660,19 +725,9 @@ namespace EasyCodeForVivox
             try
             {
                 ChannelMessageRecieved?.Invoke(channelTextMessage);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageRecieved])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelTextMessage))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelTextMessage });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageRecieved].InvokeMethods(channelTextMessage);
                 }
             }
             catch (Exception ex)
@@ -681,7 +736,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnChannelMessageRecieved<T>(IChannelTextMessage channelTextMessage, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageRecieved].InvokeMethods(channelTextMessage, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageRecieved)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnEventMessageRecieved(IChannelTextMessage channelTextMessage)
@@ -689,19 +760,9 @@ namespace EasyCodeForVivox
             try
             {
                 EventMessageRecieved?.Invoke(channelTextMessage);
-
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelMessageStatus.EventMessageRecieved])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(IChannelTextMessage))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { channelTextMessage });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.EventMessageRecieved].InvokeMethods(channelTextMessage);
                 }
             }
             catch (Exception ex)
@@ -710,7 +771,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnEventMessageRecieved<T>(IChannelTextMessage channelTextMessage, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.EventMessageRecieved].InvokeMethods(channelTextMessage, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnEventMessageRecieved)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnChannelMessageSent()
@@ -725,25 +802,15 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
-
         }
 
         public static void OnChannelMessageSent<T>(T value) where T : class
         {
             try
             {
-                foreach (var method in RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageSent])
+                if (EasySession.UseDynamicEvents)
                 {
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(T))
-                    {
-                        continue;
-                    }
-                    var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
-                    foreach (var gameObject in gameObjects)
-                    {
-                        method?.Invoke(gameObject, new object[] { value });
-                    }
+                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageSent].InvokeMethods(value);
                 }
             }
             catch (Exception ex)
@@ -752,7 +819,6 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
-
         }
 
         public static void OnDirectMessageSent()
@@ -767,7 +833,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnDirectMessageSent<T>(T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageSent].InvokeMethods(value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageSent)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnDirectMessageRecieved(IDirectedTextMessage message)
@@ -775,6 +857,10 @@ namespace EasyCodeForVivox
             try
             {
                 DirectMessageRecieved?.Invoke(message);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageRecieved].InvokeMethods(message);
+                }
             }
             catch (Exception ex)
             {
@@ -782,7 +868,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnDirectMessageRecieved<T>(IDirectedTextMessage message, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageRecieved].InvokeMethods(message, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageRecieved)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
@@ -790,6 +892,10 @@ namespace EasyCodeForVivox
             try
             {
                 DirectMessageFailed?.Invoke(failedMessage);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageFailed].InvokeMethods(failedMessage);
+                }
             }
             catch (Exception ex)
             {
@@ -797,7 +903,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnDirectMessageFailed<T>(IFailedDirectedTextMessage failedMessage, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageFailed].InvokeMethods(failedMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageFailed)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -812,6 +934,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserJoinedChannel?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserStatus.UserJoinedChannel].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -819,7 +945,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserJoinedChannel<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserStatus.UserJoinedChannel].InvokeMethods(participant);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserJoinedChannel)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnUserLeftChannel(IParticipant participant)
@@ -827,6 +969,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserLeftChannel?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserStatus.UserLeftChannel].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -834,7 +980,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserLeftChannel<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserStatus.UserLeftChannel].InvokeMethods(participant, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserLeftChannel)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnUserValuesUpdated(IParticipant participant)
@@ -842,6 +1004,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserValuesUpdated?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserStatus.UserValuesUpdated].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -849,7 +1015,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserValuesUpdated<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserStatus.UserValuesUpdated].InvokeMethods(participant, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserValuesUpdated)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -859,6 +1041,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserMuted?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserMuted].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -866,7 +1052,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserMuted<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserMuted].InvokeMethods(participant, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserMuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnUserUnmuted(IParticipant participant)
@@ -874,6 +1076,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserUnmuted?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserUnmuted].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -881,7 +1087,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserUnmuted<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserUnmuted].InvokeMethods(participant, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserUnmuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnUserSpeaking(IParticipant participant)
@@ -889,6 +1111,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserSpeaking?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserSpeaking].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -896,7 +1122,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserSpeaking<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserSpeaking].InvokeMethods(participant, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserSpeaking)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnUserNotSpeaking(IParticipant participant)
@@ -904,6 +1146,10 @@ namespace EasyCodeForVivox
             try
             {
                 UserNotSpeaking?.Invoke(participant);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserNotSpeaking].InvokeMethods(participant);
+                }
             }
             catch (Exception ex)
             {
@@ -911,7 +1157,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnUserNotSpeaking<T>(IParticipant participant, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserNotSpeaking].InvokeMethods(participant, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserNotSpeaking)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
@@ -925,6 +1187,10 @@ namespace EasyCodeForVivox
             try
             {
                 LocalUserMuted?.Invoke(isMuted);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserMuted].InvokeMethods(isMuted);
+                }
             }
             catch (Exception ex)
             {
@@ -932,7 +1198,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnLocalUserMuted<T>(bool isMuted, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserMuted].InvokeMethods(isMuted, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserMuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnLocalUserUnmuted(bool isMuted)
@@ -940,6 +1222,10 @@ namespace EasyCodeForVivox
             try
             {
                 LocalUserUnmuted?.Invoke(isMuted);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserUnmuted].InvokeMethods(isMuted);
+                }
             }
             catch (Exception ex)
             {
@@ -947,8 +1233,26 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
-
         }
+
+        public static void OnLocalUserUnmuted<T>(bool isMuted, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserUnmuted].InvokeMethods(isMuted, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserUnmuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+
         #endregion
 
 
@@ -960,6 +1264,10 @@ namespace EasyCodeForVivox
             try
             {
                 TTSMessageAdded?.Invoke(ttsArgs);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageAdded].InvokeMethods(ttsArgs);
+                }
             }
             catch (Exception ex)
             {
@@ -967,7 +1275,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTTSMessageAdded<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageAdded].InvokeMethods(ttsArgs, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageAdded)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
@@ -975,6 +1299,10 @@ namespace EasyCodeForVivox
             try
             {
                 TTSMessageRemoved?.Invoke(ttsArgs);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageRemoved].InvokeMethods(ttsArgs);
+                }
             }
             catch (Exception ex)
             {
@@ -982,7 +1310,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTTSMessageRemoved<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageRemoved].InvokeMethods(ttsArgs, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageRemoved)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
         public static void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
@@ -990,6 +1334,10 @@ namespace EasyCodeForVivox
             try
             {
                 TTSMessageUpdated?.Invoke(ttsArgs);
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageUpdated].InvokeMethods(ttsArgs);
+                }
             }
             catch (Exception ex)
             {
@@ -997,7 +1345,23 @@ namespace EasyCodeForVivox
                 Debug.LogException(ex);
                 throw;
             }
+        }
 
+        public static void OnTTSMessageUpdated<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
+        {
+            try
+            {
+                if (EasySession.UseDynamicEvents)
+                {
+                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageUpdated].InvokeMethods(ttsArgs, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageUpdated)}");
+                Debug.LogException(ex);
+                throw;
+            }
         }
 
 
