@@ -1,9 +1,9 @@
 #if !NOT_UNITY3D
 
-using ModestTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ModestTree;
 using Zenject.Internal;
 
 namespace Zenject
@@ -31,13 +31,13 @@ namespace Zenject
             get { return _container; }
         }
 
-        IEnumerable<InjectableInfo> GetAllInjectableIncludingBaseTypes()
+        IEnumerable<InjectableInfo> GetAllInjectableIncludingBaseTypes() 
         {
             var info = TypeAnalyzer.GetInfo(_installerType);
 
-            while (info != null)
+            while (info != null) 
             {
-                foreach (var injectable in info.AllInjectables)
+                foreach (var injectable in info.AllInjectables) 
                 {
                     yield return injectable;
                 }
@@ -89,7 +89,7 @@ namespace Zenject
 
             context.Install(tempContainer);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 // Note: We don't need to call ResolveRoots here because GameObjectContext does this for us
                 tempContainer.Inject(context);

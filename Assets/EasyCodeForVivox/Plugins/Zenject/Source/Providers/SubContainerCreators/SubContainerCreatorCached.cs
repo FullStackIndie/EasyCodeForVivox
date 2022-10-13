@@ -1,6 +1,6 @@
-using ModestTree;
 using System;
 using System.Collections.Generic;
+using ModestTree;
 
 namespace Zenject
 {
@@ -48,7 +48,7 @@ namespace Zenject
 
                     Assert.IsNotNull(_subContainer);
                 }
-                else
+                else 
                 {
                     injectAction = null;
                 }

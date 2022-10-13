@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ModestTree;
+using Zenject.Internal;
 
 namespace Zenject
 {
@@ -33,7 +35,7 @@ namespace Zenject
 
             context.Install(_container);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 // Note: We don't need to call ResolveRoots here because GameObjectContext does this for us
                 _container.Inject(context);

@@ -8,7 +8,7 @@ using VivoxUnity;
 namespace EasyCodeForVivox
 {
 
-    public class EasyAudioSettings : IAudioSettings
+    public class EasyAudio : IAudio
     {
         #region Audio Methods
 

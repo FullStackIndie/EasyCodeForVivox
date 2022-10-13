@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using VivoxUnity;
 
@@ -15,17 +16,22 @@ namespace EasyCodeForVivox
 
         private bool _positionalChannelExists = false;
         private string _channelName;
+        private string userName;
 
+        private void Awake()
+        {
+            userName = EasySession.LoginSessions.FirstOrDefault().Value.LoginSessionId.DisplayName;
+        }
 
         private void Start()
         {
-            StartCoroutine(Handle3DPositionUpdates(.3f));
+            StartCoroutine(Handle3DPositionUpdates(.3f, userName));
         }
 
-        IEnumerator Handle3DPositionUpdates(float nextUpdate)
+        IEnumerator Handle3DPositionUpdates(float nextUpdate, string userName)
         {
             yield return new WaitForSeconds(nextUpdate);
-            if (EasySession.LoginSessions[EasySession.LoggedInUserName].State == LoginState.LoggedIn)
+            if (EasySession.LoginSessions[userName].State == LoginState.LoggedIn)
             {
                 if (_positionalChannelExists)
                 {
@@ -37,7 +43,7 @@ namespace EasyCodeForVivox
                 }
             }
 
-            StartCoroutine(Handle3DPositionUpdates(nextUpdate));
+            StartCoroutine(Handle3DPositionUpdates(nextUpdate, userName));
         }
 
         public bool CheckIfChannelExists()

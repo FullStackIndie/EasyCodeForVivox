@@ -105,7 +105,6 @@ namespace EasyCodeForVivox
 
                 case ConnectionState.Disconnected:
                     await EasyEventsAsync.OnAudioChannelDisconnectedAsync(channelSession);
-                    Unsubscribe(channelSession);
                     break;
             }
         }

@@ -1,7 +1,7 @@
-using ModestTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ModestTree;
 
 namespace Zenject
 {
@@ -38,7 +38,7 @@ namespace Zenject
 
                 Assert.That(result == null || result.GetType().DerivesFromOrEqual<TValue>());
 
-                return (TValue)result;
+                return (TValue) result;
             }
             catch (Exception e)
             {

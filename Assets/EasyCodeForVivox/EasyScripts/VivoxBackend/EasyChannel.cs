@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using UnityEngine;
 using VivoxAccessToken;
@@ -11,6 +13,19 @@ namespace EasyCodeForVivox
 {
     public class EasyChannel : IChannel
     {
+        private readonly EasyTextChannel _textChannel;
+        private readonly EasyAudioChannel _audioChannel;
+        private readonly EasyUsers _users;
+        private readonly EasyMessages _messages;
+
+        public EasyChannel(EasyUsers users, EasyMessages messages, 
+            EasyAudioChannel audioChannel, EasyTextChannel textChannel)
+        {
+            _users = users;
+            _messages = messages;
+            _audioChannel = audioChannel;
+            _textChannel = textChannel;
+        }
 
         public void Subscribe(IChannelSession channelSession)
         {
@@ -26,6 +41,31 @@ namespace EasyCodeForVivox
 
         #region Channel Methods
 
+
+        public void JoinChannel(string userName, string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
+    bool joinMuted = false, Channel3DProperties channel3DProperties = default)
+        {
+            if (!EasyVivoxHelpers.FilterChannelAndUserName(channelName)) { return; }
+            IChannelSession channelSession = CreateNewChannel(userName, channelName, channelType, channel3DProperties);
+
+            try
+            {
+                _textChannel.Subscribe(channelSession);
+                _audioChannel.Subscribe(channelSession);
+                _users.SubscribeToParticipantEvents(channelSession);
+                _messages.SubscribeToChannelMessages(channelSession);
+
+                JoinChannel(userName, includeVoice, includeText, switchTransmissionToThisChannel, channelSession, joinMuted);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.StackTrace);
+                _textChannel.Unsubscribe(channelSession);
+                _audioChannel.Unsubscribe(channelSession);
+                _users.UnsubscribeFromParticipantEvents(channelSession);
+                _messages.UnsubscribeFromChannelMessages(channelSession);
+            }
+        }
 
 
 
@@ -48,6 +88,20 @@ namespace EasyCodeForVivox
             });
         }
 
+        public void LeaveChannel(string channelName, string userName)
+        {
+            if (EasySession.ChannelSessions.ContainsKey(channelName) && EasySession.LoginSessions.ContainsKey(userName))
+            {
+                _users.UnsubscribeFromParticipantEvents(EasySession.ChannelSessions[channelName]);
+                _messages.UnsubscribeFromChannelMessages(EasySession.ChannelSessions[channelName]);
+                LeaveChannel(EasySession.LoginSessions[userName], EasySession.ChannelSessions[channelName]);
+            }
+            else
+            {
+                Debug.Log($"User Login or Channel Session does not exist");
+            }
+        }
+
         public void LeaveChannel(ILoginSession loginSession, IChannelSession channelToRemove)
         {
             if (channelToRemove != null)
@@ -61,9 +115,16 @@ namespace EasyCodeForVivox
 
         public IChannelSession GetExistingChannelSession(string userName, string channelName)
         {
-            if (EasySession.ChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySession.ChannelSessions[channelName] == null)
+            if (EasySession.ChannelSessions.ContainsKey(channelName))
             {
-                EasySession.ChannelSessions[channelName] = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+                if (EasySession.ChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySession.ChannelSessions[channelName] == null)
+                {
+                    EasySession.ChannelSessions[channelName] = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+                }
+            }
+            else
+            {
+                return null;
             }
 
             return EasySession.ChannelSessions[channelName];
@@ -73,24 +134,25 @@ namespace EasyCodeForVivox
         {
             if (channelType == ChannelType.Positional)
             {
-                foreach (KeyValuePair<string, IChannelSession> channel in EasySession.ChannelSessions)
+                var positionalChannel = EasySession.ChannelSessions.Where(c => c.Value.Channel.Type == ChannelType.Positional).Select(c => c.Value).FirstOrDefault();
+                if (positionalChannel != null)
                 {
-                    if (channel.Value.Channel.Type == ChannelType.Positional)
-                    {
-                        Debug.Log($"{channel.Value.Channel.Name} Is already a 3D Positional Channel. Can Only Have One 3D Positional Channel. Refer To Vivox Documentation :: Returning Exisiting 3D Channel : {channel.Value.Channel.Name}");
-                        return channel.Value;
-                    }
+                    Debug.Log($"{positionalChannel.Channel.Name} Is already a 3D Positional Channel. Can Only Have One 3D Positional Channel. " +
+                        $"Refer To Vivox Documentation :: Returning Exisiting 3D Channel : {positionalChannel.Channel.Name}".Color(EasyDebug.Yellow));
+                    return positionalChannel;
                 }
-
-                EasySession.ChannelSessions.Add(userName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
+                EasySession.ChannelSessions.Add(channelName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
             }
             else
             {
-                if (EasySession.ChannelSessions.ContainsKey(userName)) { return EasySession.ChannelSessions[userName]; }
-                EasySession.ChannelSessions.Add(userName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
+                if (EasySession.ChannelSessions.ContainsKey(channelName))
+                {
+                    return EasySession.ChannelSessions[channelName];
+                }
+                EasySession.ChannelSessions.Add(channelName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
             }
 
-            return EasySession.ChannelSessions[userName];
+            return EasySession.ChannelSessions[channelName];
         }
 
         public string GetChannelSIP(ChannelType channelType, string channelName, Channel3DProperties channel3DProperties = default)

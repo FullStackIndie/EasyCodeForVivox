@@ -13,8 +13,6 @@ namespace EasyCodeForVivox
 
         public static VivoxUnity.Client Client { get; set; } = new Client();
 
-        public static string LoggedInUserName { get; set; }
-
         public static Dictionary<string, ILoginSession> LoginSessions = new Dictionary<string, ILoginSession>();
         public static Dictionary<string, IChannelSession> ChannelSessions = new Dictionary<string, IChannelSession>();
 

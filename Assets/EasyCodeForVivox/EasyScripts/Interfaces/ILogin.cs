@@ -9,7 +9,7 @@ namespace EasyCodeForVivox
         void Subscribe(ILoginSession loginSession);
         void Unsubscribe(ILoginSession loginSession);
         void LoginToVivox(ILoginSession loginSession, Uri serverUri, string userName, bool joinMuted = false);
-        void Logout(ILoginSession loginSession);
+        void Logout(string userName);
         void OnLoginPropertyChanged(object sender, PropertyChangedEventArgs propArgs);
     }
 }

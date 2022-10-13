@@ -1,6 +1,6 @@
-﻿using ModestTree;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ModestTree;
 
 namespace Zenject
 {
@@ -238,32 +238,32 @@ namespace Zenject
             switch (_settings.ExpandMethod)
             {
                 case PoolExpandMethods.Disabled:
-                    {
-                        throw new PoolExceededFixedSizeException(
-                            "Pool factory '{0}' exceeded its fixed size of '{1}'!"
-                            .Fmt(GetType(), _inactiveItems.Count));
-                    }
+                {
+                    throw new PoolExceededFixedSizeException(
+                        "Pool factory '{0}' exceeded its fixed size of '{1}'!"
+                        .Fmt(GetType(), _inactiveItems.Count));
+                }
                 case PoolExpandMethods.OneAtATime:
+                {
+                    ExpandBy(1);
+                    break;
+                }
+                case PoolExpandMethods.Double:
+                {
+                    if (NumTotal == 0)
                     {
                         ExpandBy(1);
-                        break;
                     }
-                case PoolExpandMethods.Double:
+                    else
                     {
-                        if (NumTotal == 0)
-                        {
-                            ExpandBy(1);
-                        }
-                        else
-                        {
-                            ExpandBy(NumTotal);
-                        }
-                        break;
+                        ExpandBy(NumTotal);
                     }
+                    break;
+                }
                 default:
-                    {
-                        throw Assert.CreateException();
-                    }
+                {
+                    throw Assert.CreateException();
+                }
             }
         }
 

@@ -181,7 +181,7 @@ namespace EasyCodeForVivox
                 // take advantage of multiple cores/threads to speed up the execution time at startup
                 await Task.Run(() => RegisterLoginEvents(types, flags));
                 await Task.Run(() => RegisterChannelEvents(types, flags));
-                await Task.Run(() => RegisterVoiceChannelEvents(types, flags));
+                await Task.Run(() => RegisterAudioChannelEvents(types, flags));
                 await Task.Run(() => RegisterTextChannelEvents(types, flags));
                 await Task.Run(() => RegisterChannelMessageEvents(types, flags));
                 await Task.Run(() => RegisterDirectMessageEvents(types, flags));
@@ -341,7 +341,7 @@ namespace EasyCodeForVivox
             });
         }
 
-        public static void RegisterVoiceChannelEvents(Type[] types, BindingFlags flags)
+        public static void RegisterAudioChannelEvents(Type[] types, BindingFlags flags)
         {
             Parallel.ForEach(types, type =>
             {

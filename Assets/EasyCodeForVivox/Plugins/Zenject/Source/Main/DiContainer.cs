@@ -127,12 +127,12 @@ namespace Zenject
         }
 
         public DiContainer(DiContainer parentContainer, bool isValidating)
-            : this(new[] { parentContainer }, isValidating)
+            : this(new [] { parentContainer }, isValidating)
         {
         }
 
         public DiContainer(DiContainer parentContainer)
-            : this(new[] { parentContainer }, false)
+            : this(new [] { parentContainer }, false)
         {
         }
 
@@ -932,7 +932,7 @@ namespace Zenject
             {
                 GetProviderMatches(context, matches);
 
-                if (matches.Count > 0)
+                if (matches.Count > 0 )
                 {
                     return matches.Select(
                         x => x.Provider.GetInstanceType(context))

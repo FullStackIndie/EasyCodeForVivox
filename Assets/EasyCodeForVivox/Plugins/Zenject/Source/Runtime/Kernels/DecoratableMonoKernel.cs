@@ -13,7 +13,7 @@
 
     public class DecoratableMonoKernel : IDecoratableMonoKernel
     {
-        [InjectLocal]
+        [InjectLocal] 
         public TickableManager TickableManager { get; protected set; } = null;
 
         [InjectLocal]
@@ -21,10 +21,10 @@
 
         [InjectLocal]
         public DisposableManager DisposablesManager { get; protected set; } = null;
-
-
+        
+        
         public virtual bool ShouldInitializeOnStart() => true;
-
+        
         public virtual void Initialize()
         {
             InitializableManager.Initialize();
@@ -58,7 +58,7 @@
 
     public abstract class BaseMonoKernelDecorator : IDecoratableMonoKernel
     {
-        [Inject]
+        [Inject] 
         protected IDecoratableMonoKernel DecoratedMonoKernel;
 
         public virtual bool ShouldInitializeOnStart() => DecoratedMonoKernel.ShouldInitializeOnStart();
@@ -69,5 +69,5 @@
         public virtual void Dispose() => DecoratedMonoKernel.Dispose();
         public virtual void LateDispose() => DecoratedMonoKernel.LateDispose();
     }
-
+    
 }

@@ -124,11 +124,11 @@ namespace Zenject
 
                 // We'd like to do this but this is actually a valid case sometimes
                 // (eg. loading an asset bundle with a scene containing a scene context when inside unity editor)
-                //#if UNITY_EDITOR
+//#if UNITY_EDITOR
                 //Assert.That(PrefabUtility.GetPrefabType(installerPrefab.gameObject) == PrefabType.Prefab,
-                //"Found non-prefab with name '{0}' in the InstallerPrefabs property of Context '{1}'.  You should use the property 'Installer' for this instead",
-                //installerPrefab.name, this.name);
-                //#endif
+                    //"Found non-prefab with name '{0}' in the InstallerPrefabs property of Context '{1}'.  You should use the property 'Installer' for this instead",
+                    //installerPrefab.name, this.name);
+//#endif
                 Assert.That(installerPrefab.GetComponent<MonoInstaller>() != null,
                     "Expected to find component with type 'MonoInstaller' on given installer prefab '{0}'", installerPrefab.name);
             }
@@ -300,29 +300,29 @@ namespace Zenject
                 switch (bindType)
                 {
                     case ZenjectBinding.BindTypes.Self:
-                        {
-                            Container.Bind(componentType).WithId(identifier).FromInstance(component);
-                            break;
-                        }
+                    {
+                        Container.Bind(componentType).WithId(identifier).FromInstance(component);
+                        break;
+                    }
                     case ZenjectBinding.BindTypes.BaseType:
-                        {
-                            Container.Bind(componentType.BaseType()).WithId(identifier).FromInstance(component);
-                            break;
-                        }
+                    {
+                        Container.Bind(componentType.BaseType()).WithId(identifier).FromInstance(component);
+                        break;
+                    }
                     case ZenjectBinding.BindTypes.AllInterfaces:
-                        {
-                            Container.Bind(componentType.Interfaces()).WithId(identifier).FromInstance(component);
-                            break;
-                        }
+                    {
+                        Container.Bind(componentType.Interfaces()).WithId(identifier).FromInstance(component);
+                        break;
+                    }
                     case ZenjectBinding.BindTypes.AllInterfacesAndSelf:
-                        {
-                            Container.Bind(componentType.Interfaces().Concat(new[] { componentType }).ToArray()).WithId(identifier).FromInstance(component);
-                            break;
-                        }
+                    {
+                        Container.Bind(componentType.Interfaces().Concat(new[] { componentType }).ToArray()).WithId(identifier).FromInstance(component);
+                        break;
+                    }
                     default:
-                        {
-                            throw Assert.CreateException();
-                        }
+                    {
+                        throw Assert.CreateException();
+                    }
                 }
             }
         }

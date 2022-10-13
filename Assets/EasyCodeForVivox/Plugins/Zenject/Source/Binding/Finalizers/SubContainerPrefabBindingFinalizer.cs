@@ -1,8 +1,8 @@
 #if !NOT_UNITY3D
 
-using ModestTree;
 using System;
 using System.Collections.Generic;
+using ModestTree;
 
 namespace Zenject
 {
@@ -44,32 +44,32 @@ namespace Zenject
             switch (scope)
             {
                 case ScopeTypes.Transient:
-                    {
-                        RegisterProvidersForAllContractsPerConcreteType(
-                            container,
-                            concreteTypes,
-                            (_, concreteType) => new SubContainerDependencyProvider(
-                                concreteType, _subIdentifier,
-                                _subContainerCreatorFactory(container), _resolveAll));
-                        break;
-                    }
+                {
+                    RegisterProvidersForAllContractsPerConcreteType(
+                        container,
+                        concreteTypes,
+                        (_, concreteType) => new SubContainerDependencyProvider(
+                            concreteType, _subIdentifier,
+                            _subContainerCreatorFactory(container), _resolveAll));
+                    break;
+                }
                 case ScopeTypes.Singleton:
-                    {
-                        var containerCreator = new SubContainerCreatorCached(
-                            _subContainerCreatorFactory(container));
+                {
+                    var containerCreator = new SubContainerCreatorCached(
+                        _subContainerCreatorFactory(container));
 
-                        RegisterProvidersForAllContractsPerConcreteType(
-                            container,
-                            concreteTypes,
-                            (_, concreteType) =>
-                            new SubContainerDependencyProvider(
-                                concreteType, _subIdentifier, containerCreator, _resolveAll));
-                        break;
-                    }
+                    RegisterProvidersForAllContractsPerConcreteType(
+                        container,
+                        concreteTypes,
+                        (_, concreteType) =>
+                        new SubContainerDependencyProvider(
+                            concreteType, _subIdentifier, containerCreator, _resolveAll));
+                    break;
+                }
                 default:
-                    {
-                        throw Assert.CreateException();
-                    }
+                {
+                    throw Assert.CreateException();
+                }
             }
         }
 
@@ -80,30 +80,30 @@ namespace Zenject
             switch (scope)
             {
                 case ScopeTypes.Transient:
-                    {
-                        RegisterProviderPerContract(
-                            container,
-                            (_, contractType) => new SubContainerDependencyProvider(
-                                contractType, _subIdentifier,
-                                _subContainerCreatorFactory(container), _resolveAll));
-                        break;
-                    }
+                {
+                    RegisterProviderPerContract(
+                        container,
+                        (_, contractType) => new SubContainerDependencyProvider(
+                            contractType, _subIdentifier,
+                            _subContainerCreatorFactory(container), _resolveAll));
+                    break;
+                }
                 case ScopeTypes.Singleton:
-                    {
-                        var containerCreator = new SubContainerCreatorCached(
-                            _subContainerCreatorFactory(container));
+                {
+                    var containerCreator = new SubContainerCreatorCached(
+                        _subContainerCreatorFactory(container));
 
-                        RegisterProviderPerContract(
-                            container,
-                            (_, contractType) =>
-                            new SubContainerDependencyProvider(
-                                contractType, _subIdentifier, containerCreator, _resolveAll));
-                        break;
-                    }
+                    RegisterProviderPerContract(
+                        container,
+                        (_, contractType) =>
+                        new SubContainerDependencyProvider(
+                            contractType, _subIdentifier, containerCreator, _resolveAll));
+                    break;
+                }
                 default:
-                    {
-                        throw Assert.CreateException();
-                    }
+                {
+                    throw Assert.CreateException();
+                }
             }
         }
     }

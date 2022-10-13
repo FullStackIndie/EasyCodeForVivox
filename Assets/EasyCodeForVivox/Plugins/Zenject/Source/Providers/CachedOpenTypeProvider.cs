@@ -1,7 +1,7 @@
-using ModestTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ModestTree;
 
 namespace Zenject
 {
@@ -71,19 +71,19 @@ namespace Zenject
         {
             List<object> result = null;
 
-            for (int i = 0; i < _cachedInstances.Count; i++)
+            for (int i = 0; i < _cachedInstances.Count; i++) 
             {
                 var instanceList = _cachedInstances[i];
 
                 bool matchesAll = true;
 
-                for (int k = 0; k < instanceList.Count; k++)
+                for (int k = 0; k < instanceList.Count; k++) 
                 {
                     var instance = instanceList[k];
 
-                    if (instance == null)
+                    if (instance == null) 
                     {
-                        if (memberType.IsValueType())
+                        if (memberType.IsValueType()) 
                         {
                             matchesAll = false;
                             break;
@@ -92,14 +92,14 @@ namespace Zenject
                         continue;
                     }
 
-                    if (!instance.GetType().DerivesFromOrEqual(memberType))
+                    if (!instance.GetType().DerivesFromOrEqual(memberType)) 
                     {
                         matchesAll = false;
                         break;
                     }
                 }
 
-                if (matchesAll)
+                if (matchesAll) 
                 {
                     Assert.IsNull(result); // Is there any case where this is hit?
                     result = instanceList;

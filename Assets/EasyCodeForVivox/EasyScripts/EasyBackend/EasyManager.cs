@@ -10,20 +10,21 @@ namespace EasyCodeForVivox
 {
     public class EasyManager : MonoBehaviour
     {
-        private ILogin _login;
-        private IChannel _channel;
-        private IAudioChannel _voiceChannel;
-        private ITextChannel _textChannel;
-        private IUsers _users;
-        private IMessages _messages;
-        private IAudioSettings _audioSettings;
-        private IMute _mute;
-        private ITextToSpeech _textToSpeech;
+        private EasyLogin _login;
+        private EasyChannel _channel;
+        private EasyAudioChannel _voiceChannel;
+        private EasyTextChannel _textChannel;
+        private EasyUsers _users;
+        private EasyMessages _messages;
+        private EasyAudio _audioSettings;
+        private EasyMute _mute;
+        private EasyTextToSpeech _textToSpeech;
+        private EasyAudio _audio;
 
 
         [Inject]
-        public void Initialize(ILogin login, IChannel channel, IAudioChannel voiceChannel, ITextChannel textChannel,
-            IUsers users, IMessages messages, IAudioSettings audioSettings, IMute mute, ITextToSpeech textToSpeech)
+        public void Initialize(EasyLogin login, EasyChannel channel, EasyAudioChannel voiceChannel, EasyTextChannel textChannel,
+            EasyUsers users, EasyMessages messages, EasyAudio audioSettings, EasyMute mute, EasyTextToSpeech textToSpeech, EasyAudio audio)
         {
             _login = login ?? throw new ArgumentNullException(nameof(login));
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
@@ -34,6 +35,7 @@ namespace EasyCodeForVivox
             _audioSettings = audioSettings ?? throw new ArgumentNullException(nameof(audioSettings));
             _mute = mute ?? throw new ArgumentNullException(nameof(mute));
             _textToSpeech = textToSpeech ?? throw new ArgumentNullException(nameof(textToSpeech));
+            _audio = audio ?? throw new ArgumentNullException(nameof(audio));
         }
 
 
@@ -186,73 +188,24 @@ namespace EasyCodeForVivox
 
         public void LoginToVivox(string userName, bool joinMuted = false)
         {
-            try
-            {
-                if (!EasyVivoxHelpers.FilterChannelAndUserName(userName)) { return; }
-
-                EasySession.LoginSessions.Add(userName, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain)));
-                _messages.SubscribeToDirectMessages(EasySession.LoginSessions[userName]);
-                _textToSpeech.Subscribe(EasySession.LoginSessions[userName]);
-
-                _login.LoginToVivox(EasySession.LoginSessions[userName], EasySession.APIEndpoint, userName, joinMuted);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                Debug.Log(e.StackTrace);
-                _messages.UnsubscribeFromDirectMessages(EasySession.LoginSessions[userName]);
-                _textToSpeech.Unsubscribe(EasySession.LoginSessions[userName]);
-            }
+            _login.LoginToVivox(userName, joinMuted);
         }
 
 
         public void LogoutOfVivox(string userName)
         {
-            if (EasySession.LoginSessions[userName].State == LoginState.LoggedIn)
-            {
-                _messages.UnsubscribeFromDirectMessages(EasySession.LoginSessions[userName]);
-                _textToSpeech.Unsubscribe(EasySession.LoginSessions[userName]);
-                _login.Logout(EasySession.LoginSessions[userName]);
-            }
-            else
-            {
-                Debug.Log($"Not logged in".Color(EasyDebug.Yellow));
-            }
+            _login.Logout(userName);
         }
 
         public void JoinChannel(string userName, string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
             bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
-            if (!EasyVivoxHelpers.FilterChannelAndUserName(channelName)) { return; }
-            IChannelSession channelSession = _channel.CreateNewChannel(userName, channelName, channelType, channel3DProperties);
-
-            try
-            {
-                _textChannel.Subscribe(channelSession);
-                _voiceChannel.Subscribe(channelSession);
-                _users.SubscribeToParticipantEvents(channelSession);
-                _messages.SubscribeToChannelMessages(channelSession);
-
-                _channel.JoinChannel(userName, includeVoice, includeText, switchTransmissionToThisChannel, channelSession, joinMuted);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.StackTrace);
-                _textChannel.Unsubscribe(channelSession);
-                _voiceChannel.Unsubscribe(channelSession);
-                _users.UnsubscribeFromParticipantEvents(channelSession);
-                _messages.UnsubscribeFromChannelMessages(channelSession);
-            }
+            _channel.JoinChannel(userName, channelName, includeVoice, includeText, switchTransmissionToThisChannel, channelType, joinMuted, channel3DProperties);
         }
 
         public void LeaveChannel(string channelName, string userName)
         {
-            if (EasySession.ChannelSessions.ContainsKey(channelName))
-            {
-                _users.UnsubscribeFromParticipantEvents(EasySession.ChannelSessions[channelName]);
-                _messages.UnsubscribeFromChannelMessages(EasySession.ChannelSessions[channelName]);
-                _channel.LeaveChannel(EasySession.LoginSessions[userName], EasySession.ChannelSessions[channelName]);
-            }
+            _channel.LeaveChannel(channelName, userName);
         }
 
         public void SetVoiceActiveInChannel(string userName, string channelName, bool connect)
@@ -294,6 +247,7 @@ namespace EasyCodeForVivox
         public void SendDirectMessage(string userName, string userToMsg, string msg, string title = "", string body = "")
         {
             // todo check if user is blocked and alert front end users
+            // not supporting presence so not neccessary - leaving todo in case things change
             _messages.SendDirectMessage(EasySession.LoginSessions[userName], userToMsg, msg, title, body);
         }
 
@@ -347,6 +301,17 @@ namespace EasyCodeForVivox
             IChannelSession channelSession = _channel.GetExistingChannelSession(userName, channelName);
             _audioSettings.AdjustRemotePlayerAudioVolume(userName, channelSession, volume);
         }
+
+        public void InjectAudio(string username, string audioPath)
+        {
+            _audio.StartAudioInjection(audioPath, EasySession.LoginSessions[username]);
+        }
+        
+        public void StopInjectedAudio(string username)
+        {
+            _audio.StopAudioInjection(EasySession.LoginSessions[username]);
+        }
+
 
         public void SpeakTTS(string msg, string userName)
         {
@@ -544,12 +509,12 @@ namespace EasyCodeForVivox
 
         #region Local User Mute Callbacks
 
-        protected virtual void OnLocalUserMuted(bool isMuted)
+        protected virtual void OnLocalUserMuted()
         {
             Debug.Log("Local User is Muted");
         }
 
-        protected virtual void OnLocalUserUnmuted(bool isMuted)
+        protected virtual void OnLocalUserUnmuted()
         {
             Debug.Log("Local User is Unmuted");
         }

@@ -1,6 +1,6 @@
-using ModestTree;
 using System;
 using System.Collections.Generic;
+using ModestTree;
 
 namespace Zenject
 {
@@ -52,7 +52,7 @@ namespace Zenject
 
             _installMethod(subContainer);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -86,7 +86,7 @@ namespace Zenject
 
             _installMethod(subContainer, (TParam1)args[0].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -124,7 +124,7 @@ namespace Zenject
                 (TParam1)args[0].Value,
                 (TParam2)args[1].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -164,7 +164,7 @@ namespace Zenject
                 (TParam2)args[1].Value,
                 (TParam3)args[2].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -213,7 +213,7 @@ namespace Zenject
                 (TParam3)args[2].Value,
                 (TParam4)args[3].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -264,7 +264,7 @@ namespace Zenject
                 (TParam4)args[3].Value,
                 (TParam5)args[4].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -317,7 +317,7 @@ namespace Zenject
                 (TParam5)args[4].Value,
                 (TParam6)args[5].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };
@@ -379,7 +379,7 @@ namespace Zenject
                 (TParam9)args[8].Value,
                 (TParam10)args[9].Value);
 
-            injectAction = () =>
+            injectAction = () => 
             {
                 subContainer.ResolveRoots();
             };

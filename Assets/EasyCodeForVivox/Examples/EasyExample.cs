@@ -48,7 +48,7 @@ public class EasyExample : EasyManager
         VivoxConfig vivoxConfig = new VivoxConfig();
         vivoxConfig.MaxLoginsPerUser = 201;
 
-        await InitializeClient();
+        await InitializeClient(logAllDynamicMethods: true);
 
         DontDestroyOnLoad(this);
     }
@@ -85,7 +85,7 @@ public class EasyExample : EasyManager
 
     public void JoinChannel()
     {
-        JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
+        //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
         JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
     }
 
@@ -178,6 +178,17 @@ public class EasyExample : EasyManager
         }
     }
 
+    public void InjectAudio()
+    {
+        //InjectAudio(userName.text, "C://Users/johnm/Documents/Unity/Unity Projects/v_2019.4.28/EasyCodeForVivox/Assets/EasyCodeForVivox/Resources/Over_the_Horizon.wav");
+        InjectAudio(userName.text, @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
+    }
+
+    public void StopInjectedAudio()
+    {
+        StopInjectedAudio(userName.text);
+    }
+
     public void EnablePushToTalk()
     {
         PushToTalk(true, KeyCode.Space);
@@ -208,7 +219,7 @@ public class EasyExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.LoginSessions[EasySession.LoggedInUserName].LoginSessionId.Name);
+        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userName.text].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
@@ -231,11 +242,11 @@ public class EasyExample : EasyManager
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Mute"))
         {
-            HandleMuteEvent(textMessage, EasySession.LoggedInUserName);
+            HandleMuteEvent(textMessage, userName.text);
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Unmute"))
         {
-            HandleUnmuteEvent(textMessage, EasySession.LoggedInUserName);
+            HandleUnmuteEvent(textMessage, userName.text);
         }
     }
 

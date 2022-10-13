@@ -73,8 +73,8 @@ namespace EasyCodeForVivox.Events
 
         #region User Mute Events
 
-        public static event Action<bool> LocalUserMuted;
-        public static event Action<bool> LocalUserUnmuted;
+        public static event Action LocalUserMuted;
+        public static event Action LocalUserUnmuted;
 
         #endregion
 
@@ -89,10 +89,34 @@ namespace EasyCodeForVivox.Events
 
 
 
-        private static void InvokeMethods<T>(this List<MethodInfo> methods, T value)
+        private static void InvokeMethods(Enum eventKey)
         {
+            if (!RuntimeEvents.DynamicEvents.ContainsKey(eventKey))
+            {
+                return;
+            }
+            foreach (var method in RuntimeEvents.DynamicEvents[eventKey])
+            {
+                var parameters = method.GetParameters();
+                if (parameters.Length != 0)
+                {
+                    continue;
+                }
+                var gameObjects = GameObject.FindObjectsOfType(method.DeclaringType);
+                foreach (var gameObject in gameObjects)
+                {
+                    method?.Invoke(gameObject, null);
+                }
+            }
+        }
 
-            foreach (var method in methods)
+        private static void InvokeMethods<T>(Enum eventKey, T value)
+        {
+            if (!RuntimeEvents.DynamicEvents.ContainsKey(eventKey))
+            {
+                return;
+            }
+            foreach (var method in RuntimeEvents.DynamicEvents[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 1 || parameters.FirstOrDefault().ParameterType != typeof(T))
@@ -107,10 +131,13 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private static void InvokeMethods<T1, T2>(this List<MethodInfo> methods, T1 value1, T2 value2)
+        private static void InvokeMethods<T1, T2>(Enum eventKey, T1 value1, T2 value2)
         {
-
-            foreach (var method in methods)
+            if (!RuntimeEvents.DynamicEvents.ContainsKey(eventKey))
+            {
+                return;
+            }
+            foreach (var method in RuntimeEvents.DynamicEvents[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 2 || parameters[0].ParameterType != typeof(T1) && parameters[1].ParameterType != typeof(T2))
@@ -136,7 +163,7 @@ namespace EasyCodeForVivox.Events
                 LoggingIn?.Invoke(loginSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingIn].InvokeMethods(loginSession);
+                    InvokeMethods(LoginStatus.LoggingIn, loginSession);
                 }
             }
             catch (Exception ex)
@@ -153,7 +180,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingIn].InvokeMethods(loginSession, value);
+                    InvokeMethods(LoginStatus.LoggingIn, loginSession, value);
                 }
             }
             catch (Exception ex)
@@ -171,7 +198,7 @@ namespace EasyCodeForVivox.Events
                 LoggedIn?.Invoke(loginSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedIn].InvokeMethods(loginSession);
+                    InvokeMethods(LoginStatus.LoggedIn, loginSession);
                 }
             }
             catch (Exception ex)
@@ -188,7 +215,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedIn].InvokeMethods(loginSession, value);
+                    InvokeMethods(LoginStatus.LoggedIn, loginSession, value);
                 }
             }
             catch (Exception ex)
@@ -208,7 +235,7 @@ namespace EasyCodeForVivox.Events
                 LoggingOut?.Invoke(loginSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingOut].InvokeMethods(loginSession);
+                    InvokeMethods(LoginStatus.LoggingOut, loginSession);
                 }
             }
             catch (Exception ex)
@@ -225,7 +252,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggingOut].InvokeMethods(loginSession, value);
+                    InvokeMethods(LoginStatus.LoggingOut, loginSession, value);
                 }
             }
             catch (Exception ex)
@@ -243,7 +270,7 @@ namespace EasyCodeForVivox.Events
                 LoggedOut?.Invoke(loginSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedOut].InvokeMethods(loginSession);
+                    InvokeMethods(LoginStatus.LoggedOut, loginSession);
                 }
             }
             catch (Exception ex)
@@ -260,7 +287,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[LoginStatus.LoggedOut].InvokeMethods(loginSession, value);
+                    InvokeMethods(LoginStatus.LoggedOut, loginSession, value);
                 }
             }
             catch (Exception ex)
@@ -285,7 +312,7 @@ namespace EasyCodeForVivox.Events
                 ChannelConnecting?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnecting].InvokeMethods(channelSession);
+                    InvokeMethods(ChannelStatus.ChannelConnecting, channelSession);
                 }
             }
             catch (Exception ex)
@@ -302,7 +329,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnecting].InvokeMethods(channelSession, value);
+                    InvokeMethods(ChannelStatus.ChannelConnecting, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -320,7 +347,7 @@ namespace EasyCodeForVivox.Events
                 ChannelConnected?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnected].InvokeMethods(channelSession);
+                    InvokeMethods(ChannelStatus.ChannelConnected, channelSession);
                 }
             }
             catch (Exception ex)
@@ -337,7 +364,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelConnected].InvokeMethods(channelSession, value);
+                    InvokeMethods(ChannelStatus.ChannelConnected, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -355,7 +382,7 @@ namespace EasyCodeForVivox.Events
                 ChannelDisconnecting?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnecting].InvokeMethods(channelSession);
+                    InvokeMethods(ChannelStatus.ChannelDisconnecting, channelSession);
                 }
             }
             catch (Exception ex)
@@ -372,7 +399,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnecting].InvokeMethods(channelSession, value);
+                    InvokeMethods(ChannelStatus.ChannelDisconnecting, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -390,7 +417,7 @@ namespace EasyCodeForVivox.Events
                 ChannelDisconnected?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnected].InvokeMethods(channelSession);
+                    InvokeMethods(ChannelStatus.ChannelDisconnected, channelSession);
                 }
             }
             catch (Exception ex)
@@ -407,7 +434,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelStatus.ChannelDisconnected].InvokeMethods(channelSession, value);
+                    InvokeMethods(ChannelStatus.ChannelDisconnected, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -432,7 +459,7 @@ namespace EasyCodeForVivox.Events
                 TextChannelConnecting?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnecting].InvokeMethods(channelSession);
+                    InvokeMethods(TextChannelStatus.TextChannelConnecting, channelSession);
                 }
             }
             catch (Exception ex)
@@ -449,7 +476,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnecting].InvokeMethods(channelSession, value);
+                    InvokeMethods(TextChannelStatus.TextChannelConnecting, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -468,7 +495,7 @@ namespace EasyCodeForVivox.Events
                 TextChannelConnected?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnected].InvokeMethods(channelSession);
+                    InvokeMethods(TextChannelStatus.TextChannelConnected, channelSession);
                 }
             }
             catch (Exception ex)
@@ -485,7 +512,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelConnected].InvokeMethods(channelSession, value);
+                    InvokeMethods(TextChannelStatus.TextChannelConnected, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -503,7 +530,7 @@ namespace EasyCodeForVivox.Events
                 TextChannelDisconnecting?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnecting].InvokeMethods(channelSession);
+                    InvokeMethods(TextChannelStatus.TextChannelDisconnecting, channelSession);
                 }
             }
             catch (Exception ex)
@@ -520,7 +547,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnecting].InvokeMethods(channelSession, value);
+                    InvokeMethods(TextChannelStatus.TextChannelDisconnecting, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -538,7 +565,7 @@ namespace EasyCodeForVivox.Events
                 TextChannelDisconnected?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnected].InvokeMethods(channelSession);
+                    InvokeMethods(TextChannelStatus.TextChannelDisconnected, channelSession);
                 }
             }
             catch (Exception ex)
@@ -555,7 +582,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextChannelStatus.TextChannelDisconnected].InvokeMethods(channelSession, value);
+                    InvokeMethods(TextChannelStatus.TextChannelDisconnected, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -578,9 +605,9 @@ namespace EasyCodeForVivox.Events
             try
             {
                 AudioChannelConnecting?.Invoke(channelSession);
-                if (EasySession.UseDynamicEvents)
+                if (EasySession.UseDynamicEvents && RuntimeEvents.DynamicEvents.ContainsKey(AudioChannelStatus.AudioChannelConnecting))
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnecting].InvokeMethods(channelSession);
+                    InvokeMethods(AudioChannelStatus.AudioChannelConnecting, channelSession);
                 }
             }
             catch (Exception ex)
@@ -595,9 +622,9 @@ namespace EasyCodeForVivox.Events
         {
             try
             {
-                if (EasySession.UseDynamicEvents)
+                if (EasySession.UseDynamicEvents && RuntimeEvents.DynamicEvents.ContainsKey(AudioChannelStatus.AudioChannelConnecting))
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnecting].InvokeMethods(channelSession, value);
+                    InvokeMethods(AudioChannelStatus.AudioChannelConnecting, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -615,7 +642,7 @@ namespace EasyCodeForVivox.Events
                 AudioChannelConnected?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnected].InvokeMethods(channelSession);
+                    InvokeMethods(AudioChannelStatus.AudioChannelConnected, channelSession);
                 }
             }
             catch (Exception ex)
@@ -632,7 +659,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelConnected].InvokeMethods(channelSession, value);
+                    InvokeMethods(AudioChannelStatus.AudioChannelConnected, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -650,7 +677,7 @@ namespace EasyCodeForVivox.Events
                 AudioChannelDisconnecting?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnecting].InvokeMethods(channelSession);
+                    InvokeMethods(AudioChannelStatus.AudioChannelDisconnecting, channelSession);
                 }
             }
             catch (Exception ex)
@@ -667,7 +694,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnecting].InvokeMethods(channelSession, value);
+                    InvokeMethods(AudioChannelStatus.AudioChannelDisconnecting, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -685,7 +712,7 @@ namespace EasyCodeForVivox.Events
                 AudioChannelDisconnected?.Invoke(channelSession);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnected].InvokeMethods(channelSession);
+                    InvokeMethods(AudioChannelStatus.AudioChannelDisconnected, channelSession);
                 }
             }
             catch (Exception ex)
@@ -702,7 +729,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[AudioChannelStatus.AudioChannelDisconnected].InvokeMethods(channelSession, value);
+                    InvokeMethods(AudioChannelStatus.AudioChannelDisconnected, channelSession, value);
                 }
             }
             catch (Exception ex)
@@ -727,7 +754,7 @@ namespace EasyCodeForVivox.Events
                 ChannelMessageRecieved?.Invoke(channelTextMessage);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageRecieved].InvokeMethods(channelTextMessage);
+                    InvokeMethods(ChannelMessageStatus.ChannelMessageRecieved, channelTextMessage);
                 }
             }
             catch (Exception ex)
@@ -744,7 +771,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageRecieved].InvokeMethods(channelTextMessage, value);
+                    InvokeMethods(ChannelMessageStatus.ChannelMessageRecieved, channelTextMessage, value);
                 }
             }
             catch (Exception ex)
@@ -762,7 +789,7 @@ namespace EasyCodeForVivox.Events
                 EventMessageRecieved?.Invoke(channelTextMessage);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.EventMessageRecieved].InvokeMethods(channelTextMessage);
+                    InvokeMethods(ChannelMessageStatus.EventMessageRecieved, channelTextMessage);
                 }
             }
             catch (Exception ex)
@@ -779,7 +806,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.EventMessageRecieved].InvokeMethods(channelTextMessage, value);
+                    InvokeMethods(ChannelMessageStatus.EventMessageRecieved, channelTextMessage, value);
                 }
             }
             catch (Exception ex)
@@ -810,7 +837,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[ChannelMessageStatus.ChannelMessageSent].InvokeMethods(value);
+                    InvokeMethods(ChannelMessageStatus.ChannelMessageSent, value);
                 }
             }
             catch (Exception ex)
@@ -841,7 +868,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageSent].InvokeMethods(value);
+                    InvokeMethods(DirectMessageStatus.DirectMessageSent, value);
                 }
             }
             catch (Exception ex)
@@ -859,7 +886,7 @@ namespace EasyCodeForVivox.Events
                 DirectMessageRecieved?.Invoke(message);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageRecieved].InvokeMethods(message);
+                    InvokeMethods(DirectMessageStatus.DirectMessageRecieved, message);
                 }
             }
             catch (Exception ex)
@@ -876,7 +903,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageRecieved].InvokeMethods(message, value);
+                    InvokeMethods(DirectMessageStatus.DirectMessageRecieved, message, value);
                 }
             }
             catch (Exception ex)
@@ -894,7 +921,7 @@ namespace EasyCodeForVivox.Events
                 DirectMessageFailed?.Invoke(failedMessage);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageFailed].InvokeMethods(failedMessage);
+                    InvokeMethods(DirectMessageStatus.DirectMessageFailed, failedMessage);
                 }
             }
             catch (Exception ex)
@@ -911,7 +938,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[DirectMessageStatus.DirectMessageFailed].InvokeMethods(failedMessage);
+                    InvokeMethods(DirectMessageStatus.DirectMessageFailed, failedMessage);
                 }
             }
             catch (Exception ex)
@@ -936,7 +963,7 @@ namespace EasyCodeForVivox.Events
                 UserJoinedChannel?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserStatus.UserJoinedChannel].InvokeMethods(participant);
+                    InvokeMethods(UserStatus.UserJoinedChannel, participant);
                 }
             }
             catch (Exception ex)
@@ -953,7 +980,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserStatus.UserJoinedChannel].InvokeMethods(participant);
+                    InvokeMethods(UserStatus.UserJoinedChannel, participant);
                 }
             }
             catch (Exception ex)
@@ -971,7 +998,7 @@ namespace EasyCodeForVivox.Events
                 UserLeftChannel?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserStatus.UserLeftChannel].InvokeMethods(participant);
+                    InvokeMethods(UserStatus.UserLeftChannel, participant);
                 }
             }
             catch (Exception ex)
@@ -988,7 +1015,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserStatus.UserLeftChannel].InvokeMethods(participant, value);
+                    InvokeMethods(UserStatus.UserLeftChannel, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1006,7 +1033,7 @@ namespace EasyCodeForVivox.Events
                 UserValuesUpdated?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserStatus.UserValuesUpdated].InvokeMethods(participant);
+                    InvokeMethods(UserStatus.UserValuesUpdated, participant);
                 }
             }
             catch (Exception ex)
@@ -1023,7 +1050,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserStatus.UserValuesUpdated].InvokeMethods(participant, value);
+                    InvokeMethods(UserStatus.UserValuesUpdated, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1043,7 +1070,7 @@ namespace EasyCodeForVivox.Events
                 UserMuted?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserMuted].InvokeMethods(participant);
+                    InvokeMethods(UserAudioStatus.UserMuted, participant);
                 }
             }
             catch (Exception ex)
@@ -1060,7 +1087,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserMuted].InvokeMethods(participant, value);
+                    InvokeMethods(UserAudioStatus.UserMuted, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1078,7 +1105,7 @@ namespace EasyCodeForVivox.Events
                 UserUnmuted?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserUnmuted].InvokeMethods(participant);
+                    InvokeMethods(UserAudioStatus.UserUnmuted, participant);
                 }
             }
             catch (Exception ex)
@@ -1095,7 +1122,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserUnmuted].InvokeMethods(participant, value);
+                    InvokeMethods(UserAudioStatus.UserUnmuted, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1113,7 +1140,7 @@ namespace EasyCodeForVivox.Events
                 UserSpeaking?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserSpeaking].InvokeMethods(participant);
+                    InvokeMethods(UserAudioStatus.UserSpeaking, participant);
                 }
             }
             catch (Exception ex)
@@ -1130,7 +1157,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserSpeaking].InvokeMethods(participant, value);
+                    InvokeMethods(UserAudioStatus.UserSpeaking, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1148,7 +1175,7 @@ namespace EasyCodeForVivox.Events
                 UserNotSpeaking?.Invoke(participant);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserNotSpeaking].InvokeMethods(participant);
+                    InvokeMethods(UserAudioStatus.UserNotSpeaking, participant);
                 }
             }
             catch (Exception ex)
@@ -1165,7 +1192,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.UserNotSpeaking].InvokeMethods(participant, value);
+                    InvokeMethods(UserAudioStatus.UserNotSpeaking, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1182,14 +1209,14 @@ namespace EasyCodeForVivox.Events
 
         #region User Mute Events
 
-        public static void OnLocalUserMuted(bool isMuted)
+        public static void OnLocalUserMuted()
         {
             try
             {
-                LocalUserMuted?.Invoke(isMuted);
+                LocalUserMuted?.Invoke();
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserMuted].InvokeMethods(isMuted);
+                    InvokeMethods(UserAudioStatus.LocalUserMuted);
                 }
             }
             catch (Exception ex)
@@ -1200,13 +1227,13 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public static void OnLocalUserMuted<T>(bool isMuted, T value)
+        public static void OnLocalUserMuted<T>(T value)
         {
             try
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserMuted].InvokeMethods(isMuted, value);
+                    InvokeMethods(UserAudioStatus.LocalUserMuted, value);
                 }
             }
             catch (Exception ex)
@@ -1217,14 +1244,14 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public static void OnLocalUserUnmuted(bool isMuted)
+        public static void OnLocalUserUnmuted()
         {
             try
             {
-                LocalUserUnmuted?.Invoke(isMuted);
+                LocalUserUnmuted?.Invoke();
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserUnmuted].InvokeMethods(isMuted);
+                    InvokeMethods(UserAudioStatus.LocalUserUnmuted);
                 }
             }
             catch (Exception ex)
@@ -1235,13 +1262,13 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public static void OnLocalUserUnmuted<T>(bool isMuted, T value)
+        public static void OnLocalUserUnmuted<T>(T value)
         {
             try
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[UserAudioStatus.LocalUserUnmuted].InvokeMethods(isMuted, value);
+                    InvokeMethods(UserAudioStatus.LocalUserUnmuted, value);
                 }
             }
             catch (Exception ex)
@@ -1266,7 +1293,7 @@ namespace EasyCodeForVivox.Events
                 TTSMessageAdded?.Invoke(ttsArgs);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageAdded].InvokeMethods(ttsArgs);
+                    InvokeMethods(TextToSpeechStatus.TTSMessageAdded, ttsArgs);
                 }
             }
             catch (Exception ex)
@@ -1283,7 +1310,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageAdded].InvokeMethods(ttsArgs, value);
+                    InvokeMethods(TextToSpeechStatus.TTSMessageAdded, ttsArgs, value);
                 }
             }
             catch (Exception ex)
@@ -1301,7 +1328,7 @@ namespace EasyCodeForVivox.Events
                 TTSMessageRemoved?.Invoke(ttsArgs);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageRemoved].InvokeMethods(ttsArgs);
+                    InvokeMethods(TextToSpeechStatus.TTSMessageRemoved, ttsArgs);
                 }
             }
             catch (Exception ex)
@@ -1318,7 +1345,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageRemoved].InvokeMethods(ttsArgs, value);
+                    InvokeMethods(TextToSpeechStatus.TTSMessageRemoved, ttsArgs, value);
                 }
             }
             catch (Exception ex)
@@ -1336,7 +1363,7 @@ namespace EasyCodeForVivox.Events
                 TTSMessageUpdated?.Invoke(ttsArgs);
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageUpdated].InvokeMethods(ttsArgs);
+                    InvokeMethods(TextToSpeechStatus.TTSMessageUpdated, ttsArgs);
                 }
             }
             catch (Exception ex)
@@ -1353,7 +1380,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    RuntimeEvents.DynamicEvents[TextToSpeechStatus.TTSMessageUpdated].InvokeMethods(ttsArgs, value);
+                    InvokeMethods(TextToSpeechStatus.TTSMessageUpdated, ttsArgs, value);
                 }
             }
             catch (Exception ex)

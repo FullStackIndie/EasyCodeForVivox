@@ -10,6 +10,14 @@ namespace EasyCodeForVivox
 {
     public class EasyLogin : ILogin
     {
+        private readonly EasyMessages _messages;
+        private readonly EasyTextToSpeech _textToSpeech;
+
+        public EasyLogin(EasyMessages messages, EasyTextToSpeech textToSpeech)
+        {
+            _messages = messages;
+            _textToSpeech = textToSpeech;
+        }
 
         public void Subscribe(ILoginSession loginSession)
         {
@@ -25,6 +33,26 @@ namespace EasyCodeForVivox
 
         #region Login Methods
 
+        public void LoginToVivox(string userName, bool joinMuted = false)
+        {
+            try
+            {
+                if (!EasyVivoxHelpers.FilterChannelAndUserName(userName)) { return; }
+
+                EasySession.LoginSessions.Add(userName, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain)));
+                _messages.SubscribeToDirectMessages(EasySession.LoginSessions[userName]);
+                _textToSpeech.Subscribe(EasySession.LoginSessions[userName]);
+
+                LoginToVivox(EasySession.LoginSessions[userName], EasySession.APIEndpoint, userName, joinMuted);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                Debug.Log(e.StackTrace);
+                _messages.UnsubscribeFromDirectMessages(EasySession.LoginSessions[userName]);
+                _textToSpeech.Unsubscribe(EasySession.LoginSessions[userName]);
+            }
+        }
 
         public void LoginToVivox(ILoginSession loginSession,
             Uri serverUri, string userName, bool joinMuted = false)
@@ -47,19 +75,30 @@ namespace EasyCodeForVivox
                 finally
                 {
                     EasySession.Client.AudioInputDevices.Muted = joinMuted;
-                    EasySession.LoggedInUserName = userName;
                 }
             });
         }
 
-
-        public void Logout(ILoginSession loginSession)
+        public void Logout(string userName)
         {
-            EasyEvents.OnLoggingOut(loginSession);
-            loginSession.Logout();
-            EasyEvents.OnLoggedOut(loginSession);
-            Debug.Log($"Logging Out... Vivox does not have a Logging Out event callbacks because when you disconnect from there server their is no way to send a callback.".Color(EasyDebug.Yellow) +
+            var loginSession = EasySession.LoginSessions[userName];
+            if (loginSession.State == LoginState.LoggedIn)
+            {
+                _messages.UnsubscribeFromDirectMessages(EasySession.LoginSessions[userName]);
+                _textToSpeech.Unsubscribe(EasySession.LoginSessions[userName]);
+                Logout(userName);
+
+                EasySession.LoginSessions.Remove(userName);
+                EasyEvents.OnLoggingOut(loginSession);
+                loginSession.Logout();
+                EasyEvents.OnLoggedOut(loginSession);
+
+                Debug.Log($"Logging Out... Vivox does not have a Logging Out event callbacks because when you disconnect from there server their is no way to send a callback.".Color(EasyDebug.Yellow) +
                 $" The events LoggingOut and LoggedOut are custom callback events. LoggingOut event will be called before the Logout method is called and LoggedOut event will be called after Logout method is called.".Color(EasyDebug.Yellow));
+
+            }
+
+            Debug.Log($"Not logged in".Color(EasyDebug.Yellow));
         }
 
         #endregion
@@ -112,10 +151,10 @@ namespace EasyCodeForVivox
                     await EasyEventsAsync.OnLoggedInAsync(senderLoginSession);
                     break;
                 case LoginState.LoggingOut:
-
+                    await EasyEventsAsync.OnLoggingOutAsync(senderLoginSession);
                     break;
                 case LoginState.LoggedOut:
-
+                    await EasyEventsAsync.OnLoggedOutAsync(senderLoginSession);
                     break;
 
                 default:

@@ -16,7 +16,7 @@ namespace Zenject
         {
             var subcontainerBindInfo = new SubContainerCreatorBindInfo();
 
-            ProviderFunc =
+            ProviderFunc = 
                 (container) => new SubContainerDependencyProvider(
                     ContractType, SubIdentifier,
                     new SubContainerCreatorByMethod<TParam1, TParam2>(

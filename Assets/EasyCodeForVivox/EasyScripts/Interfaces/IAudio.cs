@@ -3,7 +3,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public interface IAudioSettings
+    public interface IAudio
     {
         void SetAudioDeviceInput(IAudioDevice device, VivoxUnity.Client client);
         void SetAudioDeviceOutput(IAudioDevice device, VivoxUnity.Client client);

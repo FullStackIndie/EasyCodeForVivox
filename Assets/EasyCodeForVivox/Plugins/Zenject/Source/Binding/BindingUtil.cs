@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ModestTree;
 using Zenject.Internal;
 using System.Linq;
@@ -9,6 +10,7 @@ using TypeExtensions = ModestTree.TypeExtensions;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
 
 #endif
@@ -30,7 +32,7 @@ namespace Zenject
             // Unfortunately we can't do this check because asset bundles return PrefabType.None here
             // as discussed here: https://github.com/svermeulen/Zenject/issues/269#issuecomment-323419408
             //Assert.That(PrefabUtility.GetPrefabType(prefab) == PrefabType.Prefab,
-            //"Expected prefab but found game object with name '{0}' during bind command", prefab.name);
+                //"Expected prefab but found game object with name '{0}' during bind command", prefab.name);
 #endif
         }
 
@@ -45,7 +47,7 @@ namespace Zenject
             // Unfortunately we can't do this check because asset bundles return PrefabType.None here
             // as discussed here: https://github.com/svermeulen/Zenject/issues/269#issuecomment-323419408
             //Assert.That(PrefabUtility.GetPrefabType(gameObject) != PrefabType.Prefab,
-            //"Expected game object but found prefab instead with name '{0}' during bind command", gameObject.name);
+                //"Expected game object but found prefab instead with name '{0}' during bind command", gameObject.name);
 #endif
         }
 

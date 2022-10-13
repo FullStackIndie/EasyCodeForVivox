@@ -1,5 +1,5 @@
-using ModestTree;
 using System.Linq;
+using ModestTree;
 using UnityEngine;
 
 #pragma warning disable 219
@@ -100,13 +100,13 @@ namespace Zenject
             switch (Random.Range(0, 3))
             {
                 case 0:
-                    {
-                        return ctx.Container.Instantiate<Foo1>();
-                    }
+                {
+                    return ctx.Container.Instantiate<Foo1>();
+                }
                 case 1:
-                    {
-                        return ctx.Container.Instantiate<Foo2>();
-                    }
+                {
+                    return ctx.Container.Instantiate<Foo2>();
+                }
             }
 
             return ctx.Container.Instantiate<Foo3>();

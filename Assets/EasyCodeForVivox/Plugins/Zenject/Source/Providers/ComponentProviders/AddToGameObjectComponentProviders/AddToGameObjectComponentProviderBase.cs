@@ -1,9 +1,9 @@
 #if !NOT_UNITY3D
 
-using ModestTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ModestTree;
 using UnityEngine;
 using Zenject.Internal;
 
@@ -84,10 +84,10 @@ namespace Zenject
             if (!_container.IsValidating || TypeAnalyzer.ShouldAllowDuringValidation(_componentType))
             {
                 if (_componentType == typeof(Transform))
-                // Treat transform as a special case because it's the one component that's always automatically added
-                // Otherwise, calling AddComponent below will fail and return null
-                // This is nice to allow doing things like
-                //      Container.Bind<Transform>().FromNewComponentOnNewGameObject();
+                    // Treat transform as a special case because it's the one component that's always automatically added
+                    // Otherwise, calling AddComponent below will fail and return null
+                    // This is nice to allow doing things like
+                    //      Container.Bind<Transform>().FromNewComponentOnNewGameObject();
                 {
                     instance = gameObj.transform;
                 }

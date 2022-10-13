@@ -1,6 +1,6 @@
-using ModestTree;
 using System;
 using System.Collections.Generic;
+using ModestTree;
 
 namespace Zenject
 {
@@ -41,25 +41,25 @@ namespace Zenject
             switch (scope)
             {
                 case ScopeTypes.Transient:
-                    {
-                        RegisterProvidersForAllContractsPerConcreteType(
-                            container, concreteTypes, _providerFactory);
-                        break;
-                    }
+                {
+                    RegisterProvidersForAllContractsPerConcreteType(
+                        container, concreteTypes, _providerFactory);
+                    break;
+                }
                 case ScopeTypes.Singleton:
-                    {
-                        RegisterProvidersForAllContractsPerConcreteType(
-                            container,
-                            concreteTypes,
-                            (_, concreteType) =>
-                                BindingUtil.CreateCachedProvider(
-                                    _providerFactory(container, concreteType)));
-                        break;
-                    }
+                {
+                    RegisterProvidersForAllContractsPerConcreteType(
+                        container,
+                        concreteTypes,
+                        (_, concreteType) =>
+                            BindingUtil.CreateCachedProvider(
+                                _providerFactory(container, concreteType)));
+                    break;
+                }
                 default:
-                    {
-                        throw Assert.CreateException();
-                    }
+                {
+                    throw Assert.CreateException();
+                }
             }
         }
 
@@ -70,23 +70,23 @@ namespace Zenject
             switch (scope)
             {
                 case ScopeTypes.Transient:
-                    {
-                        RegisterProviderPerContract(container, _providerFactory);
-                        break;
-                    }
+                {
+                    RegisterProviderPerContract(container, _providerFactory);
+                    break;
+                }
                 case ScopeTypes.Singleton:
-                    {
-                        RegisterProviderPerContract(
-                            container,
-                            (_, contractType) =>
-                                BindingUtil.CreateCachedProvider(
-                                    _providerFactory(container, contractType)));
-                        break;
-                    }
+                {
+                    RegisterProviderPerContract(
+                        container,
+                        (_, contractType) =>
+                            BindingUtil.CreateCachedProvider(
+                                _providerFactory(container, contractType)));
+                    break;
+                }
                 default:
-                    {
-                        throw Assert.CreateException();
-                    }
+                {
+                    throw Assert.CreateException();
+                }
             }
         }
     }

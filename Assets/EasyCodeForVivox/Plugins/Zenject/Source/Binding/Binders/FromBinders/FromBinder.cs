@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 #endif
 
+using Zenject.Internal;
 
 namespace Zenject
 {

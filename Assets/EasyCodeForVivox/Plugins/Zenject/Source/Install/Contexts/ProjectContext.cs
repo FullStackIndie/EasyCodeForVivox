@@ -1,9 +1,9 @@
 #if !NOT_UNITY3D
 
-using ModestTree;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using ModestTree;
 using UnityEngine;
 using Zenject.Internal;
 
@@ -123,7 +123,7 @@ namespace Zenject
 
                     GameObject gameObjectInstance;
 #if UNITY_EDITOR
-                    if (prefabWasActive)
+                    if(prefabWasActive)
                     {
                         // This ensures the prefab's Awake() methods don't fire (and, if in the editor, that the prefab file doesn't get modified)
                         gameObjectInstance = GameObject.Instantiate(prefab, ZenUtilInternal.GetOrCreateInactivePrefabParent());
@@ -184,10 +184,10 @@ namespace Zenject
         public void Awake()
         {
             if (Application.isPlaying)
-            // DontDestroyOnLoad can only be called when in play mode and otherwise produces errors
-            // ProjectContext is created during design time (in an empty scene) when running validation
-            // and also when running unit tests
-            // In these cases we don't need DontDestroyOnLoad so just skip it
+                // DontDestroyOnLoad can only be called when in play mode and otherwise produces errors
+                // ProjectContext is created during design time (in an empty scene) when running validation
+                // and also when running unit tests
+                // In these cases we don't need DontDestroyOnLoad so just skip it
             {
                 DontDestroyOnLoad(gameObject);
             }

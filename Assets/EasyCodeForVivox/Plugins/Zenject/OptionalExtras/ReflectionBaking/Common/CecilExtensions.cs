@@ -1,8 +1,8 @@
-﻿using ModestTree;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ModestTree;
 using Zenject.ReflectionBaking.Mono.Cecil;
 using Zenject.ReflectionBaking.Mono.Collections.Generic;
 using ICustomAttributeProvider = Zenject.ReflectionBaking.Mono.Cecil.ICustomAttributeProvider;
@@ -200,7 +200,7 @@ namespace Zenject.ReflectionBaking
 
             Collection<CustomAttribute> attributes = instance.CustomAttributes;
 
-            for (int i = 0; i < attributes.Count; i++)
+            for(int i = 0;  i < attributes.Count; i++)
             {
                 if (attributes[i].AttributeType.FullName.Equals(typeof(T).FullName, StringComparison.Ordinal))
                 {

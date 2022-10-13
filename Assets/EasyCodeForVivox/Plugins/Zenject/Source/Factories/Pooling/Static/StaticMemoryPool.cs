@@ -1,6 +1,6 @@
-using ModestTree;
 using System;
 using System.Collections.Generic;
+using ModestTree;
 
 namespace Zenject
 {
@@ -364,7 +364,7 @@ namespace Zenject
 #if !NET_4_6
         ModestTree.Util.
 #endif
-        Action<TParam1, TParam2, TParam3, TParam4, TValue> _onSpawnMethod;
+            Action<TParam1, TParam2, TParam3, TParam4, TValue> _onSpawnMethod;
 
         public StaticMemoryPool(
 #if !NET_4_6
@@ -414,7 +414,7 @@ namespace Zenject
 #if !NET_4_6
         ModestTree.Util.
 #endif
-        Action<TParam1, TParam2, TParam3, TParam4, TParam5, TValue> _onSpawnMethod;
+            Action<TParam1, TParam2, TParam3, TParam4, TParam5, TValue> _onSpawnMethod;
 
         public StaticMemoryPool(
 #if !NET_4_6
@@ -464,7 +464,7 @@ namespace Zenject
 #if !NET_4_6
         ModestTree.Util.
 #endif
-        Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TValue> _onSpawnMethod;
+            Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TValue> _onSpawnMethod;
 
         public StaticMemoryPool(
 #if !NET_4_6
@@ -514,7 +514,7 @@ namespace Zenject
 #if !NET_4_6
         ModestTree.Util.
 #endif
-        Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TValue> _onSpawnMethod;
+            Action<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, TParam7, TValue> _onSpawnMethod;
 
         public StaticMemoryPool(
 #if !NET_4_6
