@@ -5,7 +5,7 @@ namespace EasyCodeForVivox
 {
     public class DynamicAttributeEvents : MonoBehaviour
     {
-        [SerializeField] private string cubeName;
+        [SerializeField] public string CubeName;
         // Start is called before the first frame update
         void Start()
         {
@@ -28,7 +28,7 @@ namespace EasyCodeForVivox
         public void PlayerLoggedIn(ILoginSession loginSession)
         {
             // handle some UI logic
-            cubeName = loginSession.LoginSessionId.Name;
+            CubeName = loginSession.LoginSessionId.Name;
             gameObject.GetComponent<Renderer>().material.color = Color.green;
         }
 

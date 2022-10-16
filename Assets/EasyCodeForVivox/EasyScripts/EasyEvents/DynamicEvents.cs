@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace EasyCodeForVivox
+namespace EasyCodeForVivox.Events
 {
-    public static class RuntimeEvents
+    public static class DynamicEvents
     {
         private static readonly HashSet<string> internalAssemblyNames = new HashSet<string>()
 {
@@ -150,7 +150,7 @@ namespace EasyCodeForVivox
     "SyntaxTree.VisualStudio.Unity.Messaging"
 };
 
-        public static Dictionary<Enum, List<MethodInfo>> DynamicEvents = new Dictionary<Enum, List<MethodInfo>>();
+        public static Dictionary<Enum, List<MethodInfo>> Methods = new Dictionary<Enum, List<MethodInfo>>();
 
 
         public static async Task RegisterEvents(bool logAssemblySearches = true, bool logAllDynamicMethods = false)
@@ -200,7 +200,7 @@ namespace EasyCodeForVivox
         {
             if (logAllDynamicMethods)
             {
-                foreach (var events in DynamicEvents)
+                foreach (var events in Methods)
                 {
                     foreach (var method in events.Value)
                     {
@@ -208,39 +208,39 @@ namespace EasyCodeForVivox
                     }
                 }
 
-                var loginEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Logg")).Select(m => m.Value.Count);
+                var loginEvents = Methods.Where(e => e.Key.ToString().StartsWith("Logg")).Select(m => m.Value.Count);
                 Debug.Log($"Found {loginEvents.Count()} Login Event Methods".Color(EasyDebug.Lightblue));
 
-                var channelEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Channel")).Select(m => m.Value.Count);
+                var channelEvents = Methods.Where(e => e.Key.ToString().StartsWith("Channel")).Select(m => m.Value.Count);
                 Debug.Log($"Found {channelEvents.Count()} Channel Event Methods".Color(EasyDebug.Lightblue));
 
-                var audioChannelEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Audio")).Select(m => m.Value.Count);
+                var audioChannelEvents = Methods.Where(e => e.Key.ToString().StartsWith("Audio")).Select(m => m.Value.Count);
                 Debug.Log($"Found {audioChannelEvents.Count()} Audio Channel Event Methods".Color(EasyDebug.Lightblue));
 
-                var textChannelEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Text")).Select(m => m.Value.Count);
+                var textChannelEvents = Methods.Where(e => e.Key.ToString().StartsWith("Text")).Select(m => m.Value.Count);
                 Debug.Log($"Found {textChannelEvents.Count()} Text Channel Event Methods".Color(EasyDebug.Lightblue));
 
-                var channelMessageEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("ChannelMessage") || e.Key.ToString().StartsWith("EventMessage")).Select(m => m.Value.Count);
+                var channelMessageEvents = Methods.Where(e => e.Key.ToString().StartsWith("ChannelMessage") || e.Key.ToString().StartsWith("EventMessage")).Select(m => m.Value.Count);
                 Debug.Log($"Found {channelMessageEvents.Count()} Channel Message Event Methods".Color(EasyDebug.Lightblue));
 
-                var directMessageEvents = DynamicEvents.Where(e => e.Key.ToString().StartsWith("Direct")).Select(m => m.Value.Count);
+                var directMessageEvents = Methods.Where(e => e.Key.ToString().StartsWith("Direct")).Select(m => m.Value.Count);
                 Debug.Log($"Found {directMessageEvents.Count()} Direct Message Event Methods".Color(EasyDebug.Lightblue));
 
-                var userEvents = DynamicEvents.Where(e => e.Key.ToString().Contains("User") || e.Key.ToString().Contains("LocalUser")).Select(m => m.Value.Count);
+                var userEvents = Methods.Where(e => e.Key.ToString().Contains("User") || e.Key.ToString().Contains("LocalUser")).Select(m => m.Value.Count);
                 Debug.Log($"Found {userEvents.Count()} User Events/User Audio Event Methods".Color(EasyDebug.Lightblue));
 
-                var ttsEvents = DynamicEvents.Where(e => e.Key.ToString().Contains("TTS")).Select(m => m.Value.Count);
+                var ttsEvents = Methods.Where(e => e.Key.ToString().Contains("TTS")).Select(m => m.Value.Count);
                 Debug.Log($"Found {ttsEvents.Count()} Text To Speech Event Methods".Color(EasyDebug.Lightblue));
             }
         }
 
         public static void AddDynamicEvent(Enum value, MethodInfo methodInfo)
         {
-            if (!DynamicEvents.ContainsKey(value))
+            if (!Methods.ContainsKey(value))
             {
-                DynamicEvents.Add(value, new List<MethodInfo>());
+                Methods.Add(value, new List<MethodInfo>());
             }
-            DynamicEvents[value].Add(methodInfo);
+            Methods[value].Add(methodInfo);
         }
 
         public static void RegisterLoginEvents(Type[] types, BindingFlags flags)

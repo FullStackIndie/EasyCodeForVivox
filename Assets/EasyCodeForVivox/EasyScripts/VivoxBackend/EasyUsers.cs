@@ -28,10 +28,10 @@ namespace EasyCodeForVivox
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
-            EasyEvents.OnUserJoinedChannel(senderIParticipant); 
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnUserJoinedChannel(senderIParticipant); 
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnUserJoinedChannelAsync(senderIParticipant);
+                await EasyEventsAsyncStatic.OnUserJoinedChannelAsync(senderIParticipant);
             }
         }
 
@@ -40,10 +40,10 @@ namespace EasyCodeForVivox
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
-            EasyEvents.OnUserLeftChannel(senderIParticipant);
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnUserLeftChannel(senderIParticipant);
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnUserLeftChannelAsync(senderIParticipant);
+                await EasyEventsAsyncStatic.OnUserLeftChannelAsync(senderIParticipant);
             }
             
         }
@@ -53,7 +53,7 @@ namespace EasyCodeForVivox
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[valueArg.Key];
-            EasyEvents.OnUserValuesUpdated(senderIParticipant);
+            EasyEventsStatic.OnUserValuesUpdated(senderIParticipant);
 
             switch (valueArg.PropertyName)
             {
@@ -64,12 +64,12 @@ namespace EasyCodeForVivox
                         if (senderIParticipant.LocalMute)
                         {
                             // Fires too much
-                            EasyEvents.OnUserMuted(senderIParticipant);
+                            EasyEventsStatic.OnUserMuted(senderIParticipant);
                         }
                         else
                         {
                             // Fires too much
-                            EasyEvents.OnUserUnmuted(senderIParticipant);
+                            EasyEventsStatic.OnUserUnmuted(senderIParticipant);
                         }
                     }
                     break;
@@ -78,18 +78,18 @@ namespace EasyCodeForVivox
                     {
                         if (senderIParticipant.SpeechDetected)
                         {
-                            EasyEvents.OnUserSpeaking(senderIParticipant);
+                            EasyEventsStatic.OnUserSpeaking(senderIParticipant);
                         }
                         else
                         {
-                            EasyEvents.OnUserNotSpeaking(senderIParticipant);
+                            EasyEventsStatic.OnUserNotSpeaking(senderIParticipant);
                         }
                         break;
                     }
                 default:
                     break;
             }
-            if (EasySession.UseDynamicEvents)
+            if (EasySessionStatic.UseDynamicEvents)
             {
                 await HandleDynamicEvents(valueArg, senderIParticipant);
             }
@@ -107,12 +107,12 @@ namespace EasyCodeForVivox
                         if (participant.LocalMute)
                         {
                             // Fires too much
-                            await EasyEventsAsync.OnUserMutedAsync(participant);
+                            await EasyEventsAsyncStatic.OnUserMutedAsync(participant);
                         }
                         else
                         {
                             // Fires too much
-                            await EasyEventsAsync.OnUserUnmutedAsync(participant);
+                            await EasyEventsAsyncStatic.OnUserUnmutedAsync(participant);
                         }
                     }
                     break;
@@ -121,11 +121,11 @@ namespace EasyCodeForVivox
                     {
                         if (participant.SpeechDetected)
                         {
-                            await EasyEventsAsync.OnUserSpeakingAsync(participant);
+                            await EasyEventsAsyncStatic.OnUserSpeakingAsync(participant);
                         }
                         else
                         {
-                            await EasyEventsAsync.OnUserNotSpeakingAsync(participant);
+                            await EasyEventsAsyncStatic.OnUserNotSpeakingAsync(participant);
                         }
                         break;
                     }

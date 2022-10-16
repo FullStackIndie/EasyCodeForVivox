@@ -7,11 +7,11 @@ public class NormalEvents : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        EasyEvents.LoggingIn += PlayerLoggingIn;
+        EasyEventsStatic.LoggingIn += PlayerLoggingIn;
     }
     private void OnApplicationQuit()
     {
-        EasyEvents.LoggingIn -= PlayerLoggingIn;
+        EasyEventsStatic.LoggingIn -= PlayerLoggingIn;
     }
 
     // Update is called once per frame

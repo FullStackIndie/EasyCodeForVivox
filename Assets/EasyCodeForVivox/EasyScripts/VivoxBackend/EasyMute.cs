@@ -12,7 +12,7 @@ namespace EasyCodeForVivox
         public void LocalToggleMuteRemoteUser(string userName, IChannelSession channelSession)
         {
             var participants = channelSession.Participants;
-            string userToMute = EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain);
+            string userToMute = EasySIP.GetUserSIP(EasySessionStatic.Issuer, userName, EasySessionStatic.Domain);
             Debug.Log($"Sip address of User to mute - {userToMute}");
             if (participants[userToMute].InAudio && !participants[userToMute].IsSelf)
             {
@@ -66,7 +66,7 @@ namespace EasyCodeForVivox
                 }
                 else
                 {
-                    Debug.Log($"Failed to mute {player.Account.DisplayName}, Might be local player".Color(EasyDebug.Red));
+                    Debug.Log($"Failed to unmute {player.Account.DisplayName}, Might be local player".Color(EasyDebug.Red));
                 }
             }
         }
@@ -75,20 +75,20 @@ namespace EasyCodeForVivox
         public async void LocalMuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = true;
-            EasyEvents.OnLocalUserMuted(true);
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnLocalUserMuted(true);
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnLocalUserMutedAsync(true);
+                await EasyEventsAsyncStatic.OnLocalUserMutedAsync(true);
             }
         }
 
         public async void LocalUnmuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = false;
-            EasyEvents.OnLocalUserUnmuted(true);
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnLocalUserUnmuted(true);
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnLocalUserUnmutedAsync(true);
+                await EasyEventsAsyncStatic.OnLocalUserUnmutedAsync(true);
             }
         }
 

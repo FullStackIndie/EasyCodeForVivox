@@ -29,6 +29,7 @@ namespace EasyCodeForVivox
             if (dropdown.options.Contains(remove))
             {
                 dropdown.options.Remove(remove);
+                dropdown.RefreshShownValue();
             }
         }
 

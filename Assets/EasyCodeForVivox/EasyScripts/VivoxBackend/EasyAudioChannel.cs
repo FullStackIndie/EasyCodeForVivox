@@ -31,6 +31,10 @@ namespace EasyCodeForVivox
             {
                 Subscribe(channelSession);
             }
+            else
+            {
+                Unsubscribe(channelSession);
+            }
 
             channelSession.BeginSetAudioConnected(join, true, ar =>
             {
@@ -64,23 +68,22 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.AudioState)
                 {
                     case ConnectionState.Connecting:
-                        EasyEvents.OnAudioChannelConnecting(senderIChannelSession);
+                        EasyEventsStatic.OnAudioChannelConnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Connected:
-                        EasyEvents.OnAudioChannelConnected(senderIChannelSession);
+                        EasyEventsStatic.OnAudioChannelConnected(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnecting:
-                        EasyEvents.OnAudioChannelDisconnecting(senderIChannelSession);
+                        EasyEventsStatic.OnAudioChannelDisconnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnected:
-                        EasyEvents.OnAudioChannelDisconnected(senderIChannelSession);
-                        Unsubscribe(senderIChannelSession);
+                        EasyEventsStatic.OnAudioChannelDisconnected(senderIChannelSession);
                         break;
                 }
-                if (EasySession.UseDynamicEvents)
+                if (EasySessionStatic.UseDynamicEvents)
                 {
                     await HandleDynamicEventsAsync(propArgs, senderIChannelSession);
                 }
@@ -92,19 +95,19 @@ namespace EasyCodeForVivox
             switch (channelSession.AudioState)
             {
                 case ConnectionState.Connecting:
-                    await EasyEventsAsync.OnAudioChannelConnectingAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnAudioChannelConnectingAsync(channelSession);
                     break;
 
                 case ConnectionState.Connected:
-                   await  EasyEventsAsync.OnAudioChannelConnectedAsync(channelSession);
+                   await  EasyEventsAsyncStatic.OnAudioChannelConnectedAsync(channelSession);
                     break;
 
                 case ConnectionState.Disconnecting:
-                    await EasyEventsAsync.OnAudioChannelDisconnectingAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnAudioChannelDisconnectingAsync(channelSession);
                     break;
 
                 case ConnectionState.Disconnected:
-                    await EasyEventsAsync.OnAudioChannelDisconnectedAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnAudioChannelDisconnectedAsync(channelSession);
                     break;
             }
         }

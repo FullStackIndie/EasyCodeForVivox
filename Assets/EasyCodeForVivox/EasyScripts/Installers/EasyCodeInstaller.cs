@@ -1,4 +1,5 @@
 using EasyCodeForVivox;
+using EasyCodeForVivox.Events;
 using Zenject;
 
 public class EasyCodeInstaller : MonoInstaller
@@ -14,5 +15,8 @@ public class EasyCodeInstaller : MonoInstaller
         Container.Bind<EasyUsers>().AsSingle();
         Container.Bind<EasyTextToSpeech>().AsSingle();
         Container.Bind<EasyMute>().AsSingle();
+        Container.Bind<EasyEvents>().AsSingle();
+        Container.Bind<EasyEventsAsync>().AsSingle();
+        Container.Bind<EasySession>().AsSingle();
     }
 }

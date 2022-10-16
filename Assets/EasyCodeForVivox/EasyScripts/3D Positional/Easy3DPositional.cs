@@ -20,7 +20,7 @@ namespace EasyCodeForVivox
 
         private void Awake()
         {
-            userName = EasySession.LoginSessions.FirstOrDefault().Value.LoginSessionId.DisplayName;
+            userName = EasySessionStatic.LoginSessions.FirstOrDefault().Value.LoginSessionId.DisplayName;
         }
 
         private void Start()
@@ -31,7 +31,7 @@ namespace EasyCodeForVivox
         IEnumerator Handle3DPositionUpdates(float nextUpdate, string userName)
         {
             yield return new WaitForSeconds(nextUpdate);
-            if (EasySession.LoginSessions[userName].State == LoginState.LoggedIn)
+            if (EasySessionStatic.LoginSessions[userName].State == LoginState.LoggedIn)
             {
                 if (_positionalChannelExists)
                 {
@@ -48,15 +48,15 @@ namespace EasyCodeForVivox
 
         public bool CheckIfChannelExists()
         {
-            foreach (KeyValuePair<string, IChannelSession> session in EasySession.ChannelSessions)
+            foreach (KeyValuePair<string, IChannelSession> session in EasySessionStatic.ChannelSessions)
             {
                 if (session.Value.Channel.Type == ChannelType.Positional)
                 {
                     _channelName = session.Value.Channel.Name;
-                    if (EasySession.ChannelSessions[_channelName].ChannelState == ConnectionState.Connected)
+                    if (EasySessionStatic.ChannelSessions[_channelName].ChannelState == ConnectionState.Connected)
                     {
                         Debug.Log($"Channel : {_channelName} is connected");
-                        if (EasySession.ChannelSessions[_channelName].AudioState == ConnectionState.Connected)
+                        if (EasySessionStatic.ChannelSessions[_channelName].AudioState == ConnectionState.Connected)
                         {
                             Debug.Log($"Audio is Connected in Channel : {_channelName}");
                             return true;
@@ -76,8 +76,8 @@ namespace EasyCodeForVivox
         {
             if (listenerPosition.position != _lastListenerPosition || speakerPosition.position != _lastSpeakerPosition)
             {
-                EasySession.ChannelSessions[_channelName].Set3DPosition(speakerPosition.position, listenerPosition.position, listenerPosition.forward, listenerPosition.up);
-                Debug.Log($"{EasySession.ChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
+                EasySessionStatic.ChannelSessions[_channelName].Set3DPosition(speakerPosition.position, listenerPosition.position, listenerPosition.forward, listenerPosition.up);
+                Debug.Log($"{EasySessionStatic.ChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
             }
             _lastListenerPosition = listenerPosition.position;
             _lastSpeakerPosition = speakerPosition.position;

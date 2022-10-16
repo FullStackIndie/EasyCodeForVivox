@@ -82,10 +82,10 @@ namespace EasyCodeForVivox
                 // todo update and research docs
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            EasyEvents.OnTTSMessageAdded(ttsArgs);
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnTTSMessageAdded(ttsArgs);
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnTTSMessageAddedAsync(ttsArgs);
+                await EasyEventsAsyncStatic.OnTTSMessageAddedAsync(ttsArgs);
             }
         }
 
@@ -96,10 +96,10 @@ namespace EasyCodeForVivox
             {
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            EasyEvents.OnTTSMessageRemoved(ttsArgs);
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnTTSMessageRemoved(ttsArgs);
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnTTSMessageRemovedAsync(ttsArgs);
+                await EasyEventsAsyncStatic.OnTTSMessageRemovedAsync(ttsArgs);
             }
         }
 
@@ -110,10 +110,10 @@ namespace EasyCodeForVivox
             {
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            EasyEvents.OnTTSMessageUpdated(ttsArgs);
-            if (EasySession.UseDynamicEvents)
+            EasyEventsStatic.OnTTSMessageUpdated(ttsArgs);
+            if (EasySessionStatic.UseDynamicEvents)
             {
-                await EasyEventsAsync.OnTTSMessageUpdatedAsync(ttsArgs);
+                await EasyEventsAsyncStatic.OnTTSMessageUpdatedAsync(ttsArgs);
             }
         }
 

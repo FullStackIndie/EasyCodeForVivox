@@ -18,7 +18,7 @@ namespace EasyCodeForVivox
         private readonly EasyUsers _users;
         private readonly EasyMessages _messages;
 
-        public EasyChannel(EasyUsers users, EasyMessages messages, 
+        public EasyChannel(EasyUsers users, EasyMessages messages,
             EasyAudioChannel audioChannel, EasyTextChannel textChannel)
         {
             _users = users;
@@ -90,15 +90,22 @@ namespace EasyCodeForVivox
 
         public void LeaveChannel(string channelName, string userName)
         {
-            if (EasySession.ChannelSessions.ContainsKey(channelName) && EasySession.LoginSessions.ContainsKey(userName))
+            if (EasySessionStatic.ChannelSessions.ContainsKey(channelName))
             {
-                _users.UnsubscribeFromParticipantEvents(EasySession.ChannelSessions[channelName]);
-                _messages.UnsubscribeFromChannelMessages(EasySession.ChannelSessions[channelName]);
-                LeaveChannel(EasySession.LoginSessions[userName], EasySession.ChannelSessions[channelName]);
+                if (EasySessionStatic.LoginSessions.ContainsKey(userName))
+                {
+                    _users.UnsubscribeFromParticipantEvents(EasySessionStatic.ChannelSessions[channelName]);
+                    _messages.UnsubscribeFromChannelMessages(EasySessionStatic.ChannelSessions[channelName]);
+                    LeaveChannel(EasySessionStatic.LoginSessions[userName], EasySessionStatic.ChannelSessions[channelName]);
+                }
+                else
+                {
+                    Debug.Log($"User Login Session does not exist");
+                }
             }
             else
             {
-                Debug.Log($"User Login or Channel Session does not exist");
+                Debug.Log($"User Channel Session does not exist");
             }
         }
 
@@ -109,17 +116,19 @@ namespace EasyCodeForVivox
                 channelToRemove.Disconnect();
 
                 loginSession.DeleteChannelSession(channelToRemove.Key);
+                Unsubscribe(channelToRemove);
+                EasySessionStatic.ChannelSessions.Remove(channelToRemove.Key.Name);
             }
         }
 
 
         public IChannelSession GetExistingChannelSession(string userName, string channelName)
         {
-            if (EasySession.ChannelSessions.ContainsKey(channelName))
+            if (EasySessionStatic.ChannelSessions.ContainsKey(channelName))
             {
-                if (EasySession.ChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySession.ChannelSessions[channelName] == null)
+                if (EasySessionStatic.ChannelSessions[channelName].ChannelState == ConnectionState.Disconnected || EasySessionStatic.ChannelSessions[channelName] == null)
                 {
-                    EasySession.ChannelSessions[channelName] = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
+                    EasySessionStatic.ChannelSessions[channelName] = EasySessionStatic.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelName)));
                 }
             }
             else
@@ -127,32 +136,32 @@ namespace EasyCodeForVivox
                 return null;
             }
 
-            return EasySession.ChannelSessions[channelName];
+            return EasySessionStatic.ChannelSessions[channelName];
         }
 
         public IChannelSession CreateNewChannel(string userName, string channelName, ChannelType channelType, Channel3DProperties channel3DProperties = default)
         {
             if (channelType == ChannelType.Positional)
             {
-                var positionalChannel = EasySession.ChannelSessions.Where(c => c.Value.Channel.Type == ChannelType.Positional).Select(c => c.Value).FirstOrDefault();
+                var positionalChannel = EasySessionStatic.ChannelSessions.Where(c => c.Value.Channel.Type == ChannelType.Positional).Select(c => c.Value).FirstOrDefault();
                 if (positionalChannel != null)
                 {
                     Debug.Log($"{positionalChannel.Channel.Name} Is already a 3D Positional Channel. Can Only Have One 3D Positional Channel. " +
                         $"Refer To Vivox Documentation :: Returning Exisiting 3D Channel : {positionalChannel.Channel.Name}".Color(EasyDebug.Yellow));
                     return positionalChannel;
                 }
-                EasySession.ChannelSessions.Add(channelName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
+                EasySessionStatic.ChannelSessions.Add(channelName, EasySessionStatic.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName, channel3DProperties))));
             }
             else
             {
-                if (EasySession.ChannelSessions.ContainsKey(channelName))
+                if (EasySessionStatic.ChannelSessions.ContainsKey(channelName))
                 {
-                    return EasySession.ChannelSessions[channelName];
+                    return EasySessionStatic.ChannelSessions[channelName];
                 }
-                EasySession.ChannelSessions.Add(channelName, EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
+                EasySessionStatic.ChannelSessions.Add(channelName, EasySessionStatic.LoginSessions[userName].GetChannelSession(new ChannelId(GetChannelSIP(channelType, channelName))));
             }
 
-            return EasySession.ChannelSessions[channelName];
+            return EasySessionStatic.ChannelSessions[channelName];
         }
 
         public string GetChannelSIP(ChannelType channelType, string channelName, Channel3DProperties channel3DProperties = default)
@@ -160,22 +169,22 @@ namespace EasyCodeForVivox
             switch (channelType)
             {
                 case ChannelType.NonPositional:
-                    return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
+                    return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySessionStatic.Issuer, channelName, EasySessionStatic.Domain);
 
                 case ChannelType.Echo:
-                    return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
+                    return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySessionStatic.Issuer, channelName, EasySessionStatic.Domain);
 
                 case ChannelType.Positional:
-                    return EasySIP.GetChannelSIP(ChannelType.Positional, EasySession.Issuer, channelName, EasySession.Domain, channel3DProperties);
+                    return EasySIP.GetChannelSIP(ChannelType.Positional, EasySessionStatic.Issuer, channelName, EasySessionStatic.Domain, channel3DProperties);
 
             }
-            return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySession.Issuer, channelName, EasySession.Domain);
+            return EasySIP.GetChannelSIP(ChannelType.NonPositional, EasySessionStatic.Issuer, channelName, EasySessionStatic.Domain);
         }
 
         public string GetChannelSIP(string channelName)
         {
             string result = "";
-            foreach (var session in EasySession.ChannelSessions)
+            foreach (var session in EasySessionStatic.ChannelSessions)
             {
                 if (session.Value.Channel.Name == channelName)
                 {
@@ -188,9 +197,9 @@ namespace EasyCodeForVivox
 
         public void RemoveChannelSession(string channelName)
         {
-            if (EasySession.ChannelSessions.ContainsKey(channelName))
+            if (EasySessionStatic.ChannelSessions.ContainsKey(channelName))
             {
-                EasySession.ChannelSessions.Remove(channelName);
+                EasySessionStatic.ChannelSessions.Remove(channelName);
             }
         }
 
@@ -208,22 +217,22 @@ namespace EasyCodeForVivox
             switch (channelSession.Channel.Type)
             {
                 case ChannelType.NonPositional:
-                    accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySession.UniqueCounter, null,
-                        EasySIP.GetUserSIP(EasySession.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySession.Issuer, channelSession.Channel.Name,
-                        EasySession.Domain));
+                    accessToken = AccessToken.Token_f(EasySessionStatic.SecretKey, EasySessionStatic.Issuer,
+                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySessionStatic.UniqueCounter, null,
+                        EasySIP.GetUserSIP(EasySessionStatic.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySessionStatic.Issuer, channelSession.Channel.Name,
+                        EasySessionStatic.Domain));
                     break;
                 case ChannelType.Echo:
-                    accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySession.UniqueCounter, null,
-                        EasySIP.GetUserSIP(EasySession.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySession.Issuer, channelSession.Channel.Name,
-                        EasySession.Domain));
+                    accessToken = AccessToken.Token_f(EasySessionStatic.SecretKey, EasySessionStatic.Issuer,
+                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySessionStatic.UniqueCounter, null,
+                        EasySIP.GetUserSIP(EasySessionStatic.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySessionStatic.Issuer, channelSession.Channel.Name,
+                        EasySessionStatic.Domain));
                     break;
                 case ChannelType.Positional:
-                    accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySession.UniqueCounter, null,
-                        EasySIP.GetUserSIP(EasySession.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySession.Issuer, channelSession.Channel.Name,
-                        EasySession.Domain, channel3DProperties ?? new Channel3DProperties()));
+                    accessToken = AccessToken.Token_f(EasySessionStatic.SecretKey, EasySessionStatic.Issuer,
+                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySessionStatic.UniqueCounter, null,
+                        EasySIP.GetUserSIP(EasySessionStatic.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySessionStatic.Issuer, channelSession.Channel.Name,
+                        EasySessionStatic.Domain, channel3DProperties ?? new Channel3DProperties()));
                     break;
             }
             return accessToken;
@@ -240,22 +249,22 @@ namespace EasyCodeForVivox
             switch (channelSession.Channel.Type)
             {
                 case ChannelType.NonPositional:
-                    accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySession.UniqueCounter, null,
-                        EasySIP.GetUserSIP(EasySession.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySession.Issuer, channelSession.Channel.Name,
-                        EasySession.Domain, matchRegion, matchHash));
+                    accessToken = AccessToken.Token_f(EasySessionStatic.SecretKey, EasySessionStatic.Issuer,
+                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySessionStatic.UniqueCounter, null,
+                        EasySIP.GetUserSIP(EasySessionStatic.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySessionStatic.Issuer, channelSession.Channel.Name,
+                        EasySessionStatic.Domain, matchRegion, matchHash));
                     break;
                 case ChannelType.Echo:
-                    accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySession.UniqueCounter, null,
-                        EasySIP.GetUserSIP(EasySession.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySession.Issuer, channelSession.Channel.Name,
-                        EasySession.Domain, matchRegion, matchHash));
+                    accessToken = AccessToken.Token_f(EasySessionStatic.SecretKey, EasySessionStatic.Issuer,
+                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySessionStatic.UniqueCounter, null,
+                        EasySIP.GetUserSIP(EasySessionStatic.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySessionStatic.Issuer, channelSession.Channel.Name,
+                        EasySessionStatic.Domain, matchRegion, matchHash));
                     break;
                 case ChannelType.Positional:
-                    accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySession.UniqueCounter, null,
-                        EasySIP.GetUserSIP(EasySession.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySession.Issuer, channelSession.Channel.Name,
-                        EasySession.Domain, matchRegion, matchHash, channel3DProperties));
+                    accessToken = AccessToken.Token_f(EasySessionStatic.SecretKey, EasySessionStatic.Issuer,
+                        AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), vivoxAction, EasySessionStatic.UniqueCounter, null,
+                        EasySIP.GetUserSIP(EasySessionStatic.LoginSessions[userName]), EasySIP.GetChannelSIP(channelSession.Channel.Type, EasySessionStatic.Issuer, channelSession.Channel.Name,
+                        EasySessionStatic.Domain, matchRegion, matchHash, channel3DProperties));
                     break;
             }
             return accessToken;
@@ -277,20 +286,19 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.ChannelState)
                 {
                     case ConnectionState.Connecting:
-                        EasyEvents.OnChannelConnecting(senderIChannelSession);
+                        EasyEventsStatic.OnChannelConnecting(senderIChannelSession);
                         break;
                     case ConnectionState.Connected:
-                        EasyEvents.OnChannelConnected(senderIChannelSession);
+                        EasyEventsStatic.OnChannelConnected(senderIChannelSession);
                         break;
                     case ConnectionState.Disconnecting:
-                        EasyEvents.OnChannelDisconnecting(senderIChannelSession);
+                        EasyEventsStatic.OnChannelDisconnecting(senderIChannelSession);
                         break;
                     case ConnectionState.Disconnected:
-                        EasyEvents.OnChannelDisconnected(senderIChannelSession);
-                        Unsubscribe(senderIChannelSession);
+                        EasyEventsStatic.OnChannelDisconnected(senderIChannelSession);
                         break;
                 }
-                if (EasySession.UseDynamicEvents)
+                if (EasySessionStatic.UseDynamicEvents)
                 {
                     await HandleDynamicEventsAsync(channelArgs, senderIChannelSession);
                 }
@@ -303,16 +311,16 @@ namespace EasyCodeForVivox
             switch (channelSession.ChannelState)
             {
                 case ConnectionState.Connecting:
-                    await EasyEventsAsync.OnChannelConnectingAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnChannelConnectingAsync(channelSession);
                     break;
                 case ConnectionState.Connected:
-                    await EasyEventsAsync.OnChannelConnectedAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnChannelConnectedAsync(channelSession);
                     break;
                 case ConnectionState.Disconnecting:
-                    await EasyEventsAsync.OnChannelDisconnectingAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnChannelDisconnectingAsync(channelSession);
                     break;
                 case ConnectionState.Disconnected:
-                    await EasyEventsAsync.OnChannelDisconnectedAsync(channelSession);
+                    await EasyEventsAsyncStatic.OnChannelDisconnectedAsync(channelSession);
                     break;
             }
         }

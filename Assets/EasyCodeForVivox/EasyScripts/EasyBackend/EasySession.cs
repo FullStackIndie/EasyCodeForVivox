@@ -1,33 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public static class EasySession
+    public class EasySession
     {
-        public static Uri APIEndpoint { get; set; }
-        public static string Domain { get; set; }
-        public static string Issuer { get; set; }
-        public static string SecretKey { get; set; }
+        public VivoxUnity.Client Client { get; set; } = new Client();
 
-        public static VivoxUnity.Client Client { get; set; } = new Client();
+        public Dictionary<string, ILoginSession> LoginSessions = new Dictionary<string, ILoginSession>();
+        public Dictionary<string, IChannelSession> ChannelSessions = new Dictionary<string, IChannelSession>();
 
-        public static Dictionary<string, ILoginSession> LoginSessions = new Dictionary<string, ILoginSession>();
-        public static Dictionary<string, IChannelSession> ChannelSessions = new Dictionary<string, IChannelSession>();
+        public bool IsClientInitialized = false;
 
-        public static bool IsClientInitialized = false;
+        public bool UseDynamicEvents { get; set; }
 
-        public static bool UseDynamicEvents { get; set; }
-
-        private static int uniqueCounter = 1;
+        private int uniqueCounter = 1;
 
         // todo consider using epoch as unique counter in Vivox Access Token
-        public static int UniqueCounter
+        public int UniqueCounter
         {
             get { return uniqueCounter++; }
         }
-
     }
 }
-

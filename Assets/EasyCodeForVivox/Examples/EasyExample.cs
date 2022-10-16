@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VivoxUnity;
+using Zenject;
 
 public class EasyExample : EasyManager
 {
@@ -14,7 +15,7 @@ public class EasyExample : EasyManager
 
 
     [SerializeField] InputField userName;
-    [SerializeField] InputField remotePlayerName;
+    [SerializeField] InputField directMessageRemotePlayerName;
     [SerializeField] InputField channelName;
     [SerializeField] InputField message;
     [SerializeField] Toggle voiceToggle;
@@ -22,10 +23,19 @@ public class EasyExample : EasyManager
     [SerializeField] Slider selfSlider;
     [SerializeField] Slider remotePlayerSlider;
 
-    [SerializeField] Text newMessage;
+    //[SerializeField] Text newMessage;
+    [SerializeField] TextMeshProUGUI newMessage;
     [SerializeField] Image container;
     [SerializeField] Scrollbar scrollbar;
-    [SerializeField] TMP_Dropdown dropdown;
+    [SerializeField] TMP_Dropdown loginSessionsDropdown;
+    [SerializeField] TMP_Dropdown channelSessionsDropdown;
+    [SerializeField] TMP_Dropdown remotePlayerVolumeDropdown;
+    [SerializeField] TMP_Dropdown remotePlayerinChannelDropdown;
+    [SerializeField] TMP_Dropdown mutePlayerInChannelDropdown;
+    [SerializeField] TMP_Dropdown audioCaptureDevicesDropdown;
+    [SerializeField] TMP_Dropdown audioRenderDevicesDropdown;
+
+    private EasySettings _settings;
 
     private void OnApplicationQuit()
     {
@@ -37,20 +47,24 @@ public class EasyExample : EasyManager
         // todo Implement Unity Remote Config to store sensitive information in the cloud. It's free
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
         // inside of the Unity Editor because hackers can decompile there game and steal the secrets/keys
-        EasySession.APIEndpoint = new Uri(apiEndpoint);
-        EasySession.Domain = domain;
-        EasySession.Issuer = issuer;
-        EasySession.SecretKey = secretKey;
+        // Unity decompiler https://devxdevelopment.com/
+        EasySessionStatic.APIEndpoint = new Uri(apiEndpoint);
+        EasySessionStatic.Domain = domain;
+        EasySessionStatic.Issuer = issuer;
+        EasySessionStatic.SecretKey = secretKey;
     }
 
     async void Start()
     {
         VivoxConfig vivoxConfig = new VivoxConfig();
-        vivoxConfig.MaxLoginsPerUser = 201;
+        vivoxConfig.MaxLoginsPerUser = 3;
 
-        await InitializeClient(logAllDynamicMethods: true);
+        await InitializeClient(vivoxConfig);
 
         DontDestroyOnLoad(this);
+
+        LoadAudioDevices();
+
     }
 
     // Update is called once per frame
@@ -59,10 +73,20 @@ public class EasyExample : EasyManager
 
     }
 
-    [LoginEvent(LoginStatus.LoggedIn)]
-    public void DynamicEvent(ILoginSession loginSession, EasyPlayer easyPlayer)
+    [Inject]
+    public void GetSettings(EasySettings easySettings)
     {
-        Debug.Log($"PlayerName = {easyPlayer.PlayerName} : LoginName = {loginSession.LoginSessionId.Name}");
+        _settings = easySettings;
+    }
+
+
+
+
+    [LoginEvent(LoginStatus.LoggedIn)]
+    public void DynamicEventSync(ILoginSession loginSession, InputField inputField)
+    {
+        Debug.Log($"Input Filed Value {inputField.text}");
+        inputField.text = "Text has been changed Dynamically";
     }
 
     // Clears Text messages where event logs show up in demo scene
@@ -73,9 +97,21 @@ public class EasyExample : EasyManager
         scrollbar.value = 1;
     }
 
+    public void LoadAudioDevices()
+    {
+        foreach (var device in EasySessionStatic.Client.AudioInputDevices.AvailableDevices)
+        {
+            audioCaptureDevicesDropdown.AddValue(device.Name);
+        }
+        foreach (var device in EasySessionStatic.Client.AudioOutputDevices.AvailableDevices)
+        {
+            audioRenderDevicesDropdown.AddValue(device.Name);
+        }
+    }
+
     public void Login()
     {
-        LoginToVivox(userName.text);
+        LoginToVivox(userName.text, userName);
     }
 
     public void Logout()
@@ -86,6 +122,13 @@ public class EasyExample : EasyManager
     public void JoinChannel()
     {
         //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
+        JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
+    }
+
+    public void SwitchChannel()
+    {
+        //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
+        // figure ot how settransmission works
         JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
     }
 
@@ -101,10 +144,9 @@ public class EasyExample : EasyManager
 
     public void SendDirectMessageToPlayer()
     {
-        var selectedUser = dropdown.GetSelected();
-        if (selectedUser != null)
+        if (!string.IsNullOrEmpty(directMessageRemotePlayerName.text))
         {
-            SendDirectMessage(userName.text, selectedUser, message.text);
+            SendDirectMessage(userName.text, directMessageRemotePlayerName.text, message.text);
         }
         else
         {
@@ -139,7 +181,7 @@ public class EasyExample : EasyManager
 
     public void ToggleMuteRemotePlayer()
     {
-        var selectedUser = dropdown.GetSelected();
+        var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
             ToggleMuteRemoteUser(selectedUser, channelName.text);
@@ -167,7 +209,7 @@ public class EasyExample : EasyManager
 
     public void AdjustRemotePlayerVolume()
     {
-        var selectedUser = dropdown.GetSelected();
+        var selectedUser = remotePlayerVolumeDropdown.GetSelected();
         if (selectedUser != null)
         {
             AdjustRemoteUserVolume(selectedUser, channelName.text, Mathf.RoundToInt(remotePlayerSlider.value));
@@ -180,7 +222,6 @@ public class EasyExample : EasyManager
 
     public void InjectAudio()
     {
-        //InjectAudio(userName.text, "C://Users/johnm/Documents/Unity/Unity Projects/v_2019.4.28/EasyCodeForVivox/Assets/EasyCodeForVivox/Resources/Over_the_Horizon.wav");
         InjectAudio(userName.text, @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
     }
 
@@ -188,6 +229,18 @@ public class EasyExample : EasyManager
     {
         StopInjectedAudio(userName.text);
     }
+
+    public void SetAudioInputDevice()
+    {
+        SetAudioInputDevice(audioCaptureDevicesDropdown.GetSelected());
+        Debug.Log($"Selected {audioCaptureDevicesDropdown.GetSelected()}");
+    }
+
+    public void SetAudioOutputDevice()
+    {
+        SetAudioOutputDevice(audioRenderDevicesDropdown.GetSelected());
+    }
+
 
     public void EnablePushToTalk()
     {
@@ -219,17 +272,17 @@ public class EasyExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userName.text].LoginSessionId.Name);
+        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySessionStatic.LoginSessions[userName.text].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:Mute", dropdown.GetSelected());
+        SendEventMessage(channelName.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
     }
 
     public void SendUnmuteEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:Unmute", dropdown.GetSelected());
+        SendEventMessage(channelName.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
     }
 
 
@@ -257,7 +310,7 @@ public class EasyExample : EasyManager
 
     public void HandleMuteEvent(IChannelTextMessage textMessage, string userName)
     {
-        if (EasySession.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (EasySessionStatic.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             MuteLocalPlayer();
         }
@@ -265,7 +318,7 @@ public class EasyExample : EasyManager
 
     public void HandleUnmuteEvent(IChannelTextMessage textMessage, string userName)
     {
-        if (EasySession.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (EasySessionStatic.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             UnmuteLocalPlayer();
         }
@@ -295,12 +348,14 @@ public class EasyExample : EasyManager
     {
         base.OnLoggingIn(loginSession);
         newMessage.text += $"\nLogging In {loginSession.LoginSessionId.DisplayName}";
+
     }
 
     protected override void OnLoggedIn(ILoginSession loginSession)
     {
         base.OnLoggedIn(loginSession);
         newMessage.text += $"\nLogged In {loginSession.LoginSessionId.DisplayName}";
+        loginSessionsDropdown.AddValue(loginSession.LoginSessionId.Name);
     }
 
     protected override void OnLoggingOut(ILoginSession loginSession)
@@ -313,6 +368,7 @@ public class EasyExample : EasyManager
     {
         base.OnLoggedOut(loginSession);
         newMessage.text += $"\nLogged Out {loginSession.LoginSessionId.DisplayName}";
+        loginSessionsDropdown.RemoveValue(loginSession.LoginSessionId.Name);
     }
 
 
@@ -328,6 +384,7 @@ public class EasyExample : EasyManager
     {
         base.OnChannelConnected(channelSession);
         newMessage.text += $"\nChannel Connected in : {channelSession.Channel.Name}";
+        channelSessionsDropdown.AddValue(channelSession.Channel.Name);
     }
 
     protected override void OnChannelDisconnecting(IChannelSession channelSession)
@@ -340,6 +397,7 @@ public class EasyExample : EasyManager
     {
         base.OnChannelDisconnected(channelSession);
         newMessage.text += $"\nChannel Disconnected in : {channelSession.Channel.Name}";
+        channelSessionsDropdown.RemoveValue(channelSession.Channel.Name);
     }
 
 
@@ -428,7 +486,9 @@ public class EasyExample : EasyManager
         newMessage.text += $"\n {participant.Account.DisplayName} has joined the channel";
         if (!participant.IsSelf)
         {
-            dropdown.AddValue(participant.Account.DisplayName);
+            remotePlayerinChannelDropdown.AddValue(participant.Account.DisplayName);
+            mutePlayerInChannelDropdown.AddValue(participant.Account.DisplayName);
+            remotePlayerVolumeDropdown.AddValue(participant.Account.DisplayName);
         }
     }
 
@@ -438,7 +498,9 @@ public class EasyExample : EasyManager
         newMessage.text += $"\n {participant.Account.DisplayName} has left the channel";
         if (!participant.IsSelf)
         {
-            dropdown.RemoveValue(participant.Account.DisplayName);
+            remotePlayerinChannelDropdown.RemoveValue(participant.Account.DisplayName);
+            mutePlayerInChannelDropdown.RemoveValue(participant.Account.DisplayName);
+            remotePlayerVolumeDropdown.RemoveValue(participant.Account.DisplayName);
         }
     }
 

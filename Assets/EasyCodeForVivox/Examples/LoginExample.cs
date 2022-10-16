@@ -1,6 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
 using System;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 using VivoxUnity;
@@ -8,7 +7,7 @@ using Zenject;
 
 namespace EasyCodeForVivox
 {
-    public class Login : MonoBehaviour
+    public class LoginExample : MonoBehaviour
     {
 
         [SerializeField] InputField userName;
@@ -16,22 +15,24 @@ namespace EasyCodeForVivox
         private ILogin _login;
         private IMessages _messages;
         private ITextToSpeech _textToSpeech;
+        private EasySession _session;
 
         [Inject]
-        private void Initialize(ILogin login, IMessages messages, ITextToSpeech textToSpeech)
+        private void Initialize(ILogin login, IMessages messages, ITextToSpeech textToSpeech, EasySession session)
         {
             _login = login;
             _messages = messages;
             _textToSpeech = textToSpeech;
+            _session = session;
         }
 
         private void Start()
         {
-            EasyEvents.LoggingIn += OnLoggingIn;
-            EasyEvents.LoggedIn += OnLoggedIn;
-            EasyEvents.LoggedIn += OnLoggedInSetup;
-            EasyEvents.LoggingOut += OnLoggingOut;
-            EasyEvents.LoggedOut += OnLoggedOut;
+            EasyEventsStatic.LoggingIn += OnLoggingIn;
+            EasyEventsStatic.LoggedIn += OnLoggedIn;
+            EasyEventsStatic.LoggedIn += OnLoggedInSetup;
+            EasyEventsStatic.LoggingOut += OnLoggingOut;
+            EasyEventsStatic.LoggedOut += OnLoggedOut;
         }
 
 
@@ -39,18 +40,18 @@ namespace EasyCodeForVivox
         {
             try
             {
-                EasySession.LoginSessions.Add(userName.text, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName.text, EasySession.Domain)));
-                _messages.SubscribeToDirectMessages(EasySession.LoginSessions[userName.text]);
-                _textToSpeech.Subscribe(EasySession.LoginSessions[userName.text]);
+                EasySessionStatic.LoginSessions.Add(userName.text, EasySessionStatic.Client.GetLoginSession(new AccountId(EasySessionStatic.Issuer, userName.text, EasySessionStatic.Domain)));
+                _messages.SubscribeToDirectMessages(EasySessionStatic.LoginSessions[userName.text]);
+                _textToSpeech.Subscribe(EasySessionStatic.LoginSessions[userName.text]);
 
-                _login.LoginToVivox(EasySession.LoginSessions[userName.text], EasySession.APIEndpoint, userName.text);
+                _login.LoginToVivox(userName.text);
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
                 Debug.Log(e.StackTrace);
-                _messages.UnsubscribeFromDirectMessages(EasySession.LoginSessions[userName.text]);
-                _textToSpeech.Unsubscribe(EasySession.LoginSessions[userName.text]);
+                _messages.UnsubscribeFromDirectMessages(EasySessionStatic.LoginSessions[userName.text]);
+                _textToSpeech.Unsubscribe(EasySessionStatic.LoginSessions[userName.text]);
             }
         }
 

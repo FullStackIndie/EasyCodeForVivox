@@ -1,6 +1,7 @@
 ﻿using EasyCodeForVivox.Events;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
@@ -20,11 +21,15 @@ namespace EasyCodeForVivox
         private EasyMute _mute;
         private EasyTextToSpeech _textToSpeech;
         private EasyAudio _audio;
+        private EasySettings _settings;
+        private EasyEvents _events;
+        private EasySession _session;
 
 
         [Inject]
         public void Initialize(EasyLogin login, EasyChannel channel, EasyAudioChannel voiceChannel, EasyTextChannel textChannel,
-            EasyUsers users, EasyMessages messages, EasyAudio audioSettings, EasyMute mute, EasyTextToSpeech textToSpeech, EasyAudio audio)
+            EasyUsers users, EasyMessages messages, EasyAudio audioSettings, EasyMute mute, EasyTextToSpeech textToSpeech, EasyAudio audio,
+            EasySettings settings, EasyEvents events, EasySession session)
         {
             _login = login ?? throw new ArgumentNullException(nameof(login));
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
@@ -36,11 +41,13 @@ namespace EasyCodeForVivox
             _mute = mute ?? throw new ArgumentNullException(nameof(mute));
             _textToSpeech = textToSpeech ?? throw new ArgumentNullException(nameof(textToSpeech));
             _audio = audio ?? throw new ArgumentNullException(nameof(audio));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _events = events ?? throw new ArgumentNullException(nameof(events));
         }
 
 
         // guarantees to only Initialize client once
-        public async Task InitializeClient(VivoxConfig vivoxConfig = default, bool useDynamicEvents = true, bool logAssemblySearches = true, bool logAllDynamicMethods = false)
+        public async Task InitializeClient(VivoxConfig vivoxConfig = default)
         {
             // disable Debug.Log Statements in the build for better performance
 #if UNITY_EDITOR
@@ -49,28 +56,26 @@ namespace EasyCodeForVivox
              Debug.unityLogger.logEnabled = false;
 #endif
 
-            EasySession.UseDynamicEvents = useDynamicEvents;
-
-            if (EasySession.IsClientInitialized)
+            if (_session.IsClientInitialized)
             {
                 Debug.Log($"{nameof(EasyManager)} : Vivox Client is already initialized, skipping...".Color(EasyDebug.Yellow));
                 return;
             }
             else
             {
-                if (!EasySession.Client.Initialized)
+                if (!_session.Client.Initialized)
                 {
-                    EasySession.Client.Uninitialize();
-                    EasySession.Client.Initialize(vivoxConfig);
-                    EasySession.IsClientInitialized = true;
+                    _session.Client.Uninitialize();
+                    _session.Client.Initialize(vivoxConfig);
+                    _session.IsClientInitialized = true;
                     SubscribeToVivoxEvents();
                     Debug.Log($"Vivox Client Initialized".Color(EasyDebug.Green));
-                    if (useDynamicEvents)
+                    if (_settings.UseDynamicEvents)
                     {
                         // may seem redundant to use Task.Run because multiple Tasks are created in RuntimeEvents.RegisterEvents()
                         // but I tested running RuntimeEvents.RegisterEvents() without using Task.Run and it was way slower
                         // difference was approximately .900 milliseconds vs .090 milliseconds(results will vary based on how many assemblies are in your project)
-                        await Task.Run(async () => { await RuntimeEvents.RegisterEvents(logAssemblySearches, logAllDynamicMethods); });
+                        await Task.Run(async () => { await DynamicEvents.RegisterEvents(_settings.LogAssemblySearches, _settings.LogAllDynamicMethods); });
                     }
                 }
             }
@@ -80,101 +85,117 @@ namespace EasyCodeForVivox
         public void UnitializeClient()
         {
             UnsubscribeToVivoxEvents();
-            EasySession.Client.Uninitialize();
+            _session.Client.Uninitialize();
         }
 
 
         public void SubscribeToVivoxEvents()
         {
-            EasyEvents.LoggingIn += OnLoggingIn;
-            EasyEvents.LoggedIn += OnLoggedIn;
-            EasyEvents.LoggedIn += OnLoggedInSetup;
-            EasyEvents.LoggingOut += OnLoggingOut;
-            EasyEvents.LoggedOut += OnLoggedOut;
+            _session.Client.AudioInputDevices.AvailableDevices.AfterKeyAdded += _audio.OnAudioInputDeviceAdded;
+            _session.Client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved += _audio.OnAudioInputDeviceRemoved;
+            _session.Client.AudioInputDevices.AvailableDevices.AfterValueUpdated += _audio.OnAudioInputDeviceUpdated;
 
-            EasyEvents.ChannelConnecting += OnChannelConnecting;
-            EasyEvents.ChannelConnected += OnChannelConnected;
-            EasyEvents.ChannelDisconnecting += OnChannelDisconnecting;
-            EasyEvents.ChannelDisconnected += OnChannelDisconnected;
+            _session.Client.AudioOutputDevices.AvailableDevices.AfterKeyAdded += _audio.OnAudioOutputDeviceAdded;
+            _session.Client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved += _audio.OnAudioOutputDeviceRemoved;
+            _session.Client.AudioOutputDevices.AvailableDevices.AfterValueUpdated += _audio.OnAudioOutputDeviceUpdated;
 
-            EasyEvents.AudioChannelConnecting += OnVoiceConnecting;
-            EasyEvents.AudioChannelConnected += OnVoiceConnected;
-            EasyEvents.AudioChannelDisconnecting += OnVoiceDisconnecting;
-            EasyEvents.AudioChannelDisconnected += OnVoiceDisconnected;
+            _events.LoggingIn += OnLoggingIn;
+            _events.LoggedIn += OnLoggedIn;
+            _events.LoggedIn += OnLoggedInSetup;
+            _events.LoggingOut += OnLoggingOut;
+            _events.LoggedOut += OnLoggedOut;
 
-            EasyEvents.TextChannelConnecting += OnTextChannelConnecting;
-            EasyEvents.TextChannelConnected += OnTextChannelConnected;
-            EasyEvents.TextChannelDisconnecting += OnTextChannelDisconnecting;
-            EasyEvents.TextChannelDisconnected += OnTextChannelDisconnected;
+            _events.ChannelConnecting += OnChannelConnecting;
+            _events.ChannelConnected += OnChannelConnected;
+            _events.ChannelDisconnecting += OnChannelDisconnecting;
+            _events.ChannelDisconnected += OnChannelDisconnected;
 
-            EasyEvents.ChannelMessageRecieved += OnChannelMessageRecieved;
-            EasyEvents.EventMessageRecieved += OnEventMessageRecieved;
+            _events.AudioChannelConnecting += OnVoiceConnecting;
+            _events.AudioChannelConnected += OnVoiceConnected;
+            _events.AudioChannelDisconnecting += OnVoiceDisconnecting;
+            _events.AudioChannelDisconnected += OnVoiceDisconnected;
 
-            EasyEvents.DirectMessageRecieved += OnDirectMessageRecieved;
-            EasyEvents.DirectMessageFailed += OnDirectMessageFailed;
+            _events.TextChannelConnecting += OnTextChannelConnecting;
+            _events.TextChannelConnected += OnTextChannelConnected;
+            _events.TextChannelDisconnecting += OnTextChannelDisconnecting;
+            _events.TextChannelDisconnected += OnTextChannelDisconnected;
 
-            EasyEvents.LocalUserMuted += OnLocalUserMuted;
-            EasyEvents.LocalUserUnmuted += OnLocalUserUnmuted;
+            _events.ChannelMessageRecieved += OnChannelMessageRecieved;
+            _events.EventMessageRecieved += OnEventMessageRecieved;
 
-            EasyEvents.UserJoinedChannel += OnUserJoinedChannel;
-            EasyEvents.UserLeftChannel += OnUserLeftChannel;
-            EasyEvents.UserValuesUpdated += OnUserValuesUpdated;
+            _events.DirectMessageRecieved += OnDirectMessageRecieved;
+            _events.DirectMessageFailed += OnDirectMessageFailed;
 
-            EasyEvents.UserMuted += OnUserMuted;
-            EasyEvents.UserUnmuted += OnUserUnmuted;
-            EasyEvents.UserSpeaking += OnUserSpeaking;
-            EasyEvents.UserNotSpeaking += OnUserNotSpeaking;
+            _events.LocalUserMuted += OnLocalUserMuted;
+            _events.LocalUserUnmuted += OnLocalUserUnmuted;
 
-            EasyEvents.TTSMessageAdded += OnTTSMessageAdded;
-            EasyEvents.TTSMessageRemoved += OnTTSMessageRemoved;
-            EasyEvents.TTSMessageUpdated += OnTTSMessageUpdated;
+            _events.UserJoinedChannel += OnUserJoinedChannel;
+            _events.UserLeftChannel += OnUserLeftChannel;
+            _events.UserValuesUpdated += OnUserValuesUpdated;
+
+            _events.UserMuted += OnUserMuted;
+            _events.UserUnmuted += OnUserUnmuted;
+            _events.UserSpeaking += OnUserSpeaking;
+            _events.UserNotSpeaking += OnUserNotSpeaking;
+
+            _events.TTSMessageAdded += OnTTSMessageAdded;
+            _events.TTSMessageRemoved += OnTTSMessageRemoved;
+            _events.TTSMessageUpdated += OnTTSMessageUpdated;
 
         }
 
         public void UnsubscribeToVivoxEvents()
         {
-            EasyEvents.LoggingIn -= OnLoggingIn;
-            EasyEvents.LoggedIn -= OnLoggedIn;
-            EasyEvents.LoggedIn -= OnLoggedInSetup;
-            EasyEvents.LoggingOut -= OnLoggingOut;
-            EasyEvents.LoggedOut -= OnLoggedOut;
+            _session.Client.AudioInputDevices.AvailableDevices.AfterKeyAdded -= _audio.OnAudioInputDeviceAdded;
+            _session.Client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved -= _audio.OnAudioInputDeviceRemoved;
+            _session.Client.AudioInputDevices.AvailableDevices.AfterValueUpdated -= _audio.OnAudioInputDeviceUpdated;
 
-            EasyEvents.ChannelConnecting -= OnChannelConnecting;
-            EasyEvents.ChannelConnected -= OnChannelConnected;
-            EasyEvents.ChannelDisconnecting -= OnChannelDisconnecting;
-            EasyEvents.ChannelDisconnected -= OnChannelDisconnected;
+            _session.Client.AudioOutputDevices.AvailableDevices.AfterKeyAdded -= _audio.OnAudioOutputDeviceAdded;
+            _session.Client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved -= _audio.OnAudioOutputDeviceRemoved;
+            _session.Client.AudioOutputDevices.AvailableDevices.AfterValueUpdated -= _audio.OnAudioOutputDeviceUpdated;
 
-            EasyEvents.AudioChannelConnecting -= OnVoiceConnecting;
-            EasyEvents.AudioChannelConnected -= OnVoiceConnected;
-            EasyEvents.AudioChannelDisconnecting -= OnVoiceDisconnecting;
-            EasyEvents.AudioChannelDisconnected -= OnVoiceDisconnected;
+            _events.LoggingIn -= OnLoggingIn;
+            _events.LoggedIn -= OnLoggedIn;
+            _events.LoggedIn -= OnLoggedInSetup;
+            _events.LoggingOut -= OnLoggingOut;
+            _events.LoggedOut -= OnLoggedOut;
 
-            EasyEvents.TextChannelConnecting -= OnTextChannelConnecting;
-            EasyEvents.TextChannelConnected -= OnTextChannelConnected;
-            EasyEvents.TextChannelDisconnecting -= OnTextChannelDisconnecting;
-            EasyEvents.TextChannelDisconnected -= OnTextChannelDisconnected;
+            _events.ChannelConnecting -= OnChannelConnecting;
+            _events.ChannelConnected -= OnChannelConnected;
+            _events.ChannelDisconnecting -= OnChannelDisconnecting;
+            _events.ChannelDisconnected -= OnChannelDisconnected;
 
-            EasyEvents.ChannelMessageRecieved -= OnChannelMessageRecieved;
-            EasyEvents.EventMessageRecieved -= OnEventMessageRecieved;
+            _events.AudioChannelConnecting -= OnVoiceConnecting;
+            _events.AudioChannelConnected -= OnVoiceConnected;
+            _events.AudioChannelDisconnecting -= OnVoiceDisconnecting;
+            _events.AudioChannelDisconnected -= OnVoiceDisconnected;
 
-            EasyEvents.DirectMessageRecieved -= OnDirectMessageRecieved;
-            EasyEvents.DirectMessageFailed -= OnDirectMessageFailed;
+            _events.TextChannelConnecting -= OnTextChannelConnecting;
+            _events.TextChannelConnected -= OnTextChannelConnected;
+            _events.TextChannelDisconnecting -= OnTextChannelDisconnecting;
+            _events.TextChannelDisconnected -= OnTextChannelDisconnected;
 
-            EasyEvents.LocalUserMuted -= OnLocalUserMuted;
-            EasyEvents.LocalUserUnmuted -= OnLocalUserUnmuted;
+            _events.ChannelMessageRecieved -= OnChannelMessageRecieved;
+            _events.EventMessageRecieved -= OnEventMessageRecieved;
 
-            EasyEvents.UserJoinedChannel -= OnUserJoinedChannel;
-            EasyEvents.UserLeftChannel -= OnUserLeftChannel;
-            EasyEvents.UserValuesUpdated -= OnUserValuesUpdated;
+            _events.DirectMessageRecieved -= OnDirectMessageRecieved;
+            _events.DirectMessageFailed -= OnDirectMessageFailed;
 
-            EasyEvents.UserMuted -= OnUserMuted;
-            EasyEvents.UserUnmuted -= OnUserUnmuted;
-            EasyEvents.UserSpeaking -= OnUserSpeaking;
-            EasyEvents.UserNotSpeaking -= OnUserNotSpeaking;
+            _events.LocalUserMuted -= OnLocalUserMuted;
+            _events.LocalUserUnmuted -= OnLocalUserUnmuted;
 
-            EasyEvents.TTSMessageAdded -= OnTTSMessageAdded;
-            EasyEvents.TTSMessageRemoved -= OnTTSMessageRemoved;
-            EasyEvents.TTSMessageUpdated -= OnTTSMessageUpdated;
+            _events.UserJoinedChannel -= OnUserJoinedChannel;
+            _events.UserLeftChannel -= OnUserLeftChannel;
+            _events.UserValuesUpdated -= OnUserValuesUpdated;
+
+            _events.UserMuted -= OnUserMuted;
+            _events.UserUnmuted -= OnUserUnmuted;
+            _events.UserSpeaking -= OnUserSpeaking;
+            _events.UserNotSpeaking -= OnUserNotSpeaking;
+
+            _events.TTSMessageAdded -= OnTTSMessageAdded;
+            _events.TTSMessageRemoved -= OnTTSMessageRemoved;
+            _events.TTSMessageUpdated -= OnTTSMessageUpdated;
 
         }
 
@@ -186,45 +207,50 @@ namespace EasyCodeForVivox
 
 
 
-        public void LoginToVivox(string userName, bool joinMuted = false)
+        protected void LoginToVivox(string userName, bool joinMuted = false)
         {
             _login.LoginToVivox(userName, joinMuted);
         }
 
+        protected void LoginToVivox<T>(string userName, T eventParameter, bool joinMuted = false)
+        {
+            _login.LoginToVivox(userName, eventParameter, joinMuted);
+        }
 
-        public void LogoutOfVivox(string userName)
+
+        protected void LogoutOfVivox(string userName)
         {
             _login.Logout(userName);
         }
 
-        public void JoinChannel(string userName, string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
+        protected void JoinChannel(string userName, string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
             bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
             _channel.JoinChannel(userName, channelName, includeVoice, includeText, switchTransmissionToThisChannel, channelType, joinMuted, channel3DProperties);
         }
 
-        public void LeaveChannel(string channelName, string userName)
+        protected void LeaveChannel(string channelName, string userName)
         {
             _channel.LeaveChannel(channelName, userName);
         }
 
-        public void SetVoiceActiveInChannel(string userName, string channelName, bool connect)
+        protected void SetVoiceActiveInChannel(string userName, string channelName, bool connect)
         {
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null reference because channel name exists but channelsession doesnt exist
-            IChannelSession channelSession = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(_channel.GetChannelSIP(channelName)));
+            IChannelSession channelSession = _session.LoginSessions[userName].GetChannelSession(new ChannelId(_channel.GetChannelSIP(channelName)));
             _voiceChannel.ToggleAudioChannelActive(channelSession, connect);
         }
 
-        public void SetTextActiveInChannel(string userName, string channelName, bool connect)
+        protected void SetTextActiveInChannel(string userName, string channelName, bool connect)
         {
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null reference because channel name exists but channelsession doesnt exist
-            IChannelSession channelSession = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(_channel.GetChannelSIP(channelName)));
+            IChannelSession channelSession = _session.LoginSessions[userName].GetChannelSession(new ChannelId(_channel.GetChannelSIP(channelName)));
             _textChannel.ToggleTextChannelActive(channelSession, connect);
         }
 
-        public void SendChannelMessage(string userName, string channelName, string msg, string title = "", string body = "")
+        protected void SendChannelMessage(string userName, string channelName, string msg, string title = "", string body = "")
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(body))
             {
@@ -238,39 +264,39 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void SendEventMessage(string userName, string channelName, string msg, string title = "", string body = "")
+        protected void SendEventMessage(string userName, string channelName, string msg, string title = "", string body = "")
         {
             _messages.SendChannelMessage(_channel.GetExistingChannelSession(userName, channelName),
                 msg, title, body);
         }
 
-        public void SendDirectMessage(string userName, string userToMsg, string msg, string title = "", string body = "")
+        protected void SendDirectMessage(string userName, string userToMsg, string msg, string title = "", string body = "")
         {
             // todo check if user is blocked and alert front end users
             // not supporting presence so not neccessary - leaving todo in case things change
-            _messages.SendDirectMessage(EasySession.LoginSessions[userName], userToMsg, msg, title, body);
+            _messages.SendDirectMessage(_session.LoginSessions[userName], userToMsg, msg, title, body);
         }
 
-        public void MuteSelf()
+        protected void MuteSelf()
         {
-            _mute.LocalMuteSelf(EasySession.Client);
+            _mute.LocalMuteSelf(_session.Client);
         }
 
-        public void UnmuteSelf()
+        protected void UnmuteSelf()
         {
-            _mute.LocalUnmuteSelf(EasySession.Client);
+            _mute.LocalUnmuteSelf(_session.Client);
         }
 
-        public void ToggleMuteRemoteUser(string userName, string channelName)
+        protected void ToggleMuteRemoteUser(string userName, string channelName)
         {
             _mute.LocalToggleMuteRemoteUser(userName, _channel.GetExistingChannelSession(userName, channelName));
         }
 
-        public void MuteAllPlayers(string channelName)
+        protected void MuteAllPlayers(string channelName)
         {
-            if (EasySession.ChannelSessions.ContainsKey(channelName))
+            if (_session.ChannelSessions.ContainsKey(channelName))
             {
-                _mute.MuteAllUsers(EasySession.ChannelSessions[channelName]);
+                _mute.MuteAllUsers(_session.ChannelSessions[channelName]);
             }
             else
             {
@@ -278,11 +304,11 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void UnmuteAllPlayers(string channelName)
+        protected void UnmuteAllPlayers(string channelName)
         {
-            if (EasySession.ChannelSessions.ContainsKey(channelName))
+            if (_session.ChannelSessions.ContainsKey(channelName))
             {
-                _mute.UnmuteAllUsers(EasySession.ChannelSessions[channelName]);
+                _mute.UnmuteAllUsers(_session.ChannelSessions[channelName]);
             }
             else
             {
@@ -291,39 +317,60 @@ namespace EasyCodeForVivox
         }
 
 
-        public void AdjustLocalUserVolume(int volume)
+        protected void AdjustLocalUserVolume(int volume)
         {
-            _audioSettings.AdjustLocalPlayerAudioVolume(volume, EasySession.Client);
+            _audioSettings.AdjustLocalPlayerAudioVolume(volume, _session.Client);
         }
 
-        public void AdjustRemoteUserVolume(string userName, string channelName, float volume)
+        protected void AdjustRemoteUserVolume(string userName, string channelName, float volume)
         {
             IChannelSession channelSession = _channel.GetExistingChannelSession(userName, channelName);
             _audioSettings.AdjustRemotePlayerAudioVolume(userName, channelSession, volume);
         }
 
-        public void InjectAudio(string username, string audioPath)
+        protected void InjectAudio(string username, string audioPath)
         {
-            _audio.StartAudioInjection(audioPath, EasySession.LoginSessions[username]);
+            _audio.StartAudioInjection(audioPath, _session.LoginSessions[username]);
         }
-        
-        public void StopInjectedAudio(string username)
+
+        protected void StopInjectedAudio(string username)
         {
-            _audio.StopAudioInjection(EasySession.LoginSessions[username]);
+            _audio.StopAudioInjection(_session.LoginSessions[username]);
+        }
+
+        protected void SetAudioInputDevice(string deviceName)
+        {
+            var audioDevice = _session.Client.AudioInputDevices.AvailableDevices.Where(d => d.Name.Contains(deviceName)).FirstOrDefault();
+            if (audioDevice != null)
+            {
+                Debug.Log("Setting New Audio Device");
+                _audio.SetAudioDeviceInput(audioDevice, _session.Client);
+                return;
+            }
+            Debug.Log("Could not find Audio device");
+        }
+
+        protected void SetAudioOutputDevice(string deviceName)
+        {
+            var audioDevice = _session.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Name.Contains(deviceName)).FirstOrDefault();
+            if (audioDevice != null)
+            {
+                _audio.SetAudioDeviceOutput(audioDevice, _session.Client);
+            }
         }
 
 
-        public void SpeakTTS(string msg, string userName)
+        protected void SpeakTTS(string msg, string userName)
         {
-            _textToSpeech.TTSSpeak(msg, TTSDestination.QueuedLocalPlayback, EasySession.LoginSessions[userName]);
+            _textToSpeech.TTSSpeak(msg, TTSDestination.QueuedLocalPlayback, _session.LoginSessions[userName]);
         }
 
-        public void SpeakTTS(string msg, string userName, TTSDestination playMode)
+        protected void SpeakTTS(string msg, string userName, TTSDestination playMode)
         {
-            _textToSpeech.TTSSpeak(msg, playMode, EasySession.LoginSessions[userName]);
+            _textToSpeech.TTSSpeak(msg, playMode, _session.LoginSessions[userName]);
         }
 
-        public void ChooseVoiceGender(VoiceGender voiceGender, ILoginSession loginSession)
+        protected void ChooseVoiceGender(VoiceGender voiceGender, ILoginSession loginSession)
         {
             switch (voiceGender)
             {
@@ -338,7 +385,7 @@ namespace EasyCodeForVivox
         }
 
 
-        public void PushToTalk(bool enable, KeyCode keyCode)
+        protected void PushToTalk(bool enable, KeyCode keyCode)
         {
             if (enable)
             {
