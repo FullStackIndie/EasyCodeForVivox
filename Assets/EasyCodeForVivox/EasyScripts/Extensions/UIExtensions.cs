@@ -1,9 +1,9 @@
 ﻿using TMPro;
+using UnityEngine.UI;
 
-
-namespace EasyCodeForVivox
+namespace EasyCodeForVivox.Extensions
 {
-    public static class EasyExtensions
+    public static class UIExtensions
     {
         public static string GetSelected(this TMP_Dropdown dropdown)
         {
@@ -32,6 +32,19 @@ namespace EasyCodeForVivox
                 dropdown.RefreshShownValue();
             }
         }
+
+
+        public static void TurnOn(this Toggle toggle)
+        {
+            toggle.isOn = true;
+        }
+
+        public static void TurnOff(this Toggle toggle)
+        {
+            toggle.isOn = false;
+        }
+
+
 
     }
 }

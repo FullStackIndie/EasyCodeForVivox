@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox;
+using EasyCodeForVivox.Extensions;
 using System;
 using TMPro;
 using UnityEngine;
@@ -103,25 +104,25 @@ public class EasyExample : EasyManager
 
     public void Login()
     {
-        LoginToVivox(userName.text, userName);
+        LoginToVivox(userName.text);
     }
 
     public void Logout()
     {
-        LogoutOfVivox(userName.text);
+        LogoutOfVivox(loginSessionsDropdown.GetSelected());
     }
 
     public void JoinChannel()
     {
         //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
-        JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
+        JoinChannel(loginSessionsDropdown.GetSelected(), channelName.text, true, true, true, ChannelType.NonPositional);
     }
 
     public void SwitchChannel()
     {
         //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
         // figure ot how settransmission works
-        JoinChannel(userName.text, channelName.text, true, true, true, ChannelType.NonPositional);
+        JoinChannel(loginSessionsDropdown.GetSelected(), channelName.text, true, true, true, ChannelType.NonPositional);
     }
 
     public void SendMessage()
@@ -131,14 +132,14 @@ public class EasyExample : EasyManager
             Debug.Log("Channel name or message is empty");
             return;
         }
-        SendChannelMessage(userName.text, channelName.text, message.text);
+        SendChannelMessage(loginSessionsDropdown.GetSelected(), channelName.text, message.text);
     }
 
     public void SendDirectMessageToPlayer()
     {
         if (!string.IsNullOrEmpty(directMessageRemotePlayerName.text))
         {
-            SendDirectMessage(userName.text, directMessageRemotePlayerName.text, message.text);
+            SendDirectMessage(loginSessionsDropdown.GetSelected(), directMessageRemotePlayerName.text, message.text);
         }
         else
         {
@@ -148,17 +149,17 @@ public class EasyExample : EasyManager
 
     public void LeaveChannel()
     {
-        LeaveChannel(channelName.text, userName.text);
+        LeaveChannel(channelName.text, loginSessionsDropdown.GetSelected());
     }
 
     public void ToggleAudioInChannel()
     {
-        SetVoiceActiveInChannel(userName.text, channelName.text, voiceToggle.isOn);
+        SetVoiceActiveInChannel(loginSessionsDropdown.GetSelected(), channelName.text, voiceToggle.isOn);
     }
 
     public void ToggleTextInChannel()
     {
-        SetTextActiveInChannel(userName.text, channelName.text, textToggle.isOn);
+        SetTextActiveInChannel(loginSessionsDropdown.GetSelected(), channelName.text, textToggle.isOn);
     }
 
     public void MuteLocalPlayer()
@@ -214,22 +215,27 @@ public class EasyExample : EasyManager
 
     public void CrossMute()
     {
-        CrossMuteUser(userName.text, channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), true);
+        CrossMuteUser(loginSessionsDropdown.GetSelected(), channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), true);
     }
 
     public void CrossUnmute()
     {
-        CrossMuteUser(userName.text, channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), false);
+        CrossMuteUser(loginSessionsDropdown.GetSelected(), channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), false);
+    }
+    
+    public void ClearCrossUnmute()
+    {
+        ClearCrossMutedUsersForLoginSession(loginSessionsDropdown.GetSelected());
     }
 
     public void InjectAudio()
     {
-        InjectAudio(userName.text, @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
+        InjectAudio(loginSessionsDropdown.GetSelected(), @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
     }
 
     public void StopInjectedAudio()
     {
-        StopInjectedAudio(userName.text);
+        StopInjectedAudio(loginSessionsDropdown.GetSelected());
     }
 
     public void SetAudioInputDevice()

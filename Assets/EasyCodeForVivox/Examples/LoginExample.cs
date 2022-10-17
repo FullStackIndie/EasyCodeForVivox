@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Utilities;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -91,7 +92,7 @@ namespace EasyCodeForVivox
 
         private void OnLoggedInSetup(ILoginSession loginSession)
         {
-            EasyVivoxHelpers.RequestAndroidMicPermission();
+            EasyVivoxUtilities.RequestAndroidMicPermission();
             ChooseVoiceGender(VoiceGender.female, loginSession);
         }
 

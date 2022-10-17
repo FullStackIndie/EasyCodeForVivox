@@ -1,6 +1,8 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Utilities;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -335,6 +337,16 @@ namespace EasyCodeForVivox
         {
             _mute.CrossMuteUser(userName, channelName, userToMute, mute);
         }
+        
+        protected void CrossMuteUsers(string userName, string channelName, List<string> usersToMute, bool mute)
+        {
+            _mute.CrossMuteUsers(userName, channelName, usersToMute, mute);
+        }
+
+        protected void ClearCrossMutedUsersForLoginSession(string loggedInUserName)
+        {
+            _mute.ClearAllCurrentCrossMutedAccounts(loggedInUserName);
+        }
 
         protected void InjectAudio(string username, string audioPath)
         {
@@ -460,8 +472,8 @@ namespace EasyCodeForVivox
 
         private void OnLoggedInSetup(ILoginSession loginSession)
         {
-            EasyVivoxHelpers.RequestAndroidMicPermission();
-            EasyVivoxHelpers.RequestIOSMicrophoneAccess();
+            EasyVivoxUtilities.RequestAndroidMicPermission();
+            EasyVivoxUtilities.RequestIOSMicrophoneAccess();
             ChooseVoiceGender(VoiceGender.female, loginSession);
         }
 

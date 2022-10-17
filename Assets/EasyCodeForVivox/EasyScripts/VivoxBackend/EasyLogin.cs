@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Utilities;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace EasyCodeForVivox
         {
             try
             {
-                if (!EasyVivoxHelpers.FilterChannelAndUserName(userName)) { return; }
+                if (!EasyVivoxUtilities.FilterChannelAndUserName(userName)) { return; }
 
                 _session.LoginSessions.Add(userName, _session.Client.GetLoginSession(new AccountId(_session.Issuer, userName, _session.Domain)));
                 _messages.SubscribeToDirectMessages(_session.LoginSessions[userName]);
@@ -70,7 +71,7 @@ namespace EasyCodeForVivox
         {
             try
             {
-                if (!EasyVivoxHelpers.FilterChannelAndUserName(userName)) { return; }
+                if (!EasyVivoxUtilities.FilterChannelAndUserName(userName)) { return; }
 
                 _session.LoginSessions.Add(userName, _session.Client.GetLoginSession(new AccountId(_session.Issuer, userName, _session.Domain)));
                 _messages.SubscribeToDirectMessages(_session.LoginSessions[userName]);

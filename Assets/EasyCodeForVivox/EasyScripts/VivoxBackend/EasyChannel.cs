@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Utilities;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace EasyCodeForVivox
         public void JoinChannel(string userName, string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
     bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
-            if (!EasyVivoxHelpers.FilterChannelAndUserName(channelName)) { return; }
+            if (!EasyVivoxUtilities.FilterChannelAndUserName(channelName)) { return; }
             IChannelSession channelSession = CreateNewChannel(userName, channelName, channelType, channel3DProperties);
 
             try
@@ -75,7 +76,7 @@ namespace EasyCodeForVivox
         public void JoinChannel<T>(string userName, string channelName, T eventParameter, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
     bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
-            if (!EasyVivoxHelpers.FilterChannelAndUserName(channelName)) { return; }
+            if (!EasyVivoxUtilities.FilterChannelAndUserName(channelName)) { return; }
             IChannelSession channelSession = CreateNewChannel(userName, channelName, channelType, channel3DProperties);
 
             try
