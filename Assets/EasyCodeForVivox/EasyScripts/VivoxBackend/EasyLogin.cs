@@ -110,6 +110,7 @@ namespace EasyCodeForVivox
                 finally
                 {
                     _session.Client.AudioInputDevices.Muted = joinMuted;
+                    loginSession.SetTransmissionMode(TransmissionMode.All);
                 }
             });
         }
@@ -135,6 +136,7 @@ namespace EasyCodeForVivox
                 finally
                 {
                     _session.Client.AudioInputDevices.Muted = joinMuted;
+                    loginSession.SetTransmissionMode(TransmissionMode.All);
                     await HandleDynamicEventsAsync(loginSession, value);
                 }
             });

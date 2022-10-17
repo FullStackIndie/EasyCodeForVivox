@@ -3,6 +3,7 @@ using EasyCodeForVivox.Extensions;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VivoxUnity;
 using Zenject;
@@ -36,6 +37,7 @@ public class EasyExample : EasyManager
     [SerializeField] TMP_Dropdown audioRenderDevicesDropdown;
 
     private EasySession _session;
+    private PanelSwitcher panelSwitcher;
 
     [Inject]
     public void Initialize(EasySession easySession)
@@ -59,6 +61,7 @@ public class EasyExample : EasyManager
         _session.Domain = domain;
         _session.Issuer = issuer;
         _session.SecretKey = secretKey;
+        panelSwitcher = FindObjectOfType<PanelSwitcher>();
     }
 
     async void Start()
@@ -100,6 +103,16 @@ public class EasyExample : EasyManager
         {
             audioRenderDevicesDropdown.AddValue(device.Name);
         }
+    }
+
+    public void JoinGame()
+    {
+        if(_session.LoginSessions.Count == 0 || _session.ChannelSessions.Count == 0)
+        {
+            Debug.Log("Login or Join Channel before joining the game".Color(EasyDebug.Yellow));
+            return;
+        }
+        SceneManager.LoadScene("3D Demo Scene");
     }
 
     public void Login()
@@ -359,6 +372,7 @@ public class EasyExample : EasyManager
         base.OnLoggedIn(loginSession);
         newMessage.text += $"\nLogged In {loginSession.LoginSessionId.DisplayName}";
         loginSessionsDropdown.AddValue(loginSession.LoginSessionId.Name);
+        panelSwitcher.EnablePanel("Channel");
     }
 
     protected override void OnLoggingOut(ILoginSession loginSession)
@@ -438,6 +452,7 @@ public class EasyExample : EasyManager
     {
         base.OnTextChannelConnected(channelSession);
         newMessage.text += $"\nText Connected in Channel : {channelSession.Channel.Name}";
+        panelSwitcher.EnablePanel("Message");
     }
 
     protected override void OnTextChannelConnecting(IChannelSession channelSession)
@@ -505,6 +520,7 @@ public class EasyExample : EasyManager
             mutePlayerInChannelDropdown.AddValue(participant.Account.DisplayName);
             remotePlayerVolumeDropdown.AddValue(participant.Account.DisplayName);
         }
+        
     }
 
     protected override void OnUserLeftChannel(IParticipant participant)
