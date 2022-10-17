@@ -9,6 +9,14 @@ namespace EasyCodeForVivox
 {
     public class EasyTextChannel : ITextChannel
     {
+        private readonly EasyEvents _events;
+        private readonly EasyEventsAsync _eventsAsync;
+
+        public EasyTextChannel(EasyEventsAsync eventsAsync, EasyEvents events)
+        {
+            _eventsAsync = eventsAsync;
+            _events = events;
+        }
 
         public void Subscribe(IChannelSession channelSession)
         {
@@ -50,6 +58,35 @@ namespace EasyCodeForVivox
             });
         }
 
+        public void ToggleTextChannelActive<T>(IChannelSession channelSession, bool join, T eventParameter)
+        {
+            if (join)
+            {
+                Subscribe(channelSession);
+            }
+            else
+            {
+                Unsubscribe(channelSession);
+            }
+
+            channelSession.BeginSetTextConnected(join, async ar =>
+            {
+                try
+                {
+                    channelSession.EndSetTextConnected(ar);
+                }
+                catch (Exception e)
+                {
+                    Unsubscribe(channelSession);
+                    Debug.Log(e.Message);
+                }
+                finally
+                {
+                    await HandleDynamicAsyncEvents(channelSession, eventParameter);
+                }
+            });
+        }
+
 
         #endregion
 
@@ -67,25 +104,22 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.TextState)
                 {
                     case ConnectionState.Connecting:
-                        EasyEventsStatic.OnTextChannelConnecting(senderIChannelSession);
+                        _events.OnTextChannelConnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Connected:
-                        EasyEventsStatic.OnTextChannelConnected(senderIChannelSession);
+                        _events.OnTextChannelConnected(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnecting:
-                        EasyEventsStatic.OnTextChannelDisconnecting(senderIChannelSession);
+                        _events.OnTextChannelDisconnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnected:
-                        EasyEventsStatic.OnTextChannelDisconnected(senderIChannelSession);
+                        _events.OnTextChannelDisconnected(senderIChannelSession);
                         break;
                 }
-                if (EasySessionStatic.UseDynamicEvents)
-                {
                     await HandleDynamicAsyncEvents(propArgs, senderIChannelSession);
-                }
             }
         }
 
@@ -95,19 +129,46 @@ namespace EasyCodeForVivox
             switch (channelSession.TextState)
             {
                 case ConnectionState.Connecting:
-                    await EasyEventsAsyncStatic.OnTextChannelConnectingAsync(channelSession);
+                    await _eventsAsync.OnTextChannelConnectingAsync(channelSession);
                     break;
 
                 case ConnectionState.Connected:
-                    await EasyEventsAsyncStatic.OnTextChannelConnectedAsync(channelSession);
+                    await _eventsAsync.OnTextChannelConnectedAsync(channelSession);
                     break;
 
                 case ConnectionState.Disconnecting:
-                    await EasyEventsAsyncStatic.OnTextChannelDisconnectingAsync(channelSession);
+                    await _eventsAsync.OnTextChannelDisconnectingAsync(channelSession);
                     break;
 
                 case ConnectionState.Disconnected:
-                    await EasyEventsAsyncStatic.OnTextChannelDisconnectedAsync(channelSession);
+                    await _eventsAsync.OnTextChannelDisconnectedAsync(channelSession);
+                    break;
+            }
+        }
+        
+
+        private async Task HandleDynamicAsyncEvents<T>(IChannelSession channelSession, T value)
+        {
+            switch (channelSession.TextState)
+            {
+                case ConnectionState.Connecting:
+                    _events.OnTextChannelConnecting(channelSession, value);
+                    await _eventsAsync.OnTextChannelConnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Connected:
+                    _events.OnTextChannelConnected(channelSession, value);
+                    await _eventsAsync.OnTextChannelConnectedAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnecting:
+                    _events.OnTextChannelDisconnecting(channelSession, value);
+                    await _eventsAsync.OnTextChannelDisconnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnected:
+                    _events.OnTextChannelDisconnected(channelSession, value);
+                    await _eventsAsync.OnTextChannelDisconnectedAsync(channelSession);
                     break;
             }
         }

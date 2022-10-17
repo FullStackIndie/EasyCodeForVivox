@@ -8,6 +8,14 @@ namespace EasyCodeForVivox
 {
     public class EasyMessages : IMessages
     {
+        private readonly EasyEvents _events;
+        private readonly EasyEventsAsync _eventsAsync;
+
+        public EasyMessages(EasyEventsAsync eventsAsync, EasyEvents events)
+        {
+            _eventsAsync = eventsAsync;
+            _events = events;
+        }
 
         public void SubscribeToChannelMessages(IChannelSession channelSession)
         {
@@ -55,11 +63,33 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasyEventsStatic.OnChannelMessageSent();
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnChannelMessageSentAsync();
-                    }
+                    _events.OnChannelMessageSent();
+                    await _eventsAsync.OnChannelMessageSentAsync();
+                }
+            });
+        }
+
+        public void SendChannelMessage<T>(IChannelSession channel, string inputMsg, T value)
+        {
+            if (channel.TextState == ConnectionState.Disconnected)
+            {
+                return;
+            }
+            channel.BeginSendText(inputMsg, async ar =>
+            {
+                try
+                {
+                    channel.EndSendText(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                    return;
+                }
+                finally
+                {
+                    _events.OnChannelMessageSent(value);
+                    await _eventsAsync.OnChannelMessageSentAsync(value);
                 }
             });
         }
@@ -84,11 +114,34 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasyEventsStatic.OnChannelMessageSent();
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnChannelMessageSentAsync();
-                    }
+                    _events.OnChannelMessageSent();
+                    await _eventsAsync.OnChannelMessageSentAsync();
+                }
+            });
+        }
+
+        public void SendChannelMessage<T>(IChannelSession channel, string inputMsg, T value, string stanzaNameSpace, string stanzaBody)
+        {
+            if (channel.TextState == ConnectionState.Disconnected)
+            {
+                return;
+            }
+
+            channel.BeginSendText(null, inputMsg, stanzaNameSpace, stanzaBody, async ar =>
+            {
+                try
+                {
+                    channel.EndSendText(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                    return;
+                }
+                finally
+                {
+                    _events.OnChannelMessageSent(value);
+                    await _eventsAsync.OnChannelMessageSentAsync(value);
                 }
             });
         }
@@ -117,10 +170,7 @@ namespace EasyCodeForVivox
         public void SendDirectMessage(ILoginSession loginSession, string targetID, string message, string stanzaNameSpace = null, string stanzaBody = null)
         {
             var targetAccountID = new AccountId(loginSession.LoginSessionId.Issuer, targetID, loginSession.LoginSessionId.Domain);
-            Debug.Log(targetAccountID.Name);
-            Debug.Log(targetAccountID.DisplayName);
-            Debug.Log(targetAccountID.Issuer);
-            Debug.Log(targetAccountID.Domain);
+
             loginSession.BeginSendDirectedMessage(targetAccountID, null, message, null, null, async ar =>
             {
                 try
@@ -133,11 +183,30 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasyEventsStatic.OnDirectMessageSent();
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnDirectMessageSentAsync();
-                    }
+                    _events.OnDirectMessageSent();
+                    await _eventsAsync.OnDirectMessageSentAsync();
+                }
+            });
+        }
+
+        public void SendDirectMessage<T>(ILoginSession loginSession, string targetID, string message, T value, string stanzaNameSpace = null, string stanzaBody = null)
+        {
+            var targetAccountID = new AccountId(loginSession.LoginSessionId.Issuer, targetID, loginSession.LoginSessionId.Domain);
+
+            loginSession.BeginSendDirectedMessage(targetAccountID, null, message, null, null, async ar =>
+            {
+                try
+                {
+                    loginSession.EndSendDirectedMessage(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
+                finally
+                {
+                    _events.OnDirectMessageSent(value);
+                    await _eventsAsync.OnDirectMessageSentAsync(value);
                 }
             });
         }
@@ -157,11 +226,33 @@ namespace EasyCodeForVivox
                 }
                 finally
                 {
-                    EasyEventsStatic.OnDirectMessageSent();
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnDirectMessageSentAsync();
-                    }
+                    _events.OnDirectMessageSent();
+                    await _eventsAsync.OnDirectMessageSentAsync();
+                }
+                // todo add Coroutine that will attempt to resend failed messages
+                // provide opt-in option so user can use my implementaion or there own implementaion
+                attemptedDirectMessages.Add(login.DirectedMessageResult.RequestId,
+                    message);
+            });
+        }
+
+        public void SendDirectMessage<T>(ILoginSession login, Dictionary<string, string> attemptedDirectMessages, string targetID, string message, T value, string stanzaNameSpace = null, string stanzaBody = null)
+        {
+            var targetAccountID = new AccountId(login.LoginSessionId.Issuer, targetID, login.LoginSessionId.Domain);
+            login.BeginSendDirectedMessage(targetAccountID, null, message, stanzaNameSpace, stanzaBody, async ar =>
+            {
+                try
+                {
+                    login.EndSendDirectedMessage(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
+                finally
+                {
+                    _events.OnDirectMessageSent(value);
+                    await _eventsAsync.OnDirectMessageSentAsync(value);
                 }
                 // todo add Coroutine that will attempt to resend failed messages
                 // provide opt-in option so user can use my implementaion or there own implementaion
@@ -186,11 +277,8 @@ namespace EasyCodeForVivox
                 var msg = directedMsgs.Dequeue();
                 if (msg != null)
                 {
-                    EasyEventsStatic.OnDirectMessageRecieved(directMessage.Value);
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnDirectMessageRecievedAsync(directMessage.Value);
-                    }
+                    _events.OnDirectMessageRecieved(directMessage.Value);
+                    await _eventsAsync.OnDirectMessageRecievedAsync(directMessage.Value);
                 }
             }
         }
@@ -203,11 +291,8 @@ namespace EasyCodeForVivox
                 var msg = failed.Dequeue();
                 if (msg != null)
                 {
-                    EasyEventsStatic.OnDirectMessageFailed(msg);
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnDirectMessageFailedAsync(msg);
-                    }
+                    _events.OnDirectMessageFailed(msg);
+                    await _eventsAsync.OnDirectMessageFailedAsync(msg);
                 }
             }
         }
@@ -224,19 +309,13 @@ namespace EasyCodeForVivox
                     {
                         if (msg.ApplicationStanzaNamespace.Contains("Event"))
                         {
-                            EasyEventsStatic.OnEventMessageRecieved(msg);
-                            if (EasySessionStatic.UseDynamicEvents)
-                            {
-                                await EasyEventsAsyncStatic.OnEventMessageRecievedAsync(msg);
-                            }
+                            _events.OnEventMessageRecieved(msg);
+                            await _eventsAsync.OnEventMessageRecievedAsync(msg);
                             return;
                         }
                     }
-                    EasyEventsStatic.OnChannelMessageRecieved(msg);
-                    if (EasySessionStatic.UseDynamicEvents)
-                    {
-                        await EasyEventsAsyncStatic.OnChannelMessageRecievedAsync(msg);
-                    }
+                    _events.OnChannelMessageRecieved(msg);
+                    await _eventsAsync.OnChannelMessageRecievedAsync(msg);
                 }
             }
         }

@@ -585,6 +585,12 @@ namespace EasyCodeForVivox.Events
                             case UserAudioStatus.UserUnmuted:
                                 AddDynamicEvent(UserAudioStatus.UserUnmuted, methodInfo);
                                 break;
+                            case UserAudioStatus.UserCrossMuted:
+                                AddDynamicEvent(UserAudioStatus.UserCrossMuted, methodInfo);
+                                break;
+                            case UserAudioStatus.UserCrossUnmuted:
+                                AddDynamicEvent(UserAudioStatus.UserCrossUnmuted, methodInfo);
+                                break;
                             case UserAudioStatus.UserNotSpeaking:
                                 AddDynamicEvent(UserAudioStatus.UserNotSpeaking, methodInfo);
                                 break;
@@ -610,6 +616,12 @@ namespace EasyCodeForVivox.Events
                                 break;
                             case UserAudioStatus.UserUnmuted:
                                 AddDynamicEvent(UserAudioStatusAsync.UserUnmutedAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.UserCrossMuted:
+                                AddDynamicEvent(UserAudioStatusAsync.UserCrossMutedAsync, methodInfo);
+                                break;
+                            case UserAudioStatus.UserCrossUnmuted:
+                                AddDynamicEvent(UserAudioStatusAsync.UserCrossUnmutedAsync, methodInfo);
                                 break;
                             case UserAudioStatus.UserNotSpeaking:
                                 AddDynamicEvent(UserAudioStatusAsync.UserNotSpeakingAsync, methodInfo);

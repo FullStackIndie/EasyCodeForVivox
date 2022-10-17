@@ -43,6 +43,7 @@ namespace EasyCodeForVivox
             _audio = audio ?? throw new ArgumentNullException(nameof(audio));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _events = events ?? throw new ArgumentNullException(nameof(events));
+            _session = session ?? throw new ArgumentNullException(nameof(session));
         }
 
 
@@ -68,6 +69,7 @@ namespace EasyCodeForVivox
                     _session.Client.Uninitialize();
                     _session.Client.Initialize(vivoxConfig);
                     _session.IsClientInitialized = true;
+                    _audio.Subscribe(_session.Client);
                     SubscribeToVivoxEvents();
                     Debug.Log($"Vivox Client Initialized".Color(EasyDebug.Green));
                     if (_settings.UseDynamicEvents)
@@ -84,6 +86,7 @@ namespace EasyCodeForVivox
 
         public void UnitializeClient()
         {
+            _audio.Unsubscribe(_session.Client);
             UnsubscribeToVivoxEvents();
             _session.Client.Uninitialize();
         }
@@ -328,6 +331,11 @@ namespace EasyCodeForVivox
             _audioSettings.AdjustRemotePlayerAudioVolume(userName, channelSession, volume);
         }
 
+        protected void CrossMuteUser(string userName, string channelName, string userToMute, bool mute)
+        {
+            _mute.CrossMuteUser(userName, channelName, userToMute, mute);
+        }
+
         protected void InjectAudio(string username, string audioPath)
         {
             _audio.StartAudioInjection(audioPath, _session.LoginSessions[username]);
@@ -359,6 +367,31 @@ namespace EasyCodeForVivox
             }
         }
 
+        protected void PushToTalk(bool enable, KeyCode keyCode)
+        {
+            if (enable)
+            {
+                MuteSelf();
+                StartCoroutine(PushToTalk(keyCode));
+            }
+            else
+            {
+                StopCoroutine(nameof(PushToTalk));
+                UnmuteSelf();
+            }
+        }
+
+        IEnumerator PushToTalk(KeyCode key)
+        {
+            yield return new WaitUntil(() => Input.GetKeyDown(key));
+            Debug.Log($"{key} is down, Local Player Is Unmuted");
+            UnmuteSelf();
+            yield return new WaitUntil(() => Input.GetKeyUp(key));
+            Debug.Log($"{key} is up, Local Player Muted");
+            MuteSelf();
+            yield return PushToTalk(key);
+        }
+
 
         protected void SpeakTTS(string msg, string userName)
         {
@@ -384,31 +417,6 @@ namespace EasyCodeForVivox
             }
         }
 
-
-        protected void PushToTalk(bool enable, KeyCode keyCode)
-        {
-            if (enable)
-            {
-                MuteSelf();
-                StartCoroutine(PushToTalk(keyCode));
-            }
-            else
-            {
-                StopCoroutine(nameof(PushToTalk));
-                UnmuteSelf();
-            }
-        }
-
-        IEnumerator PushToTalk(KeyCode key)
-        {
-            yield return new WaitUntil(() => Input.GetKeyDown(key));
-            Debug.Log($"{key} is down, Local Player Is Unmuted");
-            UnmuteSelf();
-            yield return new WaitUntil(() => Input.GetKeyUp(key));
-            Debug.Log($"{key} is up, Local Player Muted");
-            MuteSelf();
-            yield return PushToTalk(key);
-        }
 
 
         #endregion
@@ -453,6 +461,7 @@ namespace EasyCodeForVivox
         private void OnLoggedInSetup(ILoginSession loginSession)
         {
             EasyVivoxHelpers.RequestAndroidMicPermission();
+            EasyVivoxHelpers.RequestIOSMicrophoneAccess();
             ChooseVoiceGender(VoiceGender.female, loginSession);
         }
 

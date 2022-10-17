@@ -68,6 +68,9 @@ namespace EasyCodeForVivox
         public event Action<IParticipant> UserMuted;
         public event Action<IParticipant> UserUnmuted;
 
+        public event Action<AccountId> UserCrossMuted;
+        public event Action<AccountId> UserCrossUnmuted;
+
         public event Action<IParticipant> UserSpeaking;
         public event Action<IParticipant> UserNotSpeaking;
 
@@ -171,7 +174,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggingIn)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingIn)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -188,7 +191,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggingIn)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingIn)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -206,7 +209,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggedIn)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedIn)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -223,7 +226,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggedIn)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedIn)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -243,7 +246,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggingOut)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingOut)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -260,7 +263,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggingOut)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggingOut)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -278,7 +281,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggedOut)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedOut)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -295,7 +298,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLoggedOut)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoggedOut)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -320,7 +323,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelConnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -337,7 +340,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelConnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -355,7 +358,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelConnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -372,7 +375,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelConnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelConnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -390,7 +393,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelDisconnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -407,7 +410,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelDisconnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -425,7 +428,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelDisconnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -442,7 +445,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelDisconnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelDisconnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -467,7 +470,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelConnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -484,7 +487,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelConnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -503,7 +506,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelConnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -520,7 +523,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelConnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelConnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -538,7 +541,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelDisconnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -555,7 +558,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelDisconnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -573,7 +576,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelDisconnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -590,7 +593,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTextChannelDisconnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTextChannelDisconnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -615,7 +618,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelConnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -632,7 +635,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelConnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -650,7 +653,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelConnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -667,7 +670,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelConnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelConnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -685,7 +688,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelDisconnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -702,7 +705,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelDisconnecting)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnecting)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -720,7 +723,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelDisconnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -737,7 +740,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnAudioChannelDisconnected)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnAudioChannelDisconnected)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -762,7 +765,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelMessageRecieved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageRecieved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -779,7 +782,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelMessageRecieved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageRecieved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -797,7 +800,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnEventMessageRecieved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnEventMessageRecieved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -814,7 +817,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnEventMessageRecieved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnEventMessageRecieved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -828,13 +831,13 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelMessageSent)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageSent)}");
                 Debug.LogException(ex);
                 throw;
             }
         }
 
-        public void OnChannelMessageSent<T>(T value) where T : class
+        public void OnChannelMessageSent<T>(T value)
         {
             try
             {
@@ -845,7 +848,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnChannelMessageSent)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnChannelMessageSent)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -859,7 +862,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnDirectMessageSent)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageSent)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -876,7 +879,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnDirectMessageSent)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageSent)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -894,7 +897,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnDirectMessageRecieved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageRecieved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -911,7 +914,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnDirectMessageRecieved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageRecieved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -929,7 +932,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnDirectMessageFailed)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageFailed)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -946,7 +949,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnDirectMessageFailed)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnDirectMessageFailed)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -971,24 +974,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserJoinedChannel)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnUserJoinedChannel<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(UserStatus.UserJoinedChannel, participant);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserJoinedChannel)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserJoinedChannel)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1006,24 +992,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserLeftChannel)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnUserLeftChannel<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(UserStatus.UserLeftChannel, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserLeftChannel)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserLeftChannel)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1041,24 +1010,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserValuesUpdated)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnUserValuesUpdated<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(UserStatus.UserValuesUpdated, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserValuesUpdated)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserValuesUpdated)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1078,24 +1030,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserMuted)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnUserMuted<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(UserAudioStatus.UserMuted, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserMuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserMuted)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1113,24 +1048,45 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserUnmuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserUnmuted)}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+        
+
+
+        public void OnUserCrossMuted(AccountId accountId)
+        {
+            try
+            {
+                UserCrossMuted?.Invoke(accountId);
+                if (_settings.UseDynamicEvents)
+                {
+                    InvokeMethods(UserAudioStatus.UserCrossMuted, accountId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserCrossMuted)}");
                 Debug.LogException(ex);
                 throw;
             }
         }
 
-        public void OnUserUnmuted<T>(IParticipant participant, T value)
+        public void OnUserCrossUnmuted(AccountId accountId)
         {
             try
             {
+                UserCrossUnmuted?.Invoke(accountId);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(UserAudioStatus.UserUnmuted, participant, value);
+                    InvokeMethods(UserAudioStatus.UserCrossUnmuted, accountId);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserUnmuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserCrossUnmuted)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1148,24 +1104,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserSpeaking)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnUserSpeaking<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(UserAudioStatus.UserSpeaking, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserSpeaking)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserSpeaking)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1183,24 +1122,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserNotSpeaking)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnUserNotSpeaking<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(UserAudioStatus.UserNotSpeaking, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnUserNotSpeaking)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnUserNotSpeaking)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1224,7 +1146,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLocalUserMuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserMuted)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1241,7 +1163,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLocalUserMuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserMuted)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1259,7 +1181,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLocalUserUnmuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserUnmuted)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1276,7 +1198,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnLocalUserUnmuted)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLocalUserUnmuted)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1301,24 +1223,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTTSMessageAdded)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnTTSMessageAdded<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(TextToSpeechStatus.TTSMessageAdded, ttsArgs, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTTSMessageAdded)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageAdded)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1336,24 +1241,7 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTTSMessageRemoved)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public void OnTTSMessageRemoved<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(TextToSpeechStatus.TTSMessageRemoved, ttsArgs, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTTSMessageRemoved)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageRemoved)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1371,28 +1259,12 @@ namespace EasyCodeForVivox
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTTSMessageUpdated)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnTTSMessageUpdated)}");
                 Debug.LogException(ex);
                 throw;
             }
         }
 
-        public void OnTTSMessageUpdated<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    InvokeMethods(TextToSpeechStatus.TTSMessageUpdated, ttsArgs, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsStatic)}.{nameof(OnTTSMessageUpdated)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
 
 
         #endregion

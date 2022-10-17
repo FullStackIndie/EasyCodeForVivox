@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Android;
+#if UNITY_ANDROID
+ using UnityEngine.Android;
+#elif UNITY_IOS
+ using UnityEngine.iOS;
+#endif
 
 public static class EasyVivoxHelpers
 {
@@ -16,15 +20,17 @@ public static class EasyVivoxHelpers
     }
 
 
-    //public static void RequestIOSMicrophoneAccess()
-    //{
-    // todo update and research docs / have someone without IOS test it
-    //    // Refer to Vivox Documentation on how to implement this method. Currently a work in progress.NOT SURE IF IT WORKS
-    //    // make sure you change the info.plist refer to Vivox documentation for this to work
-    //    // Make sure NSCameraUsageDescription and NSMicrophoneUsageDescription
-    //    // are in the Info.plist.
-    //    Application.RequestUserAuthorization(UserAuthorization.Microphone);
-    //}
+    public static void RequestIOSMicrophoneAccess()
+    {
+        // todo update and research docs / have someone without IOS test it
+        // Refer to Vivox Documentation on how to implement this method. Currently a work in progress.NOT SURE IF IT WORKS
+        // make sure you change the info.plist refer to Vivox documentation for this to work
+        // Make sure NSCameraUsageDescription and NSMicrophoneUsageDescription
+        // are in the Info.plist.
+#if UNITY_IOS
+        Application.RequestUserAuthorization(UserAuthorization.Microphone);
+#endif
+    }
 
     public static bool FilterChannelAndUserName(string nameToFilter)
     {

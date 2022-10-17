@@ -7,6 +7,14 @@ namespace EasyCodeForVivox
 {
     public class EasyUsers : IUsers
     {
+        private readonly EasyEvents _events;
+        private readonly EasyEventsAsync _eventsAsync;
+
+        public EasyUsers(EasyEvents events, EasyEventsAsync eventsAsync)
+        {
+            _events = events;
+            _eventsAsync = eventsAsync;
+        }
 
         public void SubscribeToParticipantEvents(IChannelSession channelSession)
         {
@@ -28,11 +36,8 @@ namespace EasyCodeForVivox
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
-            EasyEventsStatic.OnUserJoinedChannel(senderIParticipant); 
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnUserJoinedChannelAsync(senderIParticipant);
-            }
+            _events.OnUserJoinedChannel(senderIParticipant);
+            await _eventsAsync.OnUserJoinedChannelAsync(senderIParticipant);
         }
 
         public async void OnUserLeftChannel(object sender, KeyEventArg<string> keyArg)
@@ -40,12 +45,9 @@ namespace EasyCodeForVivox
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[keyArg.Key];
-            EasyEventsStatic.OnUserLeftChannel(senderIParticipant);
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnUserLeftChannelAsync(senderIParticipant);
-            }
-            
+            _events.OnUserLeftChannel(senderIParticipant);
+            await _eventsAsync.OnUserLeftChannelAsync(senderIParticipant);
+
         }
 
         public async void OnUserValuesUpdated(object sender, ValueEventArg<string, IParticipant> valueArg)
@@ -53,7 +55,7 @@ namespace EasyCodeForVivox
             var source = (IReadOnlyDictionary<string, IParticipant>)sender;
 
             var senderIParticipant = source[valueArg.Key];
-            EasyEventsStatic.OnUserValuesUpdated(senderIParticipant);
+            _events.OnUserValuesUpdated(senderIParticipant);
 
             switch (valueArg.PropertyName)
             {
@@ -64,12 +66,12 @@ namespace EasyCodeForVivox
                         if (senderIParticipant.LocalMute)
                         {
                             // Fires too much
-                            EasyEventsStatic.OnUserMuted(senderIParticipant);
+                            _events.OnUserMuted(senderIParticipant);
                         }
                         else
                         {
                             // Fires too much
-                            EasyEventsStatic.OnUserUnmuted(senderIParticipant);
+                            _events.OnUserUnmuted(senderIParticipant);
                         }
                     }
                     break;
@@ -78,21 +80,18 @@ namespace EasyCodeForVivox
                     {
                         if (senderIParticipant.SpeechDetected)
                         {
-                            EasyEventsStatic.OnUserSpeaking(senderIParticipant);
+                            _events.OnUserSpeaking(senderIParticipant);
                         }
                         else
                         {
-                            EasyEventsStatic.OnUserNotSpeaking(senderIParticipant);
+                            _events.OnUserNotSpeaking(senderIParticipant);
                         }
                         break;
                     }
                 default:
                     break;
             }
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await HandleDynamicEvents(valueArg, senderIParticipant);
-            }
+            await HandleDynamicEvents(valueArg, senderIParticipant);
         }
 
         private async Task HandleDynamicEvents(ValueEventArg<string, IParticipant> valueArg, IParticipant participant)
@@ -107,12 +106,12 @@ namespace EasyCodeForVivox
                         if (participant.LocalMute)
                         {
                             // Fires too much
-                            await EasyEventsAsyncStatic.OnUserMutedAsync(participant);
+                            await _eventsAsync.OnUserMutedAsync(participant);
                         }
                         else
                         {
                             // Fires too much
-                            await EasyEventsAsyncStatic.OnUserUnmutedAsync(participant);
+                            await _eventsAsync.OnUserUnmutedAsync(participant);
                         }
                     }
                     break;
@@ -121,11 +120,11 @@ namespace EasyCodeForVivox
                     {
                         if (participant.SpeechDetected)
                         {
-                            await EasyEventsAsyncStatic.OnUserSpeakingAsync(participant);
+                            await _eventsAsync.OnUserSpeakingAsync(participant);
                         }
                         else
                         {
-                            await EasyEventsAsyncStatic.OnUserNotSpeakingAsync(participant);
+                            await _eventsAsync.OnUserNotSpeakingAsync(participant);
                         }
                         break;
                     }

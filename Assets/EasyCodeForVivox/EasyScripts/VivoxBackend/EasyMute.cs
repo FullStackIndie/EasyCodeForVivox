@@ -1,6 +1,8 @@
 ﻿using EasyCodeForVivox.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using VivoxUnity;
 
@@ -9,10 +11,36 @@ namespace EasyCodeForVivox
     public class EasyMute : IMute
     {
 
+        private readonly EasyEvents _events;
+        private readonly EasyEventsAsync _eventsAsync;
+        private readonly EasySettings _settings;
+        private readonly EasySession _session;
+
+        public EasyMute(EasyEvents events, EasyEventsAsync eventsAync,
+            EasySettings settings, EasySession session)
+        {
+            _events = events;
+            _eventsAsync = eventsAync;
+            _settings = settings;
+            _session = session;
+        }
+
+        public void Subscribe(ILoginSession loginSession)
+        {
+            loginSession.CrossMutedCommunications.AfterKeyAdded += OnParticipantCrossMuted;
+            loginSession.CrossMutedCommunications.BeforeKeyRemoved += OnParticipantCrossUnmuted;
+        }
+
+        public void Unsubscribe(ILoginSession loginSession)
+        {
+            loginSession.CrossMutedCommunications.AfterKeyAdded -= OnParticipantCrossMuted;
+            loginSession.CrossMutedCommunications.BeforeKeyRemoved -= OnParticipantCrossUnmuted;
+        }
+
         public void LocalToggleMuteRemoteUser(string userName, IChannelSession channelSession)
         {
             var participants = channelSession.Participants;
-            string userToMute = EasySIP.GetUserSIP(EasySessionStatic.Issuer, userName, EasySessionStatic.Domain);
+            string userToMute = EasySIP.GetUserSIP(_session.Issuer, userName, _session.Domain);
             Debug.Log($"Sip address of User to mute - {userToMute}");
             if (participants[userToMute].InAudio && !participants[userToMute].IsSelf)
             {
@@ -30,7 +58,6 @@ namespace EasyCodeForVivox
                 Debug.Log($"Failed to mute {participants[userToMute].Account.DisplayName}".Color(EasyDebug.Red));
             }
         }
-
 
 
         public void MuteAllUsers(IChannelSession channelSession)
@@ -75,65 +102,124 @@ namespace EasyCodeForVivox
         public async void LocalMuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = true;
-            EasyEventsStatic.OnLocalUserMuted(true);
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnLocalUserMutedAsync(true);
-            }
+            _events.OnLocalUserMuted();
+            await _eventsAsync.OnLocalUserMutedAsync();
+        }
+
+        public async void LocalMuteSelf<T>(VivoxUnity.Client client, T value)
+        {
+            client.AudioInputDevices.Muted = true;
+            _events.OnLocalUserMuted(value);
+            await _eventsAsync.OnLocalUserMutedAsync(value);
         }
 
         public async void LocalUnmuteSelf(VivoxUnity.Client client)
         {
             client.AudioInputDevices.Muted = false;
-            EasyEventsStatic.OnLocalUserUnmuted(true);
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnLocalUserUnmutedAsync(true);
-            }
+            _events.OnLocalUserUnmuted();
+            await _eventsAsync.OnLocalUserUnmutedAsync();
         }
 
-        public void CrossMuteUser(ILoginSession loginSession, bool mute)
+        public async void LocalUnmuteSelf<T>(VivoxUnity.Client client, T value)
         {
-            if (mute)
+            client.AudioInputDevices.Muted = false;
+            _events.OnLocalUserUnmuted(value);
+            await _eventsAsync.OnLocalUserUnmutedAsync(value);
+        }
+
+
+        public void CrossMuteUser(string userName, string channelName, string userToMute, bool mute)
+        {
+            var participant = _session.ChannelSessions[channelName].Participants.Where(p => p.Account.Name == userToMute).FirstOrDefault();
+            if (participant != null)
             {
-                Debug.Log($"Muting {loginSession.LoginSessionId.DisplayName}".Color(EasyDebug.Lightblue));
+                _session.LoginSessions[userName].SetCrossMutedCommunications(participant.Account, mute, ar =>
+                {
+                    try
+                    {
+                        if (ar.IsCompleted)
+                        {
+                            Debug.Log($"Cross Muted Communications has Completed muting the following player {participant.Account.Name}".Color(EasyDebug.Green));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        throw;
+                    }
+                });
             }
             else
             {
-                Debug.Log($"Unmuting {loginSession.LoginSessionId.DisplayName}".Color(EasyDebug.Lightblue));
+                Debug.Log($"Could not find player {userToMute} in channel {channelName}".Color(EasyDebug.Red));
             }
-            // todo check if it works
-            loginSession.SetCrossMutedCommunications(loginSession.LoginSessionId, mute, CrossMuteResult);
         }
 
-        public void CrossMuteUsers(ILoginSession loginSessionToMute, bool mute)
+        public void CrossMuteUsers(string loggedInUserName,string channelName, List<string> usersToMute, bool mute)
         {
-            List<AccountId> accountIds = new List<AccountId>();
-            loginSessionToMute.SetCrossMutedCommunications(accountIds, mute, CrossMuteResult);
-            // todo check if this actually works
-            // add this callback listener
-            // loginSessionToMute.CrossMutedCommunications.AfterKeyAdded +=
-        }
-
-        public void ClearAllCurrentCrossMutedAccounts(ILoginSession loginSession)
-        {
-            loginSession.ClearCrossMutedCommunications(CrossMuteResult);
-        }
-
-        public void CrossMuteResult(IAsyncResult ar)
-        {
-            try
+            HashSet<AccountId> accountIds = new HashSet<AccountId>();
+            foreach(var userName in usersToMute)
             {
-                if (ar.IsCompleted)
+                accountIds.Add(_session.ChannelSessions[channelName].Participants.Where(p => p.Account.Name == userName).FirstOrDefault().Account);
+            }
+            _session.LoginSessions[loggedInUserName].SetCrossMutedCommunications(accountIds.ToList(), mute, ar =>
+            {
+                try
                 {
-                    Debug.Log("Clear Cross Muted Communications has Completed : Not sure if it works".Color(EasyDebug.Red));
+                    if (ar.IsCompleted)
+                    {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        foreach (var account in accountIds)
+                        {
+                            stringBuilder.AppendLine(account.Name);
+                        }
+                        Debug.Log($"Cross Muted Communications has Completed muting the following players {stringBuilder}".Color(EasyDebug.Green));
+                    }
                 }
-            }
-            catch (Exception e)
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                    return;
+                }
+            });
+        }
+
+        public void ClearAllCurrentCrossMutedAccounts(string loggedInUserName)
+        {
+            _session.LoginSessions[loggedInUserName].ClearCrossMutedCommunications(ar =>
             {
-                Debug.Log(e.Message);
-                return;
+                try
+                {
+                    if (ar.IsCompleted)
+                    {
+                        Debug.Log($"Clearing Cross Muted Communications for LoginSession for player {loggedInUserName} has Completed");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                    return;
+                }
+            });
+        }
+
+        public async void OnParticipantCrossMuted(object sender, KeyEventArg<AccountId> account)
+        {
+            if(account != null)
+            {
+                _events.OnUserCrossMuted(account.Key);
+                await _eventsAsync.OnUserCrossMutedAsync(account.Key);
             }
         }
+
+        public async void OnParticipantCrossUnmuted(object sender, KeyEventArg<AccountId> account)
+        {
+            if (account != null)
+            {
+                _events.OnUserCrossMuted(account.Key);
+                await _eventsAsync.OnUserCrossMutedAsync(account.Key);
+            }
+        }
+
     }
 }

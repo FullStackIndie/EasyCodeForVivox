@@ -6,7 +6,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    [Obsolete("This will be removed in future versions")]
+    [Obsolete("This will be removed in future versions in favor of new EasyExtensions")]
     public static class EasyOldExtensions
     {
 
@@ -32,7 +32,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTS_Msg_Local_PlayOverCurrent(this string message, ILoginSession loginSession)
+        public static void TTSMsgLocalPlayOverCurrent(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.LocalPlayback);
             loginSession.TTS.Speak(msg);
@@ -56,7 +56,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTS_Msg_Local_Remote_PlayOverCurrent(this string message, ILoginSession loginSession)
+        public static void TTSMsgLocalRemotePlayOverCurrent(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.RemoteTransmissionWithLocalPlayback);
             loginSession.TTS.Speak(msg);
@@ -68,7 +68,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTS_Msg_Local_ReplaceCurrentPlaying(this string message, ILoginSession loginSession)
+        public static void TTSMsgLocalReplaceCurrentPlaying(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.ScreenReader);
             loginSession.TTS.Speak(msg);
@@ -80,7 +80,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTS_Msg_Queue_Local(this string message, ILoginSession loginSession)
+        public static void TTSMsgQueueLocal(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.QueuedLocalPlayback);
             loginSession.TTS.Messages.Enqueue(msg);
@@ -92,7 +92,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTS_Msg_Queue_Remote(this string message, ILoginSession loginSession)
+        public static void TTSMsgQueueRemote(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.QueuedRemoteTransmission);
             loginSession.TTS.Messages.Enqueue(msg);
@@ -104,7 +104,7 @@ namespace EasyCodeForVivox
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTS_Msg_Queue_Remote_Local(this string message, ILoginSession loginSession)
+        public static void TTSMsgQueueRemoteLocal(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
             loginSession.TTS.Messages.Enqueue(msg);

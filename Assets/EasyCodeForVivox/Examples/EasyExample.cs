@@ -20,12 +20,11 @@ public class EasyExample : EasyManager
     [SerializeField] InputField message;
     [SerializeField] Toggle voiceToggle;
     [SerializeField] Toggle textToggle;
+    [SerializeField] Toggle textToSpeechToggle;
     [SerializeField] Slider selfSlider;
     [SerializeField] Slider remotePlayerSlider;
 
-    //[SerializeField] Text newMessage;
     [SerializeField] TextMeshProUGUI newMessage;
-    [SerializeField] Image container;
     [SerializeField] Scrollbar scrollbar;
     [SerializeField] TMP_Dropdown loginSessionsDropdown;
     [SerializeField] TMP_Dropdown channelSessionsDropdown;
@@ -35,7 +34,14 @@ public class EasyExample : EasyManager
     [SerializeField] TMP_Dropdown audioCaptureDevicesDropdown;
     [SerializeField] TMP_Dropdown audioRenderDevicesDropdown;
 
-    private EasySettings _settings;
+    private EasySession _session;
+
+    [Inject]
+    public void Initialize(EasySession easySession)
+    {
+        _session = easySession;
+    }
+
 
     private void OnApplicationQuit()
     {
@@ -48,10 +54,10 @@ public class EasyExample : EasyManager
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
         // inside of the Unity Editor because hackers can decompile there game and steal the secrets/keys
         // Unity decompiler https://devxdevelopment.com/
-        EasySessionStatic.APIEndpoint = new Uri(apiEndpoint);
-        EasySessionStatic.Domain = domain;
-        EasySessionStatic.Issuer = issuer;
-        EasySessionStatic.SecretKey = secretKey;
+        _session.APIEndpoint = new Uri(apiEndpoint);
+        _session.Domain = domain;
+        _session.Issuer = issuer;
+        _session.SecretKey = secretKey;
     }
 
     async void Start()
@@ -73,21 +79,7 @@ public class EasyExample : EasyManager
 
     }
 
-    [Inject]
-    public void GetSettings(EasySettings easySettings)
-    {
-        _settings = easySettings;
-    }
 
-
-
-
-    [LoginEvent(LoginStatus.LoggedIn)]
-    public void DynamicEventSync(ILoginSession loginSession, InputField inputField)
-    {
-        Debug.Log($"Input Filed Value {inputField.text}");
-        inputField.text = "Text has been changed Dynamically";
-    }
 
     // Clears Text messages where event logs show up in demo scene
     // hooked up to ClearMessages Button in demo scene
@@ -99,11 +91,11 @@ public class EasyExample : EasyManager
 
     public void LoadAudioDevices()
     {
-        foreach (var device in EasySessionStatic.Client.AudioInputDevices.AvailableDevices)
+        foreach (var device in _session.Client.AudioInputDevices.AvailableDevices)
         {
             audioCaptureDevicesDropdown.AddValue(device.Name);
         }
-        foreach (var device in EasySessionStatic.Client.AudioOutputDevices.AvailableDevices)
+        foreach (var device in _session.Client.AudioOutputDevices.AvailableDevices)
         {
             audioRenderDevicesDropdown.AddValue(device.Name);
         }
@@ -220,6 +212,16 @@ public class EasyExample : EasyManager
         }
     }
 
+    public void CrossMute()
+    {
+        CrossMuteUser(userName.text, channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), true);
+    }
+
+    public void CrossUnmute()
+    {
+        CrossMuteUser(userName.text, channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), false);
+    }
+
     public void InjectAudio()
     {
         InjectAudio(userName.text, @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
@@ -233,7 +235,6 @@ public class EasyExample : EasyManager
     public void SetAudioInputDevice()
     {
         SetAudioInputDevice(audioCaptureDevicesDropdown.GetSelected());
-        Debug.Log($"Selected {audioCaptureDevicesDropdown.GetSelected()}");
     }
 
     public void SetAudioOutputDevice()
@@ -252,10 +253,6 @@ public class EasyExample : EasyManager
         PushToTalk(false, KeyCode.Space);
     }
 
-    public void TextToSpeech()
-    {
-        SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
-    }
 
 
 
@@ -272,7 +269,7 @@ public class EasyExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySessionStatic.LoginSessions[userName.text].LoginSessionId.Name);
+        SendEventMessage(channelName.text, "event", "Event:RaiseHand", _session.LoginSessions[userName.text].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
@@ -310,7 +307,7 @@ public class EasyExample : EasyManager
 
     public void HandleMuteEvent(IChannelTextMessage textMessage, string userName)
     {
-        if (EasySessionStatic.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (_session.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             MuteLocalPlayer();
         }
@@ -318,7 +315,7 @@ public class EasyExample : EasyManager
 
     public void HandleUnmuteEvent(IChannelTextMessage textMessage, string userName)
     {
-        if (EasySessionStatic.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
+        if (_session.LoginSessions[userName].LoginSessionId.Name == textMessage.ApplicationStanzaBody)
         {
             UnmuteLocalPlayer();
         }
@@ -463,18 +460,30 @@ public class EasyExample : EasyManager
     {
         base.OnChannelMessageRecieved(textMessage);
         newMessage.text += $"\nFrom {textMessage.Sender.DisplayName} : {textMessage.Message}";
+        if (textToSpeechToggle.isOn)
+        {
+            SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+        }
     }
 
     protected override void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
     {
         base.OnDirectMessageRecieved(directedTextMessage);
         newMessage.text += $"\nFrom {directedTextMessage.Sender.DisplayName} : {directedTextMessage.Message}";
+        if (textToSpeechToggle.isOn)
+        {
+            SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+        }
     }
 
     protected override void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
     {
         base.OnDirectMessageFailed(failedMessage);
         newMessage.text += $"\nMessage failed from {failedMessage.Sender.DisplayName} : Status Code : {failedMessage.StatusCode}";
+        if (textToSpeechToggle.isOn)
+        {
+            SpeakTTS("Failed to send message", userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+        }
     }
 
 

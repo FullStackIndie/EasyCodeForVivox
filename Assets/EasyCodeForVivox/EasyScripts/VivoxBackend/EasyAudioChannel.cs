@@ -10,6 +10,16 @@ namespace EasyCodeForVivox
 
     public class EasyAudioChannel : IAudioChannel
     {
+
+        private readonly EasyEvents _events;
+        private readonly EasyEventsAsync _eventsAsync;
+
+        public EasyAudioChannel(EasyEvents events, EasyEventsAsync eventsAsync)
+        {
+            _events = events;
+            _eventsAsync = eventsAsync;
+        }
+
         public void Subscribe(IChannelSession channelSession)
         {
             channelSession.PropertyChanged += OnChannelAudioPropertyChanged;
@@ -48,7 +58,35 @@ namespace EasyCodeForVivox
                     Debug.Log(e.Message);
                 }
             });
+        }
 
+        public void ToggleAudioChannelActive<T>(IChannelSession channelSession, bool join, T eventParameter)
+        {
+            if (join)
+            {
+                Subscribe(channelSession);
+            }
+            else
+            {
+                Unsubscribe(channelSession);
+            }
+
+            channelSession.BeginSetAudioConnected(join, true, async ar =>
+            {
+                try
+                {
+                    channelSession.EndSetAudioConnected(ar);
+                }
+                catch (Exception e)
+                {
+                    Unsubscribe(channelSession);
+                    Debug.Log(e.Message);
+                }
+                finally
+                {
+                    await HandleDynamicEventsAsync(channelSession, eventParameter);
+                }
+            });
         }
 
 
@@ -68,25 +106,22 @@ namespace EasyCodeForVivox
                 switch (senderIChannelSession.AudioState)
                 {
                     case ConnectionState.Connecting:
-                        EasyEventsStatic.OnAudioChannelConnecting(senderIChannelSession);
+                        _events.OnAudioChannelConnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Connected:
-                        EasyEventsStatic.OnAudioChannelConnected(senderIChannelSession);
+                        _events.OnAudioChannelConnected(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnecting:
-                        EasyEventsStatic.OnAudioChannelDisconnecting(senderIChannelSession);
+                        _events.OnAudioChannelDisconnecting(senderIChannelSession);
                         break;
 
                     case ConnectionState.Disconnected:
-                        EasyEventsStatic.OnAudioChannelDisconnected(senderIChannelSession);
+                        _events.OnAudioChannelDisconnected(senderIChannelSession);
                         break;
                 }
-                if (EasySessionStatic.UseDynamicEvents)
-                {
-                    await HandleDynamicEventsAsync(propArgs, senderIChannelSession);
-                }
+                await HandleDynamicEventsAsync(propArgs, senderIChannelSession);
             }
         }
 
@@ -95,19 +130,45 @@ namespace EasyCodeForVivox
             switch (channelSession.AudioState)
             {
                 case ConnectionState.Connecting:
-                    await EasyEventsAsyncStatic.OnAudioChannelConnectingAsync(channelSession);
+                    await _eventsAsync.OnAudioChannelConnectingAsync(channelSession);
                     break;
 
                 case ConnectionState.Connected:
-                   await  EasyEventsAsyncStatic.OnAudioChannelConnectedAsync(channelSession);
+                    await _eventsAsync.OnAudioChannelConnectedAsync(channelSession);
                     break;
 
                 case ConnectionState.Disconnecting:
-                    await EasyEventsAsyncStatic.OnAudioChannelDisconnectingAsync(channelSession);
+                    await _eventsAsync.OnAudioChannelDisconnectingAsync(channelSession);
                     break;
 
                 case ConnectionState.Disconnected:
-                    await EasyEventsAsyncStatic.OnAudioChannelDisconnectedAsync(channelSession);
+                    await _eventsAsync.OnAudioChannelDisconnectedAsync(channelSession);
+                    break;
+            }
+        }
+
+        private async Task HandleDynamicEventsAsync<T>(IChannelSession channelSession, T value)
+        {
+            switch (channelSession.AudioState)
+            {
+                case ConnectionState.Connecting:
+                    _events.OnAudioChannelConnecting(channelSession, value);
+                    await _eventsAsync.OnAudioChannelConnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Connected:
+                    _events.OnAudioChannelConnected(channelSession, value);
+                    await _eventsAsync.OnAudioChannelConnectedAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnecting:
+                    _events.OnAudioChannelDisconnecting(channelSession, value);
+                    await _eventsAsync.OnAudioChannelDisconnectingAsync(channelSession);
+                    break;
+
+                case ConnectionState.Disconnected:
+                    _events.OnAudioChannelDisconnected(channelSession, value);
+                    await _eventsAsync.OnAudioChannelDisconnectedAsync(channelSession);
                     break;
             }
         }

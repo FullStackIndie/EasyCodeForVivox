@@ -119,8 +119,10 @@
     public enum UserAudioStatus
     {
         UserMuted,
-        LocalUserMuted,
         UserUnmuted,
+        UserCrossMuted,
+        UserCrossUnmuted,
+        LocalUserMuted,
         LocalUserUnmuted,
         UserSpeaking,
         UserNotSpeaking,
@@ -129,8 +131,10 @@
     internal enum UserAudioStatusAsync
     {
         UserMutedAsync,
-        LocalUserMutedAsync,
         UserUnmutedAsync,
+        UserCrossMutedAsync,
+        UserCrossUnmutedAsync,
+        LocalUserMutedAsync,
         LocalUserUnmutedAsync,
         UserSpeakingAsync,
         UserNotSpeakingAsync,

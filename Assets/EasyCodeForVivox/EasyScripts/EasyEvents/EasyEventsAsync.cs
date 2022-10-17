@@ -757,7 +757,7 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnChannelMessageSentAsync<T>(T value) where T : class
+        public async Task OnChannelMessageSentAsync<T>(T value)
         {
             try
             {
@@ -900,23 +900,6 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnUserJoinedChannelAsync<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(UserStatusAsync.UserJoinedChannelAsync, participant);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserJoinedChannelAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
         public async Task OnUserLeftChannelAsync(IParticipant participant)
         {
             try
@@ -934,23 +917,6 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnUserLeftChannelAsync<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(UserStatusAsync.UserLeftChannelAsync, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserLeftChannelAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
         public async Task OnUserValuesUpdatedAsync(IParticipant participant)
         {
             try
@@ -958,23 +924,6 @@ namespace EasyCodeForVivox.Events
                 if (_settings.UseDynamicEvents)
                 {
                     await InvokeMethodsAsync(UserStatusAsync.UserValuesUpdatedAsync, participant);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserValuesUpdatedAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public async Task OnUserValuesUpdatedAsync<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(UserStatusAsync.UserValuesUpdatedAsync, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1004,22 +953,6 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnUserMutedAsync<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserMutedAsync, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserMutedAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
 
         public async Task OnUserUnmutedAsync(IParticipant participant)
         {
@@ -1038,18 +971,36 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnUserUnmutedAsync<T>(IParticipant participant, T value)
+        public async Task OnUserCrossMutedAsync(AccountId accountId)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserUnmutedAsync, participant, value);
+                    await InvokeMethodsAsync(UserAudioStatusAsync.UserCrossMutedAsync, accountId);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserUnmutedAsync)}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserCrossMutedAsync)}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+
+        public async Task OnUserCrossUnmutedAsync(AccountId accountId)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(UserAudioStatusAsync.UserCrossUnmutedAsync, accountId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserCrossUnmutedAsync)}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1062,23 +1013,6 @@ namespace EasyCodeForVivox.Events
                 if (_settings.UseDynamicEvents)
                 {
                     await InvokeMethodsAsync(UserAudioStatusAsync.UserSpeakingAsync, participant);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserSpeakingAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public async Task OnUserSpeakingAsync<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserSpeakingAsync, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1106,22 +1040,6 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnUserNotSpeakingAsync<T>(IParticipant participant, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserNotSpeakingAsync, participant, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnUserNotSpeakingAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
 
 
         #endregion
@@ -1129,13 +1047,13 @@ namespace EasyCodeForVivox.Events
 
         #region User Mute Events
 
-        public async Task OnLocalUserMutedAsync(bool isMuted)
+        public async Task OnLocalUserMutedAsync()
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync, isMuted);
+                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync);
                 }
             }
             catch (Exception ex)
@@ -1146,13 +1064,13 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnLocalUserMutedAsync<T>(bool isMuted, T value)
+        public async Task OnLocalUserMutedAsync<T>( T value)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync, isMuted, value);
+                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync, value);
                 }
             }
             catch (Exception ex)
@@ -1163,13 +1081,13 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnLocalUserUnmutedAsync(bool isMuted)
+        public async Task OnLocalUserUnmutedAsync()
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync, isMuted);
+                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync);
                 }
             }
             catch (Exception ex)
@@ -1180,13 +1098,13 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnLocalUserUnmutedAsync<T>(bool isMuted, T value)
+        public async Task OnLocalUserUnmutedAsync<T>(T value)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync, isMuted, value);
+                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync, value);
                 }
             }
             catch (Exception ex)
@@ -1221,23 +1139,6 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnTTSMessageAddedAsync<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(TextToSpeechStatusAsync.TTSMessageAddedAsync, ttsArgs, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnTTSMessageAddedAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
         public async Task OnTTSMessageRemovedAsync(ITTSMessageQueueEventArgs ttsArgs)
         {
             try
@@ -1255,23 +1156,6 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnTTSMessageRemovedAsync<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(TextToSpeechStatusAsync.TTSMessageRemovedAsync, ttsArgs, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnTTSMessageRemovedAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
         public async Task OnTTSMessageUpdatedAsync(ITTSMessageQueueEventArgs ttsArgs)
         {
             try
@@ -1279,23 +1163,6 @@ namespace EasyCodeForVivox.Events
                 if (_settings.UseDynamicEvents)
                 {
                     await InvokeMethodsAsync(TextToSpeechStatusAsync.TTSMessageUpdatedAsync, ttsArgs);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEventsAsync)}.{nameof(OnTTSMessageUpdatedAsync)}");
-                Debug.LogException(ex);
-                throw;
-            }
-        }
-
-        public async Task OnTTSMessageUpdatedAsync<T>(ITTSMessageQueueEventArgs ttsArgs, T value)
-        {
-            try
-            {
-                if (_settings.UseDynamicEvents)
-                {
-                    await InvokeMethodsAsync(TextToSpeechStatusAsync.TTSMessageUpdatedAsync, ttsArgs, value);
                 }
             }
             catch (Exception ex)

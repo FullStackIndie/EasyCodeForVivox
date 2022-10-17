@@ -8,9 +8,17 @@ namespace EasyCodeForVivox
 {
     public class EasyTextToSpeech : ITextToSpeech
     {
+        private readonly EasyEvents _events;
+        private readonly EasyEventsAsync _eventsAsync;
+
+        public EasyTextToSpeech(EasyEvents events, EasyEventsAsync eventsAsync)
+        {
+            _events = events;
+            _eventsAsync = eventsAsync;
+        }
+
         public string MaleVoice { get; } = "en_US male";
         public string FemaleVoice { get; } = "en_US female";
-
 
         public void Subscribe(ILoginSession loginSession)
         {
@@ -44,25 +52,25 @@ namespace EasyCodeForVivox
             switch (destination)
             {
                 case TTSDestination.LocalPlayback:
-                    message.TTS_Msg_Local_PlayOverCurrent(loginSession);
+                    message.TTSMsgLocalPlayOverCurrent(loginSession);
                     break;
                 case TTSDestination.RemoteTransmission:
-                    message.TTS_Msg_Local_Remote_PlayOverCurrent(loginSession);
+                    message.TTSMsgLocalRemotePlayOverCurrent(loginSession);
                     break;
                 case TTSDestination.RemoteTransmissionWithLocalPlayback:
-                    message.TTS_Msg_Local_Remote_PlayOverCurrent(loginSession);
+                    message.TTSMsgLocalRemotePlayOverCurrent(loginSession);
                     break;
                 case TTSDestination.QueuedLocalPlayback:
-                    message.TTS_Msg_Queue_Local(loginSession);
+                    message.TTSMsgQueueLocal(loginSession);
                     break;
                 case TTSDestination.QueuedRemoteTransmission:
-                    message.TTS_Msg_Queue_Remote(loginSession);
+                    message.TTSMsgQueueRemote(loginSession);
                     break;
                 case TTSDestination.QueuedRemoteTransmissionWithLocalPlayback:
-                    message.TTS_Msg_Queue_Remote_Local(loginSession);
+                    message.TTSMsgQueueRemoteLocal(loginSession);
                     break;
                 case TTSDestination.ScreenReader:
-                    message.TTS_Msg_Local_ReplaceCurrentPlaying(loginSession);
+                    message.TTSMsgLocalReplaceCurrentPlaying(loginSession);
                     break;
             }
         }
@@ -82,11 +90,8 @@ namespace EasyCodeForVivox
                 // todo update and research docs
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            EasyEventsStatic.OnTTSMessageAdded(ttsArgs);
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnTTSMessageAddedAsync(ttsArgs);
-            }
+            _events.OnTTSMessageAdded(ttsArgs);
+            await _eventsAsync.OnTTSMessageAddedAsync(ttsArgs);
         }
 
         public async void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
@@ -96,11 +101,8 @@ namespace EasyCodeForVivox
             {
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            EasyEventsStatic.OnTTSMessageRemoved(ttsArgs);
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnTTSMessageRemovedAsync(ttsArgs);
-            }
+            _events.OnTTSMessageRemoved(ttsArgs);
+            await _eventsAsync.OnTTSMessageRemovedAsync(ttsArgs);
         }
 
         public async void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
@@ -110,11 +112,8 @@ namespace EasyCodeForVivox
             {
                 Debug.Log("Cant keep over 10 messages in Queue");
             }
-            EasyEventsStatic.OnTTSMessageUpdated(ttsArgs);
-            if (EasySessionStatic.UseDynamicEvents)
-            {
-                await EasyEventsAsyncStatic.OnTTSMessageUpdatedAsync(ttsArgs);
-            }
+            _events.OnTTSMessageUpdated(ttsArgs);
+            await _eventsAsync.OnTTSMessageUpdatedAsync(ttsArgs);
         }
 
         public void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)
