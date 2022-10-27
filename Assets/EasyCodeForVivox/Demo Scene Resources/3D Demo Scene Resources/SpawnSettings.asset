@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24766bca13098874f82d2d340556edad, type: 3}
+  m_Name: SpawnSettings
+  m_EditorClassIdentifier: 
+  _spawnTransformList:
+  - {x: -25.6, y: 1, z: 19.8}
+  - {x: 28.5, y: 1, z: 20.9}
+  - {x: -21.59, y: 1, z: -9.74}
+  - {x: 20.6, y: 1, z: -11.24}
