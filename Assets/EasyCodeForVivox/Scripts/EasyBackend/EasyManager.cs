@@ -22,14 +22,14 @@ namespace EasyCodeForVivox
         private EasyMute _mute;
         private EasyTextToSpeech _textToSpeech;
         private EasyAudio _audio;
-        private EasySettings _settings;
+        private EasySettingsSO _settings;
         private EasyEvents _events;
 
 
         [Inject]
         public void Initialize(EasyLogin login, EasyChannel channel, EasyAudioChannel voiceChannel, EasyTextChannel textChannel,
             EasyUsers users, EasyMessages messages, EasyMute mute, EasyTextToSpeech textToSpeech, EasyAudio audio,
-            EasySettings settings, EasyEvents events)
+            EasySettingsSO settings, EasyEvents events)
         {
             _login = login ?? throw new ArgumentNullException(nameof(login));
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
@@ -57,7 +57,8 @@ namespace EasyCodeForVivox
 
             if (EasySession.IsClientInitialized)
             {
-                Debug.Log($"{nameof(EasyManager)} : Vivox Client is already initialized, skipping...".Color(EasyDebug.Yellow));
+                if (_settings.LogEasyManager)
+                    Debug.Log($"{nameof(EasyManager)} : Vivox Client is already initialized, skipping...".Color(EasyDebug.Yellow));
                 return;
             }
             else
@@ -69,13 +70,22 @@ namespace EasyCodeForVivox
                     EasySession.IsClientInitialized = true;
                     _audio.Subscribe(EasySession.Client);
                     SubscribeToVivoxEvents();
-                    Debug.Log($"Vivox Client Initialized".Color(EasyDebug.Green));
+                    if (_settings.LogEasyManager)
+                        Debug.Log($"Vivox Client Initialized".Color(EasyDebug.Green));
                     if (_settings.UseDynamicEvents)
                     {
-                        // may seem redundant to use Task.Run because multiple Tasks are created in RuntimeEvents.RegisterEvents()
-                        // but I tested running RuntimeEvents.RegisterEvents() without using Task.Run and it was way slower
-                        // difference was approximately .900 milliseconds vs .090 milliseconds(results will vary based on how many assemblies are in your project)
-                        await Task.Run(async () => { await DynamicEvents.RegisterEvents(_settings.OnlySearchAssemblyCSharp, _settings.LogAssemblySearches, _settings.LogAllDynamicMethods); });
+                        // may seem redundant to use Task.Run because multiple Tasks are created in DynamicEvents.RegisterEvents()
+                        // but I tested running DynamicEvents.RegisterEvents() without using Task.Run and it was way slower
+                        // difference was approximately .900 milliseconds vs .090 milliseconds(results will vary based on how many assemblies are in your project
+                        // and how many cpus you have)
+                        await Task.Run(async () =>
+                        {
+                            await DynamicEvents.RegisterEvents(_settings.OnlySearchAssemblyCSharp, _settings.LogAssemblySearches, _settings.LogAllDynamicMethods);
+                            if (DynamicEvents.Methods.Count == 0)
+                            {
+                                _settings.UseDynamicEvents = false;
+                            }
+                        });
                     }
                 }
             }
@@ -204,13 +214,6 @@ namespace EasyCodeForVivox
 
         #region Main Methods
 
-        protected IEnumerator SubscribeToAudioEvents()
-        {
-            yield return new WaitUntil(() => EasySession.Client.Initialized);
-            EasySession.IsClientInitialized = true;
-            _audio.Subscribe(EasySession.Client);
-        }
-
 
 
         protected void LoginToVivox(string userName, bool joinMuted = false)
@@ -306,7 +309,8 @@ namespace EasyCodeForVivox
             }
             else
             {
-                Debug.Log("Channel Does not exist");
+                if (_settings.LogEasyManager)
+                    Debug.Log("Channel Does not exist. Cannot Mute player");
             }
         }
 
@@ -318,10 +322,25 @@ namespace EasyCodeForVivox
             }
             else
             {
-                Debug.Log("Channel Does not exist");
+                if (_settings.LogEasyManager)
+                    Debug.Log("Channel Does not exist. Cannot Unmute player");
             }
         }
 
+        protected IEnumerable<ChannelId> GetTransmittingChannelsForPlayer(string userName)
+        {
+            return EasySession.LoginSessions[userName].TransmittingChannels;
+        }
+
+        protected bool IsPlayerTransmittingInChannel(string channelName)
+        {
+            return EasySession.ChannelSessions[channelName].IsTransmitting;
+        }
+
+        protected void SetPlayerTransmissionMode(string userName, TransmissionMode transmissionMode, ChannelId channelId = default)
+        {
+            EasySession.LoginSessions[userName].SetTransmissionMode(transmissionMode, channelId);
+        }
 
         protected void AdjustLocalUserVolume(int volume)
         {
@@ -338,7 +357,7 @@ namespace EasyCodeForVivox
         {
             _mute.CrossMuteUser(userName, channelName, userToMute, mute);
         }
-        
+
         protected void CrossMuteUsers(string userName, string channelName, List<string> usersToMute, bool mute)
         {
             _mute.CrossMuteUsers(userName, channelName, usersToMute, mute);
@@ -359,16 +378,28 @@ namespace EasyCodeForVivox
             _audio.StopAudioInjection(EasySession.LoginSessions[username]);
         }
 
+        protected void SetAutoVoiceActivityDetection(string userName)
+        {
+            _audio.SetAutoVoiceActivityDetection(userName);
+        }
+
+        protected void SetVoiceActivityDetection(string userName, int hangover, int sensitivity, int noiseFloor)
+        {
+            _audio.SetVoiceActivityDetection(userName, hangover, sensitivity, noiseFloor);
+        }
+
         protected void SetAudioInputDevice(string deviceName)
         {
             var audioDevice = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Name.Contains(deviceName)).FirstOrDefault();
             if (audioDevice != null)
             {
-                Debug.Log("Setting New Audio Device");
+                if (_settings.LogEasyManager)
+                    Debug.Log("Setting New Audio Device");
                 _audio.SetAudioDeviceInput(audioDevice, EasySession.Client);
                 return;
             }
-            Debug.Log("Could not find Audio device");
+            if (_settings.LogEasyManager)
+                Debug.Log("Could not find Audio device");
         }
 
         protected void SetAudioOutputDevice(string deviceName)
@@ -397,10 +428,12 @@ namespace EasyCodeForVivox
         IEnumerator PushToTalk(KeyCode key)
         {
             yield return new WaitUntil(() => Input.GetKeyDown(key));
-            Debug.Log($"{key} is down, Local Player Is Unmuted");
+            if (_settings.LogEasyManager)
+                Debug.Log($"{key} is down, Local Player Is Unmuted");
             UnmuteSelf();
             yield return new WaitUntil(() => Input.GetKeyUp(key));
-            Debug.Log($"{key} is up, Local Player Muted");
+            if (_settings.LogEasyManager)
+                Debug.Log($"{key} is up, Local Player Muted");
             MuteSelf();
             yield return PushToTalk(key);
         }
@@ -451,22 +484,26 @@ namespace EasyCodeForVivox
 
         protected virtual void OnLoggingIn(ILoginSession loginSession)
         {
-            Debug.Log($"Logging In : {loginSession.LoginSessionId.DisplayName}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Logging In : {loginSession.LoginSessionId.DisplayName}");
         }
 
         protected virtual void OnLoggedIn(ILoginSession loginSession)
         {
-            Debug.Log($"Logged in : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Logged in : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
         protected virtual void OnLoggingOut(ILoginSession loginSession)
         {
-            Debug.Log($"Logging out : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Logging out : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
         protected virtual void OnLoggedOut(ILoginSession loginSession)
         {
-            Debug.Log($"Logged out : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Logged out : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
 
@@ -483,17 +520,20 @@ namespace EasyCodeForVivox
 
         protected virtual void OnLoginAdded(ILoginSession loginSession)
         {
-            Debug.Log($"Login Added : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Login Added : {loginSession.LoginSessionId.DisplayName}  : Presence = {loginSession.Presence.Status}");
         }
 
         protected virtual void OnLoginRemoved(ILoginSession loginSession)
         {
-            Debug.Log($"Login Removed : {loginSession.LoginSessionId.DisplayName} : Presence = {loginSession.Presence.Status}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Login Removed : {loginSession.LoginSessionId.DisplayName} : Presence = {loginSession.Presence.Status}");
         }
 
         protected virtual void OnLoginUpdated(ILoginSession loginSession)
         {
-            Debug.Log($"Login Updated : Login Updated : {loginSession.LoginSessionId.DisplayName} : Presence = {loginSession.Presence.Status}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Login Updated : Login Updated : {loginSession.LoginSessionId.DisplayName} : Presence = {loginSession.Presence.Status}");
         }
 
 
@@ -505,23 +545,29 @@ namespace EasyCodeForVivox
 
         protected virtual void OnChannelConnecting(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Is Connecting");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Is Connecting");
         }
 
         protected virtual void OnChannelConnected(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Has Connected");
-            Debug.Log($"Channel Type == {channelSession.Channel.Type}");
+            if (_settings.LogEasyManagerEventCallbacks)
+            {
+                Debug.Log($"{channelSession.Channel.Name} Has Connected");
+                Debug.Log($"Channel Type == {channelSession.Channel.Type}");
+            }
         }
 
         protected virtual void OnChannelDisconnecting(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Is Disconnecting");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Is Disconnecting");
         }
 
         protected virtual void OnChannelDisconnected(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Has Disconnected");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Has Disconnected");
             _channel.RemoveChannelSession(channelSession.Channel.Name);
         }
 
@@ -530,22 +576,26 @@ namespace EasyCodeForVivox
 
         protected virtual void OnVoiceConnecting(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Audio Is Connecting In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Audio Is Connecting In Channel");
         }
 
         protected virtual void OnVoiceConnected(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Audio Has Connected In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Audio Has Connected In Channel");
         }
 
         protected virtual void OnVoiceDisconnecting(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Audio Is Disconnecting In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Audio Is Disconnecting In Channel");
         }
 
         protected virtual void OnVoiceDisconnected(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Audio Has Disconnected In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Audio Has Disconnected In Channel");
         }
 
 
@@ -553,22 +603,26 @@ namespace EasyCodeForVivox
 
         protected virtual void OnTextChannelConnecting(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Text Is Connecting In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Text Is Connecting In Channel");
         }
 
         protected virtual void OnTextChannelConnected(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Text Has Connected In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Text Has Connected In Channel");
         }
 
         protected virtual void OnTextChannelDisconnecting(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Text Is Disconnecting In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Text Is Disconnecting In Channel");
         }
 
         protected virtual void OnTextChannelDisconnected(IChannelSession channelSession)
         {
-            Debug.Log($"{channelSession.Channel.Name} Text Has Disconnected In Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{channelSession.Channel.Name} Text Has Disconnected In Channel");
         }
 
 
@@ -580,12 +634,14 @@ namespace EasyCodeForVivox
 
         protected virtual void OnLocalUserMuted()
         {
-            Debug.Log("Local User is Muted");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log("Local User is Muted");
         }
 
         protected virtual void OnLocalUserUnmuted()
         {
-            Debug.Log("Local User is Unmuted");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log("Local User is Unmuted");
         }
 
         #endregion
@@ -595,43 +651,49 @@ namespace EasyCodeForVivox
 
         protected virtual void OnUserJoinedChannel(IParticipant participant)
         {
-            Debug.Log($"{participant.Account.DisplayName} Has Joined The Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Has Joined The Channel");
         }
 
         protected virtual void OnUserLeftChannel(IParticipant participant)
         {
-            Debug.Log($"{participant.Account.DisplayName} Has Left The Channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Has Left The Channel");
 
         }
 
         protected virtual void OnUserValuesUpdated(IParticipant participant)
         {
-            Debug.Log($"{participant.Account.DisplayName} Has updated itself in the channel");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Has updated itself in the channel");
 
         }
 
         protected virtual void OnUserMuted(IParticipant participant)
         {
-            // todo add option if statement to display debug messages
-            Debug.Log($"{participant.Account.DisplayName} Is Muted : (Muted For All : {participant.IsMutedForAll})");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Muted : (Muted For All : {participant.IsMutedForAll})");
 
         }
 
         protected virtual void OnUserUnmuted(IParticipant participant)
         {
-            Debug.Log($"{participant.Account.DisplayName} Is Unmuted : (Muted For All : {participant.IsMutedForAll})");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Unmuted : (Muted For All : {participant.IsMutedForAll})");
 
         }
 
         protected virtual void OnUserSpeaking(IParticipant participant)
         {
-            Debug.Log($"{participant.Account.DisplayName} Is Speaking : Audio Energy {participant.AudioEnergy}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Speaking : Audio Energy {participant.AudioEnergy}");
 
         }
 
         protected virtual void OnUserNotSpeaking(IParticipant participant)
         {
-            Debug.Log($"{participant.Account.DisplayName} Is Not Speaking");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Not Speaking");
         }
 
 
@@ -643,22 +705,26 @@ namespace EasyCodeForVivox
 
         protected virtual void OnChannelMessageRecieved(IChannelTextMessage textMessage)
         {
-            Debug.Log($"From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.Message}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.Message}");
         }
 
         protected virtual void OnEventMessageRecieved(IChannelTextMessage textMessage)
         {
-            Debug.Log($"Event Message From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.ApplicationStanzaNamespace} : {textMessage.ApplicationStanzaBody} : {textMessage.Message}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Event Message From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.ApplicationStanzaNamespace} : {textMessage.ApplicationStanzaBody} : {textMessage.Message}");
         }
 
         protected virtual void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
         {
-            Debug.Log($"Recived Message From : {directedTextMessage.Sender.DisplayName} : {directedTextMessage.ReceivedTime} : {directedTextMessage.Message}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Recived Message From : {directedTextMessage.Sender.DisplayName} : {directedTextMessage.ReceivedTime} : {directedTextMessage.Message}");
         }
 
         protected virtual void OnDirectMessageFailed(IFailedDirectedTextMessage failedMessage)
         {
-            Debug.Log($"Failed To Send Message From : {failedMessage.Sender}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Failed To Send Message From : {failedMessage.Sender}");
         }
 
 
@@ -671,17 +737,20 @@ namespace EasyCodeForVivox
 
         protected virtual void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
         {
-            Debug.Log($"TTS Message Has Been Added : {ttsArgs.Message.Text}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"TTS Message Has Been Added : {ttsArgs.Message.Text}");
         }
 
         protected virtual void OnTTSMessageRemoved(ITTSMessageQueueEventArgs ttsArgs)
         {
-            Debug.Log($"TTS Message Has Been Removed : {ttsArgs.Message.Text}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"TTS Message Has Been Removed : {ttsArgs.Message.Text}");
         }
 
         protected virtual void OnTTSMessageUpdated(ITTSMessageQueueEventArgs ttsArgs)
         {
-            Debug.Log($"TTS Message Has Been Updated : {ttsArgs.Message.Text}");
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"TTS Message Has Been Updated : {ttsArgs.Message.Text}");
         }
 
 

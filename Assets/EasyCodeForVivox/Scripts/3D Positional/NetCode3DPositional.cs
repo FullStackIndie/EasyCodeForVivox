@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using VivoxUnity;
+using Zenject;
 
 namespace EasyCodeForVivox
 {
@@ -17,10 +18,14 @@ namespace EasyCodeForVivox
         private bool _positionalChannelExists = false;
         private string _channelName;
         private string userName;
+        private EasySettingsSO _settings;
+
+
 
         private void Awake()
         {
             userName = EasySession.LoginSessions.FirstOrDefault().Value.LoginSessionId.DisplayName;
+            _settings = ScriptableObject.CreateInstance<EasySettingsSO>();
         }
 
         private void Start()
@@ -56,16 +61,19 @@ namespace EasyCodeForVivox
                     _channelName = session.Value.Channel.Name;
                     if (EasySession.ChannelSessions[_channelName].ChannelState == ConnectionState.Connected)
                     {
-                        Debug.Log($"Channel : {_channelName} is connected");
+                        if (_settings.LogEasyNetCode)
+                            Debug.Log($"Channel : {_channelName} is connected");
                         if (EasySession.ChannelSessions[_channelName].AudioState == ConnectionState.Connected)
                         {
-                            Debug.Log($"Audio is Connected in Channel : {_channelName}");
+                            if (_settings.LogEasyNetCode)
+                                Debug.Log($"Audio is Connected in Channel : {_channelName}");
                             return true;
                         }
                     }
                     else
                     {
-                        Debug.Log($"Channel : {_channelName} is not Connected");
+                        if (_settings.LogEasyNetCode)
+                            Debug.Log($"Channel : {_channelName} is not Connected");
                     }
                 }
             }
@@ -78,7 +86,8 @@ namespace EasyCodeForVivox
             if (listenerPosition.position != _lastListenerPosition || speakerPosition.position != _lastSpeakerPosition)
             {
                 EasySession.ChannelSessions[_channelName].Set3DPosition(speakerPosition.position, listenerPosition.position, listenerPosition.forward, listenerPosition.up);
-                Debug.Log($"{EasySession.ChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
+                if (_settings.LogNetCodeForGameObjects)
+                    Debug.Log($"{EasySession.ChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
             }
             _lastListenerPosition = listenerPosition.position;
             _lastSpeakerPosition = speakerPosition.position;

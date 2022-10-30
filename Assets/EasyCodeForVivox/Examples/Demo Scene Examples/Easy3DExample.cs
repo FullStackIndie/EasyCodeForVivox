@@ -1,6 +1,7 @@
 ﻿using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,9 +16,9 @@ public class Easy3DExample : EasyManager
     [SerializeField] string secretKey;
 
 
-    [SerializeField] InputField userName;
+    [SerializeField] InputField userNameText;
     [SerializeField] InputField directMessageRemotePlayerName;
-    [SerializeField] InputField channelName;
+    [SerializeField] InputField channelNameText;
     [SerializeField] InputField message;
     [SerializeField] Toggle voiceToggle;
     [SerializeField] Toggle textToggle;
@@ -34,6 +35,7 @@ public class Easy3DExample : EasyManager
     [SerializeField] TMP_Dropdown mutePlayerInChannelDropdown;
     [SerializeField] TMP_Dropdown audioCaptureDevicesDropdown;
     [SerializeField] TMP_Dropdown audioRenderDevicesDropdown;
+    [SerializeField] TMP_Dropdown textToSpeechOptionsDropdown;
 
     private PanelSwitcher panelSwitcher;
 
@@ -63,15 +65,8 @@ public class Easy3DExample : EasyManager
         await InitializeClient(vivoxConfig);
 
         LoadAudioDevices();
-
+        LoadTextToSpeechOptions();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
 
 
     // Clears Text messages where event logs show up in demo scene
@@ -94,10 +89,28 @@ public class Easy3DExample : EasyManager
         }
     }
 
+    public void LoadTextToSpeechOptions()
+    {
+        foreach (var tts in Enum.GetValues(typeof(TTSDestination)))
+        {
+            textToSpeechOptionsDropdown.AddValue(tts.ToString());
+        }
+    }
+
+    public void LoadExistingData()
+    {
+        var userName = EasySession.LoginSessions?.FirstOrDefault().Value.LoginSessionId.DisplayName;
+        var channelName = EasySession.ChannelSessions?.FirstOrDefault().Value.Channel.Name;
+        userNameText.text = userName;
+        channelNameText.text = channelName;
+        // todo finsish loading data for when you leave network 
+        // todo finish doing if checks for Log settings
+
+    }
 
     public void Login()
     {
-        LoginToVivox(userName.text);
+        LoginToVivox(userNameText.text);
     }
 
     public void Logout()
@@ -107,25 +120,34 @@ public class Easy3DExample : EasyManager
 
     public void JoinChannel()
     {
-        //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
-        JoinChannel(loginSessionsDropdown.GetSelected(), channelName.text, true, true, true, ChannelType.NonPositional);
+        JoinChannel(userNameText.text, channelNameText.text, true, true, false, ChannelType.NonPositional);
+    }
+
+    public void Join3DPositionalChannel()
+    {
+        JoinChannel(userNameText.text, "3D", true, false, false, ChannelType.Positional);
+    }
+
+    public void JoinEchoChannel()
+    {
+        JoinChannel(userNameText.text, channelNameText.text, true, true, true, ChannelType.Echo);
     }
 
     public void SwitchChannel()
     {
         //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
         // figure ot how settransmission works
-        JoinChannel(loginSessionsDropdown.GetSelected(), channelName.text, true, true, true, ChannelType.NonPositional);
+        JoinChannel(loginSessionsDropdown.GetSelected(), channelNameText.text, true, true, true, ChannelType.NonPositional);
     }
 
     public void SendMessage()
     {
-        if (string.IsNullOrEmpty(channelName.text) || string.IsNullOrEmpty(message.text))
+        if (string.IsNullOrEmpty(channelNameText.text) || string.IsNullOrEmpty(message.text))
         {
             Debug.Log("Channel name or message is empty");
             return;
         }
-        SendChannelMessage(loginSessionsDropdown.GetSelected(), channelName.text, message.text);
+        SendChannelMessage(loginSessionsDropdown.GetSelected(), channelSessionsDropdown.GetSelected(), message.text);
     }
 
     public void SendDirectMessageToPlayer()
@@ -142,17 +164,17 @@ public class Easy3DExample : EasyManager
 
     public void LeaveChannel()
     {
-        LeaveChannel(channelName.text, loginSessionsDropdown.GetSelected());
+        LeaveChannel(channelNameText.text, loginSessionsDropdown.GetSelected());
     }
 
     public void ToggleAudioInChannel()
     {
-        SetVoiceActiveInChannel(loginSessionsDropdown.GetSelected(), channelName.text, voiceToggle.isOn);
+        SetVoiceActiveInChannel(loginSessionsDropdown.GetSelected(), channelNameText.text, voiceToggle.isOn);
     }
 
     public void ToggleTextInChannel()
     {
-        SetTextActiveInChannel(loginSessionsDropdown.GetSelected(), channelName.text, textToggle.isOn);
+        SetTextActiveInChannel(loginSessionsDropdown.GetSelected(), channelNameText.text, textToggle.isOn);
     }
 
     public void MuteLocalPlayer()
@@ -170,7 +192,7 @@ public class Easy3DExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            ToggleMuteRemoteUser(selectedUser, channelName.text);
+            ToggleMuteRemoteUser(selectedUser, channelNameText.text);
         }
         else
         {
@@ -180,12 +202,12 @@ public class Easy3DExample : EasyManager
 
     public void MuteAllPlayers()
     {
-        MuteAllPlayers(channelName.text);
+        MuteAllPlayers(channelNameText.text);
     }
 
     public void UnmuteAllPlayers()
     {
-        UnmuteAllPlayers(channelName.text);
+        UnmuteAllPlayers(channelNameText.text);
     }
 
     public void AdjustLocalSelfVolume()
@@ -198,7 +220,7 @@ public class Easy3DExample : EasyManager
         var selectedUser = remotePlayerVolumeDropdown.GetSelected();
         if (selectedUser != null)
         {
-            AdjustRemoteUserVolume(selectedUser, channelName.text, Mathf.RoundToInt(remotePlayerSlider.value));
+            AdjustRemoteUserVolume(selectedUser, channelNameText.text, Mathf.RoundToInt(remotePlayerSlider.value));
         }
         else
         {
@@ -215,7 +237,7 @@ public class Easy3DExample : EasyManager
     {
         CrossMuteUser(loginSessionsDropdown.GetSelected(), channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), false);
     }
-    
+
     public void ClearCrossUnmute()
     {
         ClearCrossMutedUsersForLoginSession(loginSessionsDropdown.GetSelected());
@@ -268,17 +290,17 @@ public class Easy3DExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userName.text].LoginSessionId.Name);
+        SendEventMessage(channelNameText.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userNameText.text].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
+        SendEventMessage(channelNameText.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
     }
 
     public void SendUnmuteEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
+        SendEventMessage(channelNameText.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
     }
 
 
@@ -291,11 +313,11 @@ public class Easy3DExample : EasyManager
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Mute"))
         {
-            HandleMuteEvent(textMessage, userName.text);
+            HandleMuteEvent(textMessage, userNameText.text);
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Unmute"))
         {
-            HandleUnmuteEvent(textMessage, userName.text);
+            HandleUnmuteEvent(textMessage, userNameText.text);
         }
     }
 
@@ -353,6 +375,9 @@ public class Easy3DExample : EasyManager
         newMessage.text += $"\nLogged In {loginSession.LoginSessionId.DisplayName}";
         loginSessionsDropdown.AddValue(loginSession.LoginSessionId.Name);
         panelSwitcher.EnablePanel("Channel");
+
+        // set Auto VAD for loggedin user
+        SetAutoVoiceActivityDetection(loginSession.LoginSessionId.Name);
     }
 
     protected override void OnLoggingOut(ILoginSession loginSession)
@@ -428,17 +453,17 @@ public class Easy3DExample : EasyManager
 
     // Text Channels Event Callbacks
 
+    protected override void OnTextChannelConnecting(IChannelSession channelSession)
+    {
+        base.OnTextChannelConnecting(channelSession);
+        newMessage.text += $"\nText Connecting in Channel : {channelSession.Channel.Name}";
+    }
+
     protected override void OnTextChannelConnected(IChannelSession channelSession)
     {
         base.OnTextChannelConnected(channelSession);
         newMessage.text += $"\nText Connected in Channel : {channelSession.Channel.Name}";
         panelSwitcher.EnablePanel("Message");
-    }
-
-    protected override void OnTextChannelConnecting(IChannelSession channelSession)
-    {
-        base.OnTextChannelConnecting(channelSession);
-        newMessage.text += $"\nText Connecting in Channel : {channelSession.Channel.Name}";
     }
 
     protected override void OnTextChannelDisconnecting(IChannelSession channelSession)
@@ -463,7 +488,10 @@ public class Easy3DExample : EasyManager
         newMessage.text += $"\nFrom {textMessage.Sender.DisplayName} : {textMessage.Message}";
         if (textToSpeechToggle.isOn)
         {
-            SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
+            {
+                SpeakTTS(message.text, userNameText.text, destination);
+            }
         }
     }
 
@@ -473,7 +501,10 @@ public class Easy3DExample : EasyManager
         newMessage.text += $"\nFrom {directedTextMessage.Sender.DisplayName} : {directedTextMessage.Message}";
         if (textToSpeechToggle.isOn)
         {
-            SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
+            {
+                SpeakTTS(message.text, userNameText.text, destination);
+            }
         }
     }
 
@@ -483,7 +514,10 @@ public class Easy3DExample : EasyManager
         newMessage.text += $"\nMessage failed from {failedMessage.Sender.DisplayName} : Status Code : {failedMessage.StatusCode}";
         if (textToSpeechToggle.isOn)
         {
-            SpeakTTS("Failed to send message", userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
+            {
+                SpeakTTS("Failed to send message", userNameText.text, destination);
+            }
         }
     }
 
@@ -500,7 +534,7 @@ public class Easy3DExample : EasyManager
             mutePlayerInChannelDropdown.AddValue(participant.Account.DisplayName);
             remotePlayerVolumeDropdown.AddValue(participant.Account.DisplayName);
         }
-        
+
     }
 
     protected override void OnUserLeftChannel(IParticipant participant)

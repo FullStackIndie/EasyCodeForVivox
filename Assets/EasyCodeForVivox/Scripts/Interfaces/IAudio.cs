@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using VivoxUnity;
+﻿using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
@@ -14,7 +13,7 @@ namespace EasyCodeForVivox
         void RefreshAudioDevices(VivoxUnity.Client client);
         void OnAudioInputDeviceAdded(object sender, KeyEventArg<string> propArgs);
         void OnAudioInputDeviceRemoved(object sender, KeyEventArg<string> propArgs);
-        void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs);  
+        void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs);
         void OnAudioOutputDeviceAdded(object sender, KeyEventArg<string> propArgs);
         void OnAudioOutputDeviceRemoved(object sender, KeyEventArg<string> propArgs);
         void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs);

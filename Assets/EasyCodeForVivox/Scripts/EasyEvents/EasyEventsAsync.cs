@@ -8,9 +8,9 @@ namespace EasyCodeForVivox.Events
 {
     public class EasyEventsAsync
     {
-        private readonly EasySettings _settings;
+        private readonly EasySettingsSO _settings;
 
-        public EasyEventsAsync(EasySettings settings)
+        public EasyEventsAsync(EasySettingsSO settings)
         {
             _settings = settings;
         }
@@ -1064,7 +1064,7 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        public async Task OnLocalUserMutedAsync<T>( T value)
+        public async Task OnLocalUserMutedAsync<T>(T value)
         {
             try
             {

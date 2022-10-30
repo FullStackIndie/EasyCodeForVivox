@@ -16,9 +16,9 @@ namespace EasyCodeForVivox
 
         void SendChannelMessage(IChannelSession channel, string inputMsg, string stanzaNameSpace, string stanzaBody);
         void SendChannelMessage<T>(IChannelSession channel, string inputMsg, T value, string stanzaNameSpace, string stanzaBody);
-      
+
         void SendEventMessage(IChannelSession channel, string eventMessage, string stanzaNameSpace, string stanzaBody);
-       
+
         void SendDirectMessage(ILoginSession loginSession, string targetID, string message, string stanzaNameSpace = null, string stanzaBody = null);
         void SendDirectMessage<T>(ILoginSession loginSession, string targetID, string message, T value, string stanzaNameSpace = null, string stanzaBody = null);
 

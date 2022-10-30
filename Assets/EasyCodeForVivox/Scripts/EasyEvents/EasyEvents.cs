@@ -8,9 +8,9 @@ namespace EasyCodeForVivox
 {
     public class EasyEvents
     {
-        private readonly EasySettings _settings;
+        private readonly EasySettingsSO _settings;
 
-        public EasyEvents(EasySettings settings)
+        public EasyEvents(EasySettingsSO settings)
         {
             _settings = settings;
         }
@@ -1053,7 +1053,7 @@ namespace EasyCodeForVivox
                 throw;
             }
         }
-        
+
 
 
         public void OnUserCrossMuted(AccountId accountId)

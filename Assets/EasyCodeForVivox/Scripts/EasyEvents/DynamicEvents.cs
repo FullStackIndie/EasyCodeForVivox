@@ -152,8 +152,7 @@ namespace EasyCodeForVivox.Events
 
         public static Dictionary<Enum, List<MethodInfo>> Methods = new Dictionary<Enum, List<MethodInfo>>();
 
-
-        public static async Task RegisterEvents(bool onlySearchAssemblyCSharp = true,bool logAssemblySearches = true, bool logAllDynamicMethods = false)
+        public static async Task RegisterEvents(bool onlySearchAssemblyCSharp = true, bool logAssemblySearches = true, bool logAllDynamicMethods = false)
         {
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();

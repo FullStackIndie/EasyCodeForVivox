@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VivoxUnity;
-using Zenject;
 
 public class EasyChatExample : EasyManager
 {
@@ -101,7 +100,7 @@ public class EasyChatExample : EasyManager
 
     public void JoinGame()
     {
-        if(EasySession.LoginSessions.Count == 0 || EasySession.ChannelSessions.Count == 0)
+        if (EasySession.LoginSessions.Count == 0 || EasySession.ChannelSessions.Count == 0)
         {
             Debug.Log("Login or Join Channel before joining the game".Color(EasyDebug.Yellow));
             return;
@@ -229,7 +228,7 @@ public class EasyChatExample : EasyManager
     {
         CrossMuteUser(loginSessionsDropdown.GetSelected(), channelSessionsDropdown.GetSelected(), remotePlayerVolumeDropdown.GetSelected(), false);
     }
-    
+
     public void ClearCrossUnmute()
     {
         ClearCrossMutedUsersForLoginSession(loginSessionsDropdown.GetSelected());
@@ -514,7 +513,7 @@ public class EasyChatExample : EasyManager
             mutePlayerInChannelDropdown.AddValue(participant.Account.DisplayName);
             remotePlayerVolumeDropdown.AddValue(participant.Account.DisplayName);
         }
-        
+
     }
 
     protected override void OnUserLeftChannel(IParticipant participant)

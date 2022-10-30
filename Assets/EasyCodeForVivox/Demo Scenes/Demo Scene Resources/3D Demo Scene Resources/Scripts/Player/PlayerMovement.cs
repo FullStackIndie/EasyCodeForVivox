@@ -28,12 +28,6 @@ public class PlayerMovement : NetworkBehaviour
         _lastPosition = transform.position;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -42,7 +36,6 @@ public class PlayerMovement : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-
         if (IsOwner && IsSpawned)
         {
             IsGrounded = Physics.CheckSphere(_groundCheck.position, _groundDistance, _groundMask);
@@ -61,7 +54,8 @@ public class PlayerMovement : NetworkBehaviour
             if (Input.GetKeyDown(KeyCode.Space) && IsGrounded)
             {
                 _velocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-                HandleJumpAnimationServerRpc();
+                HandleJumpAnimationServerRpc(_velocity * Time.deltaTime);
+                return;
             }
             if (_lastPosition == transform.position) { return; }
             _velocity.y += _gravity * Time.deltaTime;
@@ -77,9 +71,10 @@ public class PlayerMovement : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void HandleJumpAnimationServerRpc()
+    private void HandleJumpAnimationServerRpc(Vector3 velocity)
     {
         _networkAnimator.SetTrigger(_isJumpingHash);
+        _characterController.Move(velocity);
     }
 
 }

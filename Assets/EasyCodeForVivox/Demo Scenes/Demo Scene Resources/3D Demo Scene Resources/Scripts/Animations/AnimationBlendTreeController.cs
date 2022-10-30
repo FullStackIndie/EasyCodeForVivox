@@ -5,6 +5,7 @@ using UnityEngine;
 public class AnimationBlendTreeController : NetworkBehaviour
 {
     // Credits : iHeartGameDev :  https://www.youtube.com/watch?v=m8rGyoStfgQ&list=PLwyUzJb_FNeTQwyGujWRLqnfKpV-cj-eO&index=4
+
     [SerializeField] private PlayerMovement _playerMovement;
     [SerializeField] private float _accelaration = 0.1f;
     [SerializeField] private float _deccelaration = 0.5f;
@@ -20,11 +21,6 @@ public class AnimationBlendTreeController : NetworkBehaviour
         _velocityHash = Animator.StringToHash("Velocity");
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
 
     // Update is called once per frame
     void Update()
@@ -43,7 +39,7 @@ public class AnimationBlendTreeController : NetworkBehaviour
     {
         bool forwardPressed = Input.GetKey(KeyCode.W);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
-        
+
         if (forwardPressed && _velocity < _maxVelocity)
         {
             _velocity += Time.deltaTime * _accelaration;

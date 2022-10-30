@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 12
-  _jumpHeight: 2
+  _jumpHeight: 1.2
   _gravity: -19.81
   _groundDistance: 0.4
   _groundCheck: {fileID: 8252343034509374867}

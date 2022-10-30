@@ -9,9 +9,9 @@ namespace EasyCodeForVivox
 
     public class EasyAudio : IAudio
     {
-        private readonly EasySettings _settings;
+        private readonly EasySettingsSO _settings;
 
-        public EasyAudio(EasySettings settings)
+        public EasyAudio(EasySettingsSO settings)
         {
             _settings = settings;
         }
@@ -22,7 +22,7 @@ namespace EasyCodeForVivox
             client.AudioInputDevices.AvailableDevices.AfterKeyAdded += OnAudioInputDeviceAdded;
             client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved += OnAudioInputDeviceRemoved;
             client.AudioInputDevices.AvailableDevices.AfterValueUpdated += OnAudioInputDeviceUpdated;
-            
+
             client.AudioOutputDevices.AvailableDevices.AfterKeyAdded += OnAudioOutputDeviceAdded;
             client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved += OnAudioOutputDeviceRemoved;
             client.AudioOutputDevices.AvailableDevices.AfterValueUpdated += OnAudioOutputDeviceUpdated;
@@ -33,7 +33,7 @@ namespace EasyCodeForVivox
             client.AudioInputDevices.AvailableDevices.AfterKeyAdded -= OnAudioInputDeviceAdded;
             client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved -= OnAudioInputDeviceRemoved;
             client.AudioInputDevices.AvailableDevices.AfterValueUpdated -= OnAudioInputDeviceUpdated;
-            
+
             client.AudioOutputDevices.AvailableDevices.AfterKeyAdded -= OnAudioOutputDeviceAdded;
             client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved -= OnAudioOutputDeviceRemoved;
             client.AudioOutputDevices.AvailableDevices.AfterValueUpdated -= OnAudioOutputDeviceUpdated;
@@ -141,38 +141,89 @@ namespace EasyCodeForVivox
                 }
             });
         }
+
+        public void SetAutoVoiceActivityDetection(string userName)
+        {
+            var request = new vx_req_aux_set_vad_properties_t();
+            request.account_handle = userName;
+            request.vad_auto = 1; // 1 = true
+            VxClient.Instance.BeginIssueRequest(request, ar =>
+            {
+                try
+                {
+                    if (ar.IsCompleted)
+                    {
+                        if (_settings.LogVoiceActivityDetection)
+                            Debug.Log($"Successfully set Auto Voice Activity Detection (VAD) for logged in player {userName}");
+                    }
+                }
+                catch(Exception e)
+                {
+                    Debug.Log($"Error Setting Auto Voice Activity Detection (VAD) for logged in player {userName}");
+                    Debug.LogException(e);
+                }
+            });
+        }
+
+        public void SetVoiceActivityDetection(string userName, int hangover, int sensitivity, int noiseFloor)
+        {
+            // https://support.unity.com/hc/en-us/articles/4418142182804-Vivox-How-to-Access-VAD-settings#h_4650a9f8-6c2b-4e31-b0c9-7d0a90509378
+            var request = new vx_req_aux_set_vad_properties_t();
+            request.account_handle = userName;
+            request.vad_hangover = hangover; // milliseconds to switch back to silence after player stopped talking
+            request.vad_sensitivity = sensitivity;
+            request.vad_noise_floor = noiseFloor;
+            request.vad_auto = 0; // 0 = false
+            VxClient.Instance.BeginIssueRequest(request, ar =>
+            {
+                try
+                {
+                    if (ar.IsCompleted)
+                    {
+                        if (_settings.LogVoiceActivityDetection)
+                            Debug.Log($"Successfully set Voice Activity Detection (VAD) for logged in player {userName}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.Log($"Error Setting  Voice Activity Detection (VAD) for logged in player {userName}");
+                    Debug.LogException(e);
+                }
+            });
+        }
+
         #endregion
 
 
-        public void OnAudioInputDeviceAdded(object sender, KeyEventArg<string> keyArgs) 
+        public void OnAudioInputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
         {
             var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             if (!_settings.LogAllAudioDevices) { return; }
             Debug.Log($"Audio Input device has been added {device?.Name}");
         }
 
-        public void OnAudioInputDeviceRemoved(object sender, KeyEventArg<string> keyArgs) 
+        public void OnAudioInputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
         {
             var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             if (!_settings.LogAllAudioDevices) { return; }
             Debug.Log($"Audio Input device has been removed {device?.Name}");
         }
 
-        public void OnAudioOutputDeviceAdded(object sender, KeyEventArg<string> keyArgs) 
+        public void OnAudioOutputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
         {
             var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             if (!_settings.LogAllAudioDevices) { return; }
             Debug.Log($"Audio Output device has been added {device?.Name}");
         }
 
-        public void OnAudioOutputDeviceRemoved(object sender, KeyEventArg<string> keyArgs) 
+        public void OnAudioOutputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
         {
             var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             if (!_settings.LogAllAudioDevices) { return; }
             Debug.Log($"Audio Output device has been removed {device?.Name}");
         }
 
-        public void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs) 
+        public void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
         {
             switch (valueArgs.PropertyName)
             {

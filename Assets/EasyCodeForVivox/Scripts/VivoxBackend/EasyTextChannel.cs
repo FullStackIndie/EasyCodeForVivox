@@ -119,7 +119,7 @@ namespace EasyCodeForVivox
                         _events.OnTextChannelDisconnected(senderIChannelSession);
                         break;
                 }
-                    await HandleDynamicAsyncEvents(propArgs, senderIChannelSession);
+                await HandleDynamicAsyncEvents(propArgs, senderIChannelSession);
             }
         }
 
@@ -145,7 +145,7 @@ namespace EasyCodeForVivox
                     break;
             }
         }
-        
+
 
         private async Task HandleDynamicAsyncEvents<T>(IChannelSession channelSession, T value)
         {

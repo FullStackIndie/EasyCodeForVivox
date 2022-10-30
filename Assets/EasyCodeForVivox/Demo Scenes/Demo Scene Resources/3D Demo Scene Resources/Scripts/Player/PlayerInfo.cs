@@ -15,7 +15,7 @@ public struct PlayerInfo : INetworkSerializable, IEquatable<PlayerInfo>
 
     public bool Equals(PlayerInfo other)
     {
-        if(other.playerName == playerName)
+        if (other.playerName == playerName)
         {
             return true;
         }

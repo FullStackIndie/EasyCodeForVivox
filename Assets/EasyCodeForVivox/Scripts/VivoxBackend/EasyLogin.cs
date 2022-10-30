@@ -19,7 +19,7 @@ namespace EasyCodeForVivox
 
         public EasyLogin(EasyMessages messages, EasyTextToSpeech textToSpeech,
             EasyEvents eventsSync, EasyEventsAsync eventsAync,
-            EasySettings easySettings, EasyMute mute)
+            EasySettingsSO easySettings, EasyMute mute)
         {
             _messages = messages;
             _textToSpeech = textToSpeech;
@@ -209,19 +209,19 @@ namespace EasyCodeForVivox
                 {
                     case LoginState.LoggingIn:
                         _events.OnLoggingIn(senderLoginSession);
-                         await _eventsAync.OnLoggingInAsync(senderLoginSession);
+                        await _eventsAync.OnLoggingInAsync(senderLoginSession);
                         break;
                     case LoginState.LoggedIn:
                         _events.OnLoggedIn(senderLoginSession);
-                         await _eventsAync.OnLoggedInAsync(senderLoginSession);
+                        await _eventsAync.OnLoggedInAsync(senderLoginSession);
                         break;
                     case LoginState.LoggingOut:
                         _events.OnLoggingOut(senderLoginSession);
-                         await _eventsAync.OnLoggingOutAsync(senderLoginSession);
+                        await _eventsAync.OnLoggingOutAsync(senderLoginSession);
                         break;
                     case LoginState.LoggedOut:
                         _events.OnLoggedOut(senderLoginSession);
-                         await _eventsAync.OnLoggedOutAsync(senderLoginSession);
+                        await _eventsAync.OnLoggedOutAsync(senderLoginSession);
                         break;
 
                     default:
@@ -237,19 +237,19 @@ namespace EasyCodeForVivox
             {
                 case LoginState.LoggingIn:
                     _events.OnLoggingIn(senderLoginSession, value);
-                     await _eventsAync.OnLoggingInAsync(senderLoginSession, value);
+                    await _eventsAync.OnLoggingInAsync(senderLoginSession, value);
                     break;
                 case LoginState.LoggedIn:
                     _events.OnLoggedIn(senderLoginSession, value);
-                     await _eventsAync.OnLoggedInAsync(senderLoginSession, value);
+                    await _eventsAync.OnLoggedInAsync(senderLoginSession, value);
                     break;
                 case LoginState.LoggingOut:
                     _events.OnLoggingOut(senderLoginSession, value);
-                     await _eventsAync.OnLoggingOutAsync(senderLoginSession, value);
+                    await _eventsAync.OnLoggingOutAsync(senderLoginSession, value);
                     break;
                 case LoginState.LoggedOut:
                     _events.OnLoggedOut(senderLoginSession, value);
-                     await _eventsAync.OnLoggedOutAsync(senderLoginSession, value);
+                    await _eventsAync.OnLoggedOutAsync(senderLoginSession, value);
                     break;
 
                 default:

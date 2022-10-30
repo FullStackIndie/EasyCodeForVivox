@@ -13,10 +13,10 @@ namespace EasyCodeForVivox
 
         private readonly EasyEvents _events;
         private readonly EasyEventsAsync _eventsAsync;
-        private readonly EasySettings _settings;
+        private readonly EasySettingsSO _settings;
 
         public EasyMute(EasyEvents events, EasyEventsAsync eventsAync,
-            EasySettings settings)
+            EasySettingsSO settings)
         {
             _events = events;
             _eventsAsync = eventsAync;
@@ -153,10 +153,10 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void CrossMuteUsers(string loggedInUserName,string channelName, List<string> usersToMute, bool mute)
+        public void CrossMuteUsers(string loggedInUserName, string channelName, List<string> usersToMute, bool mute)
         {
             HashSet<AccountId> accountIds = new HashSet<AccountId>();
-            foreach(var userName in usersToMute)
+            foreach (var userName in usersToMute)
             {
                 accountIds.Add(EasySession.ChannelSessions[channelName].Participants.Where(p => p.Account.Name == userName).FirstOrDefault().Account);
             }
@@ -203,7 +203,7 @@ namespace EasyCodeForVivox
 
         public async void OnParticipantCrossMuted(object sender, KeyEventArg<AccountId> account)
         {
-            if(account != null)
+            if (account != null)
             {
                 _events.OnUserCrossMuted(account.Key);
                 await _eventsAsync.OnUserCrossMutedAsync(account.Key);

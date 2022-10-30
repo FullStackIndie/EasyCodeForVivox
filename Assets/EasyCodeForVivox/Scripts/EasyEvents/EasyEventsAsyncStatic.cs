@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
-using Zenject;
 
 namespace EasyCodeForVivox.Events
 {

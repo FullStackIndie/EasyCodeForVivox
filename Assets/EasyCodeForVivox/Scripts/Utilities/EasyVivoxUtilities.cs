@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Android;
 #if UNITY_ANDROID
  using UnityEngine.Android;
 #elif UNITY_IOS
@@ -17,6 +18,7 @@ namespace EasyCodeForVivox.Utilities
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
             Permission.RequestUserPermission(Permission.Microphone);
+            
         }
 #endif
         }

@@ -43,7 +43,7 @@
         AudioChannelDisconnecting,
         AudioChannelDisconnected,
     }
-    
+
 
     internal enum AudioChannelStatusAsync
     {

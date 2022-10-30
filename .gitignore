@@ -71,10 +71,11 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# Vivox
+# EasyCodeForVivox
 /Assets/Vivox
 /Assets/TextMesh Pro
 /Assets/AssetStoreTools
+*_clone_[0-9]*/
 
 # Unity
 /ProjectSettings/
@@ -82,8 +83,3 @@ crashlytics-build.properties
 
 #Visual Studio
 .vsconfig
-Assets/EasyCodeTesting/Test4.cs
-Assets/EasyCodeTesting/Test3.cs
-Assets/EasyCodeTesting/Test2.cs
-Assets/EasyCodeTesting/Test1.cs
-Assets/EasyCodeTesting/Test.cs

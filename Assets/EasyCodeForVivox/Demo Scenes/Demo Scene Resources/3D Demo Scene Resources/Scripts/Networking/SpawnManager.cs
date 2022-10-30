@@ -1,15 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 public class SpawnManager : NetworkBehaviour
 {
     [SerializeField] private GameObject _playerPrefab;
-    [SerializeField] private SpawnSettings _spawnSettings;
+    [SerializeField] private SpawnSettingsSO _spawnSettings;
+    private EasySettingsSO _settings;
+
 
     public override void OnNetworkSpawn()
     {
+        _settings = ScriptableObject.CreateInstance<EasySettingsSO>();
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientDisconnected;
         SpawnExistingClients();
@@ -26,7 +28,8 @@ public class SpawnManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            Debug.Log($"Spawned player {clientId}");
+            if (_settings.LogEasyNetCode)
+                Debug.Log($"Spawned player {clientId}");
             SpawnPlayer(clientId);
         }
     }
@@ -35,7 +38,7 @@ public class SpawnManager : NetworkBehaviour
     {
 
     }
-    
+
     public void SpawnExistingClients()
     {
         if (IsServer)
@@ -49,29 +52,9 @@ public class SpawnManager : NetworkBehaviour
 
     private void SpawnPlayer(ulong clientId)
     {
-        Debug.Log($"Spawned player {clientId}");
+        if (_settings.LogEasyNetCode)
+            Debug.Log($"Spawned player {clientId}");
         GameObject player = Instantiate(_playerPrefab, _spawnSettings.GetSpawnPoint(), Quaternion.identity);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-        SetNameClientRpc(player, NetCodeManager.GetPlayerInfo(clientId).Value);
-    }
-
-    [ClientRpc]
-    private void SetNameClientRpc(NetworkObjectReference player, PlayerInfo playerInfo)
-    {
-        Debug.Log($"Setting name for  player {playerInfo.playerId}");
-        ((GameObject)player).GetComponentInChildren<PlayerUI>().UpdatePlayerName(playerInfo);
-    }
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

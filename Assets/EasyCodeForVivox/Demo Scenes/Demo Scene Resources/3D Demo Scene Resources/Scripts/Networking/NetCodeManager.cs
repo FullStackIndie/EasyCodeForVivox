@@ -5,22 +5,32 @@ using System.Text;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 public class NetCodeManager : MonoBehaviour
 {
-    [SerializeField] private SpawnSettings _spawnManager;
+    [SerializeField] private SpawnSettingsSO _spawnManager;
     private static Dictionary<ulong, PlayerInfo> _players;
+    private EasySettingsSO _settings;
 
-    private void Awake()
+    [Inject]
+    private void Initialize(EasySettingsSO settings)
     {
-        _players = new Dictionary<ulong, PlayerInfo>();
+        _settings = settings;
+    }
+    private void Start()
+    {
+        if (_settings.LogNetCodeForGameObjects)
+            NetworkManager.Singleton.LogLevel = LogLevel.Developer;
+        else
+            NetworkManager.Singleton.LogLevel = LogLevel.Nothing;
     }
 
     private void OnApplicationQuit()
     {
         UnsubscribeToNetworkManagerEvents();
         LeaveGame();
-        NetworkManager.Singleton?.Shutdown();
+        NetworkManager.Singleton?.Shutdown(true);
     }
 
     private void SubscribeToNetworkManagerEvents()
@@ -108,9 +118,9 @@ public class NetCodeManager : MonoBehaviour
         if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
         {
             _players.Remove(clientId);
+            NetworkManager.Singleton.DisconnectClient(clientId);
             return;
         }
-        NetworkManager.Singleton.DisconnectClient(clientId);
     }
 
     private void ApproveClient(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
@@ -124,11 +134,19 @@ public class NetCodeManager : MonoBehaviour
                 PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
                 _players.Add(request.ClientNetworkId, playerInfo);
 
+                // neccessary if you dont have custom spawner
                 //response.Position = _spawnManager.GetSpawnPoint();
+                //response.Rotation = Quaternion.identity;
                 //response.CreatePlayerObject = true;
 
                 response.CreatePlayerObject = false;
-                Debug.Log($"Client {request.ClientNetworkId} has been approved");
+                if (_settings.LogEasyNetCode)
+                    Debug.Log($"Client [ {request.ClientNetworkId} ] has been approved to join game".Color(EasyDebug.Yellow));
+            }
+            else
+            {
+                if (_settings.LogEasyNetCode)
+                    Debug.Log($"Client [ {request.ClientNetworkId} ] has been rejected from joining the game".Color(EasyDebug.Yellow));
             }
         }
     }
@@ -137,7 +155,8 @@ public class NetCodeManager : MonoBehaviour
     {
         if (EasySession.LoginSessions.Count == 0 || EasySession.ChannelSessions.Count == 0)
         {
-            Debug.Log("Login or Join Channel before joining the game".Color(EasyDebug.Yellow));
+            if (_settings.LogEasyNetCode)
+                Debug.Log("Login or Join Channel before joining the game".Color(EasyDebug.Yellow));
             return;
         }
         if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
@@ -145,7 +164,8 @@ public class NetCodeManager : MonoBehaviour
             var status = NetworkManager.Singleton.SceneManager.LoadScene("3D Demo Scene", LoadSceneMode.Single);
             if (status != SceneEventProgressStatus.Started)
             {
-                Debug.LogWarning($"Failed to load 3D Demo Scene : [ Status ] {status}");
+                if (_settings.LogEasyNetCode)
+                    Debug.LogWarning($"Failed to load 3D Demo Scene : [ Status ] {status}");
             }
         }
     }
@@ -158,11 +178,8 @@ public class NetCodeManager : MonoBehaviour
         {
             NetworkManager.Singleton.ConnectionApprovalCallback -= ApproveClient;
         }
-        var result = SceneManager.LoadSceneAsync("Lobby");
-        while (!result.isDone)
-        {
-            Debug.Log(result.progress);
-        }
+        NetworkManager.Singleton.Shutdown(true);
+        SceneManager.LoadScene("Lobby");
     }
 
 }

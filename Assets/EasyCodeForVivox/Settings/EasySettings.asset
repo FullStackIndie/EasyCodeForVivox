@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25b8004b32333d4e974099a3b2214e8, type: 3}
   m_Name: EasySettings
   m_EditorClassIdentifier: 
-  UseDynamicEvents: 1
+  LogEasyManager: 1
+  LogEasyManagerEventCallbacks: 0
+  UseDynamicEvents: 0
   OnlySearchAssemblyCSharp: 1
   LogAssemblySearches: 0
   LogAllDynamicMethods: 0
   LogAllAudioDevices: 0
+  LogVoiceActivityDetection: 1
+  LogEasyNetCode: 1
+  LogNetCodeForGameObjects: 0
