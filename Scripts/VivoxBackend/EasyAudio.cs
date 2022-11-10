@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasyCodeForVivox.Extensions;
+using System;
 using System.Linq;
 using UnityEngine;
 using VivoxUnity;
@@ -157,7 +158,7 @@ namespace EasyCodeForVivox
                             Debug.Log($"Successfully set Auto Voice Activity Detection (VAD) for logged in player {userName}");
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Debug.Log($"Error Setting Auto Voice Activity Detection (VAD) for logged in player {userName}");
                     Debug.LogException(e);

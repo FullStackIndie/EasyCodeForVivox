@@ -3,8 +3,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using VivoxUnity;
 
 public class DynamicAsyncEvents : MonoBehaviour

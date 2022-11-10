@@ -1,4 +1,5 @@
-﻿using EasyCodeForVivox.Internal;
+﻿using EasyCodeForVivox.Extensions;
+using EasyCodeForVivox.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,7 +199,7 @@ namespace EasyCodeForVivox.Events
             LogRegisteredEventsCount(logAllDynamicMethods);
 
             stopwatch.Stop();
-            Debug.Log($"Registering Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Teal));
+            Debug.Log($"Registering Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green));
         }
 
         public static void LogRegisteredEventsCount(bool logAllDynamicMethods)

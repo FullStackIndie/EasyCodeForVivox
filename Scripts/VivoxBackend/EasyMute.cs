@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace EasyCodeForVivox
         {
             var participants = channelSession.Participants;
             string userToMute = EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain);
+            
             Debug.Log($"Sip address of User to mute - {userToMute}");
             if (participants[userToMute].InAudio && !participants[userToMute].IsSelf)
             {

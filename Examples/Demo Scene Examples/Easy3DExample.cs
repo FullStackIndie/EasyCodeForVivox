@@ -1,15 +1,9 @@
 ﻿using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 using VivoxUnity;
 
@@ -174,12 +168,12 @@ public class Easy3DExample : EasyManager
 
     public void ToggleAudioInChannel()
     {
-        SetVoiceActiveInChannel(loginSessionsDropdown.GetSelected(), channelNameInput.text, voiceToggle.isOn);
+        ToggleAudioInChannel(channelNameInput.text, voiceToggle.isOn);
     }
 
     public void ToggleTextInChannel()
     {
-        SetTextActiveInChannel(loginSessionsDropdown.GetSelected(), channelNameInput.text, textToggle.isOn);
+        ToggleTextInChannel(channelNameInput.text, textToggle.isOn);
     }
 
     public void MuteLocalPlayer()
@@ -271,12 +265,12 @@ public class Easy3DExample : EasyManager
 
     public void EnablePushToTalk()
     {
-        PushToTalk(true, KeyCode.Space);
+        EnablePushToTalk(true, KeyCode.Space);
     }
 
     public void DisablePushToTalk()
     {
-        PushToTalk(false, KeyCode.Space);
+        EnablePushToTalk(false, KeyCode.Space);
     }
 
 

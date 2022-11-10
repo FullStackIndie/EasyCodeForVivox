@@ -1,20 +1,21 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Extensions;
 using EasyCodeForVivox.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
 using Zenject;
-using static EasyCodeForVivox.Examples.ApiResponse;
 
 namespace EasyCodeForVivox
 {
+    [RequireComponent(typeof(SceneContext))]
     public class EasyManager : MonoBehaviour
     {
+        [SerializeField] private bool dontDestroyOnLoad = true;
         private EasyLogin _login;
         private EasyChannel _channel;
         private EasyAudioChannel _voiceChannel;
@@ -56,7 +57,10 @@ namespace EasyCodeForVivox
 #else
              Debug.unityLogger.logEnabled = false;
 #endif
-
+            if (dontDestroyOnLoad)
+            {
+                DontDestroyOnLoad(this);
+            }
             if (EasySession.Client.Initialized)
             {
                 if (_settings.LogEasyManager)
@@ -231,19 +235,14 @@ namespace EasyCodeForVivox
             _login.LoginToVivox(userName, joinMuted);
         }
 
-        public void LoginToVivox<T>(string userName, T eventParameter, bool joinMuted = false)
-        {
-            _login.LoginToVivox(userName, eventParameter, joinMuted);
-        }
-
         public void UpdateLoginProperties(string userName, ParticipantPropertyUpdateFrequency updateFrequency)
         {
-            _login.UpdateLoginProperties(EasySession.LoginSessions[userName], updateFrequency);
+            _login.UpdateLoginProperties(userName, updateFrequency);
         }
 
         public void LogoutOfVivox(string userName)
         {
-            _login.Logout(userName);
+            _login.LogoutOfVivox(userName);
         }
 
         public void JoinChannel(string userName, string channelName, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
@@ -252,30 +251,31 @@ namespace EasyCodeForVivox
             _channel.JoinChannel(userName, channelName, includeVoice, includeText, switchTransmissionToThisChannel, channelType, joinMuted, channel3DProperties);
         }
 
-        public void JoinChannelCustom<T>(string userName, string channelName, T eventParameter, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
+        public void JoinChannelRegion(string userName, string channelName, string matchRegion, string matchHash, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
             bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
-            _channel.JoinChannelCustom(userName, channelName, eventParameter, includeVoice, includeText, switchTransmissionToThisChannel, channelType, joinMuted, channel3DProperties);
+            _channel.JoinChannelRegion(userName, channelName, matchRegion, matchHash, includeVoice, includeText, switchTransmissionToThisChannel, channelType, joinMuted, channel3DProperties);
         }
+
 
         public void LeaveChannel(string channelName, string userName)
         {
             _channel.LeaveChannel(channelName, userName);
         }
 
-        public void SetVoiceActiveInChannel(string userName, string channelName, bool connect)
+        public void ToggleAudioInChannel(string channelName, bool connect)
         {
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null reference because channel name exists but channelsession doesnt exist
-            IChannelSession channelSession = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(_channel.GetChannelSIP(channelName)));
-            _voiceChannel.ToggleAudioChannelActive(channelSession, connect);
+            IChannelSession channelSession = EasySession.ChannelSessions[channelName];
+            _voiceChannel.ToggleAudioInChannel(channelSession, connect);
         }
 
-        public void SetTextActiveInChannel(string userName, string channelName, bool connect)
+        public void ToggleTextInChannel(string channelName, bool connect)
         {
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null reference because channel name exists but channelsession doesnt exist
-            IChannelSession channelSession = EasySession.LoginSessions[userName].GetChannelSession(new ChannelId(_channel.GetChannelSIP(channelName)));
+            IChannelSession channelSession = EasySession.ChannelSessions[channelName];
             _textChannel.ToggleTextChannelActive(channelSession, connect);
         }
 
@@ -359,7 +359,12 @@ namespace EasyCodeForVivox
 
         public void SetPlayerTransmissionMode(string userName, TransmissionMode transmissionMode, ChannelId channelId = default)
         {
-            EasySession.LoginSessions[userName].SetTransmissionMode(transmissionMode, channelId);
+            _login.SetPlayerTransmissionMode(userName, transmissionMode, channelId);
+        }
+
+        public ChannelId GetChannelId(string userName, string channelName)
+        {
+            return _login.GetChannelId(userName, channelName);
         }
 
         public void AdjustLocalUserVolume(int volume)
@@ -431,7 +436,7 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void PushToTalk(bool enable, KeyCode keyCode)
+        public void EnablePushToTalk(bool enable, KeyCode keyCode)
         {
             if (enable)
             {

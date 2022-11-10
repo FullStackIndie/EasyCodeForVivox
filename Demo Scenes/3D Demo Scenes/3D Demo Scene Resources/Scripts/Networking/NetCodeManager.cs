@@ -1,5 +1,6 @@
 using EasyCodeForVivox;
 using EasyCodeForVivox.DemoScene;
+using EasyCodeForVivox.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

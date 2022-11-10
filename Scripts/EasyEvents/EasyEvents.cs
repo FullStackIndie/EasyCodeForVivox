@@ -1,10 +1,9 @@
-﻿using EasyCodeForVivox.Events;
-using System;
+﻿using System;
 using System.Linq;
 using UnityEngine;
 using VivoxUnity;
 
-namespace EasyCodeForVivox
+namespace EasyCodeForVivox.Events
 {
     public class EasyEvents
     {
@@ -114,7 +113,7 @@ namespace EasyCodeForVivox
                 foreach (var gameObject in gameObjects)
                 {
                     var newMethod = method.MakeGenericMethod(typeof(T1), typeof(T2));
-                    var del = 
+                    var del =
                     method?.Invoke(gameObject, new object[] { value1, value2 });
                 }
             }
@@ -337,7 +336,7 @@ namespace EasyCodeForVivox
             {
                 LoginAdded?.Invoke(accountId);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoginAdded)}");
                 Debug.LogException(ex);
@@ -352,7 +351,7 @@ namespace EasyCodeForVivox
             {
                 LoginRemoved?.Invoke(accountId);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoginRemoved)}");
                 Debug.LogException(ex);
@@ -366,7 +365,7 @@ namespace EasyCodeForVivox
             {
                 LoginUpdated?.Invoke(loginSession);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{nameof(OnLoginUpdated)}");
                 Debug.LogException(ex);

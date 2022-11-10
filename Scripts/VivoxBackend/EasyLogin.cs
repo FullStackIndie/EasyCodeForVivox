@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Extensions;
 using EasyCodeForVivox.Utilities;
 using System;
 using System.ComponentModel;
@@ -30,7 +31,7 @@ namespace EasyCodeForVivox
             _settings = easySettings;
         }
 
-        public void Subscribe(ILoginSession loginSession)
+        private void Subscribe(ILoginSession loginSession)
         {
             loginSession.PropertyChanged += OnLoginPropertyChanged;
             EasySession.Client.LoginSessions.AfterKeyAdded += OnLoginAdded;
@@ -38,7 +39,7 @@ namespace EasyCodeForVivox
             EasySession.Client.LoginSessions.AfterValueUpdated += OnLoginUpdated;
         }
 
-        public void Unsubscribe(ILoginSession loginSession)
+        private void Unsubscribe(ILoginSession loginSession)
         {
             loginSession.PropertyChanged -= OnLoginPropertyChanged;
             EasySession.Client.LoginSessions.AfterKeyAdded -= OnLoginAdded;
@@ -151,23 +152,33 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void UpdateLoginProperties(ILoginSession loginSession, ParticipantPropertyUpdateFrequency updateFrequency)
+        public void UpdateLoginProperties(string userName, ParticipantPropertyUpdateFrequency updateFrequency)
         {
-            loginSession.BeginAccountSetLoginProperties(updateFrequency, ar =>
+            EasySession.LoginSessions[userName].BeginAccountSetLoginProperties(updateFrequency, ar =>
             {
                 try
                 {
-                    loginSession.EndAccountSetLoginProperties(ar);
+                    EasySession.LoginSessions[userName].EndAccountSetLoginProperties(ar);
                 }
                 catch (Exception e)
                 {
-                    Unsubscribe(loginSession);
+                    Unsubscribe(EasySession.LoginSessions[userName]);
                     Debug.LogException(e);
                 }
             });
         }
 
-        public async void Logout(string userName)
+        public void SetPlayerTransmissionMode(string userName, TransmissionMode transmissionMode, ChannelId channelId = default)
+        {
+            EasySession.LoginSessions[userName].SetTransmissionMode(transmissionMode, channelId);
+        }
+
+        public ChannelId GetChannelId(string userName, string channelName)
+        {
+            return EasySession.LoginSessions[userName].GetChannelId(channelName);
+        }
+
+        public async void LogoutOfVivox(string userName)
         {
             if (!EasySession.LoginSessions.TryGetValue(userName, out ILoginSession loginSession)) { return; }
 
@@ -192,7 +203,7 @@ namespace EasyCodeForVivox
             Debug.Log($"Not logged in".Color(EasyDebug.Yellow));
         }
 
-        public async void Logout<T>(string userName, T value)
+        public async void LogoutOfVivox<T>(string userName, T value)
         {
             if (!EasySession.LoginSessions.TryGetValue(userName, out ILoginSession loginSession))
             {

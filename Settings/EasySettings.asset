@@ -18,8 +18,8 @@ MonoBehaviour:
   LogEasyManagerEventCallbacks: 0
   UseDynamicEvents: 1
   OnlySearchAssemblyCSharp: 0
-  LogAssemblySearches: 0
-  LogAllDynamicMethods: 1
+  LogAssemblySearches: 1
+  LogAllDynamicMethods: 0
   LogAllAudioDevices: 0
   LogVoiceActivityDetection: 1
   LogEasyNetCode: 1

@@ -160,12 +160,12 @@ public class EasyChatExample : EasyManager
 
     public void ToggleAudioInChannel()
     {
-        SetVoiceActiveInChannel(loginSessionsDropdown.GetSelected(), channelName.text, voiceToggle.isOn);
+        ToggleAudioInChannel(channelName.text, voiceToggle.isOn);
     }
 
     public void ToggleTextInChannel()
     {
-        SetTextActiveInChannel(loginSessionsDropdown.GetSelected(), channelName.text, textToggle.isOn);
+        ToggleTextInChannel(channelName.text, textToggle.isOn);
     }
 
     public void MuteLocalPlayer()
@@ -257,12 +257,12 @@ public class EasyChatExample : EasyManager
 
     public void EnablePushToTalk()
     {
-        PushToTalk(true, KeyCode.Space);
+        EnablePushToTalk(true, KeyCode.Space);
     }
 
     public void DisablePushToTalk()
     {
-        PushToTalk(false, KeyCode.Space);
+        EnablePushToTalk(false, KeyCode.Space);
     }
 
 

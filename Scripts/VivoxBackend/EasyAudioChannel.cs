@@ -8,7 +8,7 @@ using VivoxUnity;
 namespace EasyCodeForVivox
 {
 
-    public class EasyAudioChannel : IAudioChannel
+    public class EasyAudioChannel 
     {
 
         private readonly EasyEvents _events;
@@ -35,7 +35,7 @@ namespace EasyCodeForVivox
         #region Channel - Voice Methods
 
 
-        public void ToggleAudioChannelActive(IChannelSession channelSession, bool join)
+        public void ToggleAudioInChannel(IChannelSession channelSession, bool join)
         {
             if (join)
             {
@@ -60,7 +60,7 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void ToggleAudioChannelActive<T>(IChannelSession channelSession, bool join, T eventParameter)
+        public void ToggleAudioInChannel<T>(IChannelSession channelSession, bool join, T eventParameter)
         {
             if (join)
             {
@@ -97,7 +97,7 @@ namespace EasyCodeForVivox
         #region Channel - Voice Callbacks
 
 
-        public async void OnChannelAudioPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
+        private async void OnChannelAudioPropertyChanged(object sender, PropertyChangedEventArgs propArgs)
         {
             var senderIChannelSession = (IChannelSession)sender;
 

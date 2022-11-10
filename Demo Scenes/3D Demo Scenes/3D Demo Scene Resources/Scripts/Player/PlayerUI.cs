@@ -1,10 +1,10 @@
 using EasyCodeForVivox;
 using EasyCodeForVivox.DemoScene;
+using EasyCodeForVivox.Extensions;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using Zenject;
 
 public class PlayerUI : NetworkBehaviour
 {

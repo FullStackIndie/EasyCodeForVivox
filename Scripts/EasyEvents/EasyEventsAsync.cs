@@ -1,4 +1,5 @@
-﻿using EasyCodeForVivox.Internal;
+﻿using EasyCodeForVivox.Extensions;
+using EasyCodeForVivox.Internal;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

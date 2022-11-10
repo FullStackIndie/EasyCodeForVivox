@@ -56,6 +56,7 @@ namespace EasyCodeForVivox
 
             var senderIParticipant = source[valueArg.Key];
             _events.OnUserValuesUpdated(senderIParticipant);
+            await _eventsAsync.OnUserValuesUpdatedAsync(senderIParticipant);
 
             switch (valueArg.PropertyName)
             {
@@ -67,11 +68,13 @@ namespace EasyCodeForVivox
                         {
                             // Fires too much
                             _events.OnUserMuted(senderIParticipant);
+                            await _eventsAsync.OnUserMutedAsync(senderIParticipant);
                         }
                         else
                         {
                             // Fires too much
                             _events.OnUserUnmuted(senderIParticipant);
+                            await _eventsAsync.OnUserUnmutedAsync(senderIParticipant);
                         }
                     }
                     break;
@@ -81,50 +84,12 @@ namespace EasyCodeForVivox
                         if (senderIParticipant.SpeechDetected)
                         {
                             _events.OnUserSpeaking(senderIParticipant);
+                            await _eventsAsync.OnUserSpeakingAsync(senderIParticipant);
                         }
                         else
                         {
                             _events.OnUserNotSpeaking(senderIParticipant);
-                        }
-                        break;
-                    }
-                default:
-                    break;
-            }
-            await HandleDynamicEvents(valueArg, senderIParticipant);
-        }
-
-        private async Task HandleDynamicEvents(ValueEventArg<string, IParticipant> valueArg, IParticipant participant)
-        {
-
-            switch (valueArg.PropertyName)
-            {
-                case "LocalMute":
-
-                    if (!participant.IsSelf) //can't local mute yourself, so don't check for it
-                    {
-                        if (participant.LocalMute)
-                        {
-                            // Fires too much
-                            await _eventsAsync.OnUserMutedAsync(participant);
-                        }
-                        else
-                        {
-                            // Fires too much
-                            await _eventsAsync.OnUserUnmutedAsync(participant);
-                        }
-                    }
-                    break;
-
-                case "SpeechDetected":
-                    {
-                        if (participant.SpeechDetected)
-                        {
-                            await _eventsAsync.OnUserSpeakingAsync(participant);
-                        }
-                        else
-                        {
-                            await _eventsAsync.OnUserNotSpeakingAsync(participant);
+                            await _eventsAsync.OnUserNotSpeakingAsync(senderIParticipant);
                         }
                         break;
                     }

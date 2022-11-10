@@ -1,6 +1,6 @@
-﻿namespace EasyCodeForVivox
+﻿namespace EasyCodeForVivox.Extensions
 {
-    internal static class EasyDebug
+    public static class EasyDebug
     {
         public const string Aqua = "#00ffffff";
         public const string Blue = "#0000ffff";

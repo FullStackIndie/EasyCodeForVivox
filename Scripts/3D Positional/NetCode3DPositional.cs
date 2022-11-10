@@ -20,6 +20,7 @@ namespace EasyCodeForVivox
         private string userName;
         private EasySettingsSO _settings;
 
+        [Inject]
         private void Initialize(EasySettingsSO settings)
         {
             _settings = settings;

@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Extensions;
 using EasyCodeForVivox.Utilities;
 using System;
 using System.ComponentModel;
@@ -71,6 +72,31 @@ namespace EasyCodeForVivox
             }
         }
 
+        public void JoinChannelRegion(string userName, string channelName, string matchRegion, string matchHash, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
+    bool joinMuted = false, Channel3DProperties channel3DProperties = default)
+        {
+            if (!EasyVivoxUtilities.FilterChannelAndUserName(channelName)) { return; }
+            IChannelSession channelSession = CreateNewChannel(userName, channelName, channelType, channel3DProperties);
+
+            try
+            {
+                _textChannel.Subscribe(channelSession);
+                _audioChannel.Subscribe(channelSession);
+                _users.SubscribeToParticipantEvents(channelSession);
+                _messages.SubscribeToChannelMessages(channelSession);
+
+                JoinChannelRegion(userName, matchRegion, matchHash, includeVoice, includeText, switchTransmissionToThisChannel, channelSession, joinMuted);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                _textChannel.Unsubscribe(channelSession);
+                _audioChannel.Unsubscribe(channelSession);
+                _users.UnsubscribeFromParticipantEvents(channelSession);
+                _messages.UnsubscribeFromChannelMessages(channelSession);
+            }
+        }
+
         public void JoinChannelCustom<T>(string userName, string channelName, T eventParameter, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel, ChannelType channelType,
     bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
@@ -103,6 +129,27 @@ namespace EasyCodeForVivox
         {
             Subscribe(channelSession);
             var accessToken = GetChannelToken(userName, channelSession, joinMuted);
+            channelSession.BeginConnect(includeVoice, includeText, switchTransmissionToThisChannel, accessToken, ar =>
+            {
+                try
+                {
+                    channelSession.EndConnect(ar);
+                }
+                catch (Exception e)
+                {
+                    Unsubscribe(channelSession);
+                    Debug.LogException(e);
+                    throw;
+                }
+            });
+        }
+
+
+        protected void JoinChannelRegion(string userName, string matchRegion, string matchHash, bool includeVoice, bool includeText, bool switchTransmissionToThisChannel,
+           IChannelSession channelSession, bool joinMuted = false)
+        {
+            Subscribe(channelSession);
+            var accessToken = GetRegionChannelToken(userName, channelSession, matchRegion, matchHash, joinMuted);
             channelSession.BeginConnect(includeVoice, includeText, switchTransmissionToThisChannel, accessToken, ar =>
             {
                 try
@@ -292,7 +339,7 @@ namespace EasyCodeForVivox
             return accessToken;
         }
 
-        public string GetMatchChannelToken(string userName, IChannelSession channelSession, string matchRegion, string matchHash, bool joinMuted = false, Channel3DProperties channel3DProperties = default)
+        public string GetRegionChannelToken(string userName, IChannelSession channelSession, string matchRegion, string matchHash, bool joinMuted = false, Channel3DProperties channel3DProperties = default)
         {
             var accessToken = "Error : Easy token invalid";
             var vivoxAction = "join";
@@ -355,7 +402,6 @@ namespace EasyCodeForVivox
                 await HandleDynamicEventsAsync(channelArgs, senderIChannelSession);
             }
         }
-
 
         private async Task HandleDynamicEventsAsync(PropertyChangedEventArgs channelArgs, IChannelSession channelSession)
         {
