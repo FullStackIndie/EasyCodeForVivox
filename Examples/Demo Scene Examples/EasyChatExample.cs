@@ -183,7 +183,7 @@ public class EasyChatExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            MuteRemoteUser(selectedUser, channelName.text);
+            LocalMuteRemoteUser(selectedUser, channelName.text);
         }
         else
         {
@@ -196,7 +196,7 @@ public class EasyChatExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            UnmuteRemoteUser(selectedUser, channelName.text);
+            LocalUnmuteRemoteUser(selectedUser, channelName.text);
         }
         else
         {
@@ -206,12 +206,12 @@ public class EasyChatExample : EasyManager
 
     public void MuteAllPlayers()
     {
-        MuteAllPlayers(channelName.text);
+        LocalMuteAllPlayers(channelName.text);
     }
 
     public void UnmuteAllPlayers()
     {
-        UnmuteAllPlayers(channelName.text);
+        LocalUnmuteAllPlayers(channelName.text);
     }
 
     public void AdjustLocalSelfVolume()

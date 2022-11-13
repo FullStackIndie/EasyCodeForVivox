@@ -394,7 +394,7 @@ namespace EasyCodeForVivox.Events
                     var asyncAttribute = methodInfo.GetCustomAttribute<AudioChannelEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case AudioChannelStatus.AudioChannelConnecting:
                                 AddDynamicEvent(AudioChannelStatusAsync.AudioChannelConnectingAsync, methodInfo);
@@ -443,7 +443,7 @@ namespace EasyCodeForVivox.Events
                     var asyncAttribute = methodInfo.GetCustomAttribute<TextChannelEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case TextChannelStatus.TextChannelConnecting:
                                 AddDynamicEvent(TextChannelStatusAsync.TextChannelConnectingAsync, methodInfo);
@@ -489,7 +489,7 @@ namespace EasyCodeForVivox.Events
                     var asyncAttribute = methodInfo.GetCustomAttribute<ChannelMessageEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case ChannelMessageStatus.ChannelMessageSent:
                                 AddDynamicEvent(ChannelMessageStatusAsync.ChannelMessageSentAsync, methodInfo);
@@ -532,7 +532,7 @@ namespace EasyCodeForVivox.Events
                     var asyncAttribute = methodInfo.GetCustomAttribute<DirectMessageEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case DirectMessageStatus.DirectMessageSent:
                                 AddDynamicEvent(DirectMessageStatusAsync.DirectMessageSentAsync, methodInfo);
@@ -575,7 +575,7 @@ namespace EasyCodeForVivox.Events
                     var asyncAttribute = methodInfo.GetCustomAttribute<UserEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case UserStatus.UserLeftChannel:
                                 AddDynamicEvent(UserStatusAsync.UserLeftChannelAsync, methodInfo);
@@ -633,7 +633,7 @@ namespace EasyCodeForVivox.Events
                     var asyncAttribute = methodInfo.GetCustomAttribute<UserAudioEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case UserAudioStatus.UserMuted:
                                 AddDynamicEvent(UserAudioStatusAsync.UserMutedAsync, methodInfo);
@@ -688,10 +688,10 @@ namespace EasyCodeForVivox.Events
                         }
                         continue;
                     }
-                    var asyncAttribute = methodInfo.GetCustomAttribute<UserAudioEventAsyncAttribute>();
+                    var asyncAttribute = methodInfo.GetCustomAttribute<TextToSpeechEventAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
-                        switch (attribute.Options)
+                        switch (asyncAttribute.Options)
                         {
                             case TextToSpeechStatus.TTSMessageAdded:
                                 AddDynamicEvent(TextToSpeechStatusAsync.TTSMessageAddedAsync, methodInfo);

@@ -53,7 +53,7 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void MuteAllUsers(IChannelSession channelSession)
+        public void LocalMuteAllUsers(IChannelSession channelSession)
         {
             foreach (var player in channelSession.Participants)
             {
@@ -72,7 +72,7 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void UnmuteAllUsers(IChannelSession channelSession)
+        public void LocalUnmuteAllUsers(IChannelSession channelSession)
         {
             foreach (var player in channelSession.Participants)
             {

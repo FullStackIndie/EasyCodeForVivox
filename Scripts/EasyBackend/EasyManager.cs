@@ -316,20 +316,20 @@ namespace EasyCodeForVivox
             _mute.LocalUnmuteSelf(EasySession.Client);
         }
 
-        public void MuteRemoteUser(string userName, string channelName)
+        public void LocalMuteRemoteUser(string userName, string channelName)
         {
             _mute.LocalMuteRemoteUser(userName, _channel.GetExistingChannelSession(userName, channelName), true);
         }
-        public void UnmuteRemoteUser(string userName, string channelName)
+        public void LocalUnmuteRemoteUser(string userName, string channelName)
         {
             _mute.LocalMuteRemoteUser(userName, _channel.GetExistingChannelSession(userName, channelName), false);
         }
 
-        public void MuteAllPlayers(string channelName)
+        public void LocalMuteAllPlayers(string channelName)
         {
             if (EasySession.ChannelSessions.ContainsKey(channelName))
             {
-                _mute.MuteAllUsers(EasySession.ChannelSessions[channelName]);
+                _mute.LocalMuteAllUsers(EasySession.ChannelSessions[channelName]);
             }
             else
             {
@@ -338,11 +338,11 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void UnmuteAllPlayers(string channelName)
+        public void LocalUnmuteAllPlayers(string channelName)
         {
             if (EasySession.ChannelSessions.ContainsKey(channelName))
             {
-                _mute.UnmuteAllUsers(EasySession.ChannelSessions[channelName]);
+                _mute.LocalUnmuteAllUsers(EasySession.ChannelSessions[channelName]);
             }
             else
             {

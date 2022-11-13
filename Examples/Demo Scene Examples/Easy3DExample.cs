@@ -191,7 +191,7 @@ public class Easy3DExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            MuteRemoteUser(selectedUser, channelNameInput.text);
+            LocalMuteRemoteUser(selectedUser, channelNameInput.text);
         }
         else
         {
@@ -204,7 +204,7 @@ public class Easy3DExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            UnmuteRemoteUser(selectedUser, channelNameInput.text);
+            LocalUnmuteRemoteUser(selectedUser, channelNameInput.text);
         }
         else
         {
@@ -214,12 +214,12 @@ public class Easy3DExample : EasyManager
 
     public void MuteAllPlayers()
     {
-        MuteAllPlayers(channelNameInput.text);
+        LocalMuteAllPlayers(channelNameInput.text);
     }
 
     public void UnmuteAllPlayers()
     {
-        UnmuteAllPlayers(channelNameInput.text);
+        LocalUnmuteAllPlayers(channelNameInput.text);
     }
 
     public void AdjustLocalSelfVolume()
