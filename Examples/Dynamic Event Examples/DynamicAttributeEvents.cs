@@ -52,14 +52,6 @@ namespace EasyCodeForVivox
             Debug.Log($"A Message has been sent. Do some work");
         }
 
-        [ChannelMessageEvent(ChannelMessageStatus.ChannelMessageSent)]
-        public void ChannelMessageSentEventWithDynamicObject(DynamicEventModel dynamicEventModel)
-        {
-            Debug.Log($"A Message has been sent. Do some work");
-            Debug.Log($"Recieved a message from {dynamicEventModel.Name} with Player Id {dynamicEventModel.PlayerId}");
-            Debug.Log($"Message : {dynamicEventModel.Message}");
-        }
-
         [DirectMessageEvent(DirectMessageStatus.DirectMessageRecieved)]
         public void DirectMessageRecievedEvent(IDirectedTextMessage directedTextMessage)
         {
@@ -72,13 +64,6 @@ namespace EasyCodeForVivox
             Debug.Log($"A Direct Message has been sent. Do some work");
         }
 
-        [DirectMessageEvent(DirectMessageStatus.DirectMessageSent)]
-        public void DirectMessageSentEventWithDynamicObject(DynamicEventModel dynamicEventModel)
-        {
-            Debug.Log($"A Direct Message has been sent. Do some work");
-            Debug.Log($"Recieved a message from {dynamicEventModel.Name} with Player Id {dynamicEventModel.PlayerId}");
-            Debug.Log($"Message : {dynamicEventModel.Message}");
-        }
 
         [UserEvent(UserStatus.UserJoinedChannel)]
         public void UserHasJoinedChannel(IParticipant participant)

@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Events.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -94,14 +95,14 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendChannelMessage(IChannelSession channel, string inputMsg, string stanzaNameSpace, string stanzaBody)
+        public void SendChannelMessage(IChannelSession channel, string inputMsg, string header, string body)
         {
             if (channel.TextState == ConnectionState.Disconnected)
             {
                 return;
             }
 
-            channel.BeginSendText(null, inputMsg, stanzaNameSpace, stanzaBody, async ar =>
+            channel.BeginSendText(null, inputMsg, header, body, async ar =>
             {
                 try
                 {
@@ -120,14 +121,14 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendChannelMessage<T>(IChannelSession channel, string inputMsg, T value, string stanzaNameSpace, string stanzaBody)
+        public void SendChannelMessage<T>(IChannelSession channel, string inputMsg, T value, string header, string body)
         {
             if (channel.TextState == ConnectionState.Disconnected)
             {
                 return;
             }
 
-            channel.BeginSendText(null, inputMsg, stanzaNameSpace, stanzaBody, async ar =>
+            channel.BeginSendText(null, inputMsg, header, body, async ar =>
             {
                 try
                 {
@@ -146,14 +147,14 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendEventMessage(IChannelSession channel, string eventMessage, string stanzaNameSpace, string stanzaBody)
+        public void SendEventMessage(IChannelSession channel, string eventMessage, string header, string body)
         {
             if (channel.TextState == ConnectionState.Disconnected)
             {
                 return;
             }
 
-            channel.BeginSendText(null, eventMessage, stanzaNameSpace, stanzaBody, ar =>
+            channel.BeginSendText(null, eventMessage, header, body, ar =>
             {
                 try
                 {
@@ -167,7 +168,7 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendDirectMessage(ILoginSession loginSession, string targetID, string message, string stanzaNameSpace = null, string stanzaBody = null)
+        public void SendDirectMessage(ILoginSession loginSession, string targetID, string message, string header = null, string body = null)
         {
             var targetAccountID = new AccountId(loginSession.LoginSessionId.Issuer, targetID, loginSession.LoginSessionId.Domain);
 
@@ -189,7 +190,7 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendDirectMessage<T>(ILoginSession loginSession, string targetID, string message, T value, string stanzaNameSpace = null, string stanzaBody = null)
+        public void SendDirectMessage<T>(ILoginSession loginSession, string targetID, string message, T value, string header = null, string body = null)
         {
             var targetAccountID = new AccountId(loginSession.LoginSessionId.Issuer, targetID, loginSession.LoginSessionId.Domain);
 
@@ -211,10 +212,10 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendDirectMessage(ILoginSession login, Dictionary<string, string> attemptedDirectMessages, string targetID, string message, string stanzaNameSpace = null, string stanzaBody = null)
+        public void SendDirectMessage(ILoginSession login, Dictionary<string, string> attemptedDirectMessages, string targetID, string message, string header = null, string body = null)
         {
             var targetAccountID = new AccountId(login.LoginSessionId.Issuer, targetID, login.LoginSessionId.Domain);
-            login.BeginSendDirectedMessage(targetAccountID, null, message, stanzaNameSpace, stanzaBody, async ar =>
+            login.BeginSendDirectedMessage(targetAccountID, null, message, header, body, async ar =>
             {
                 try
                 {
@@ -236,10 +237,10 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SendDirectMessage<T>(ILoginSession login, Dictionary<string, string> attemptedDirectMessages, string targetID, string message, T value, string stanzaNameSpace = null, string stanzaBody = null)
+        public void SendDirectMessage<T>(ILoginSession login, Dictionary<string, string> attemptedDirectMessages, string targetID, string message, T value, string header = null, string body = null)
         {
             var targetAccountID = new AccountId(login.LoginSessionId.Issuer, targetID, login.LoginSessionId.Domain);
-            login.BeginSendDirectedMessage(targetAccountID, null, message, stanzaNameSpace, stanzaBody, async ar =>
+            login.BeginSendDirectedMessage(targetAccountID, null, message, header, body, async ar =>
             {
                 try
                 {

@@ -1,4 +1,4 @@
-﻿using EasyCodeForVivox.Internal;
+﻿using EasyCodeForVivox.Events.Internal;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;

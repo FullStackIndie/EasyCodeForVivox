@@ -9,6 +9,9 @@
         LoggedIn,
         LoggingOut,
         LoggedOut,
+        LoginAdded,
+        LoginRemoved,
+        LoginValuesUpdated
     }
 
     public enum ChannelStatus
@@ -37,8 +40,8 @@
 
     public enum ChannelMessageStatus
     {
-        ChannelMessageSent,
         ChannelMessageRecieved,
+        ChannelMessageSent,
         EventMessageRecieved
     }
 
@@ -78,7 +81,7 @@
 }
 
 
-namespace EasyCodeForVivox.Internal
+namespace EasyCodeForVivox.Events.Internal
 {
 
     internal enum LoginStatusAsync
@@ -87,6 +90,9 @@ namespace EasyCodeForVivox.Internal
         LoggedInAsync,
         LoggingOutAsync,
         LoggedOutAsync,
+        LoginAddedAsync,
+        LoginRemovedAsync,
+        LoginValuesUpdatedAsync
     }
 
     internal enum ChannelStatusAsync
@@ -115,8 +121,8 @@ namespace EasyCodeForVivox.Internal
 
     internal enum ChannelMessageStatusAsync
     {
-        ChannelMessageSentAsync,
         ChannelMessageRecievedAsync,
+        ChannelMessageSentAsync,
         EventMessageRecievedAsync
     }
 

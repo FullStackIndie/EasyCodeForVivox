@@ -1,5 +1,5 @@
-﻿using EasyCodeForVivox.Extensions;
-using EasyCodeForVivox.Internal;
+﻿using EasyCodeForVivox.Events.Internal;
+using EasyCodeForVivox.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -272,6 +272,15 @@ namespace EasyCodeForVivox.Events
                             case LoginStatus.LoggedOut:
                                 AddDynamicEvent(LoginStatus.LoggedOut, methodInfo);
                                 break;
+                            case LoginStatus.LoginAdded:
+                                AddDynamicEvent(LoginStatus.LoginAdded, methodInfo);
+                                break;
+                            case LoginStatus.LoginRemoved:
+                                AddDynamicEvent(LoginStatus.LoginRemoved, methodInfo);
+                                break;
+                            case LoginStatus.LoginValuesUpdated:
+                                AddDynamicEvent(LoginStatus.LoginValuesUpdated, methodInfo);
+                                break;
                         }
                         continue;
                     }
@@ -291,6 +300,15 @@ namespace EasyCodeForVivox.Events
                                 break;
                             case LoginStatus.LoggedOut:
                                 AddDynamicEvent(LoginStatusAsync.LoggedOutAsync, methodInfo);
+                                break;
+                            case LoginStatus.LoginAdded:
+                                AddDynamicEvent(LoginStatusAsync.LoginAddedAsync, methodInfo);
+                                break;
+                            case LoginStatus.LoginRemoved:
+                                AddDynamicEvent(LoginStatusAsync.LoginRemovedAsync, methodInfo);
+                                break;
+                            case LoginStatus.LoginValuesUpdated:
+                                AddDynamicEvent(LoginStatusAsync.LoginValuesUpdatedAsync, methodInfo);
                                 break;
                         }
                     }

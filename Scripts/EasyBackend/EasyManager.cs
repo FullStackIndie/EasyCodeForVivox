@@ -276,12 +276,12 @@ namespace EasyCodeForVivox
             // todo fix error where channel disconects if both text and voice are disconnected and when you try and toggle 
             // you get an object null reference because channel name exists but channelsession doesnt exist
             IChannelSession channelSession = EasySession.ChannelSessions[channelName];
-            _textChannel.ToggleTextChannelActive(channelSession, connect);
+            _textChannel.ToggleTextInChannel(channelSession, connect);
         }
 
-        public void SendChannelMessage(string userName, string channelName, string msg, string title = "", string body = "")
+        public void SendChannelMessage(string userName, string channelName, string msg, string header = "", string body = "")
         {
-            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(body))
+            if (string.IsNullOrEmpty(header) || string.IsNullOrEmpty(body))
             {
                 _messages.SendChannelMessage(_channel.GetExistingChannelSession(userName, channelName),
                 msg);
@@ -289,21 +289,21 @@ namespace EasyCodeForVivox
             else
             {
                 _messages.SendChannelMessage(_channel.GetExistingChannelSession(userName, channelName),
-                    msg, title, body);
+                    msg, header, body);
             }
         }
 
-        public void SendEventMessage(string userName, string channelName, string msg, string title = "", string body = "")
+        public void SendEventMessage(string userName, string channelName, string msg, string header = "", string body = "")
         {
-            _messages.SendChannelMessage(_channel.GetExistingChannelSession(userName, channelName),
-                msg, title, body);
+            _messages.SendEventMessage(_channel.GetExistingChannelSession(userName, channelName),
+                msg, header, body);
         }
 
-        public void SendDirectMessage(string userName, string userToMsg, string msg, string title = "", string body = "")
+        public void SendDirectMessage(string userName, string userToMsg, string msg, string header = "", string body = "")
         {
             // todo check if user is blocked and alert front end users
             // not supporting presence so not neccessary - leaving todo in case things change
-            _messages.SendDirectMessage(EasySession.LoginSessions[userName], userToMsg, msg, title, body);
+            _messages.SendDirectMessage(EasySession.LoginSessions[userName], userToMsg, msg, header, body);
         }
 
         public void MuteSelf()
@@ -316,9 +316,13 @@ namespace EasyCodeForVivox
             _mute.LocalUnmuteSelf(EasySession.Client);
         }
 
-        public void ToggleMuteRemoteUser(string userName, string channelName)
+        public void MuteRemoteUser(string userName, string channelName)
         {
-            _mute.LocalToggleMuteRemoteUser(userName, _channel.GetExistingChannelSession(userName, channelName));
+            _mute.LocalMuteRemoteUser(userName, _channel.GetExistingChannelSession(userName, channelName), true);
+        }
+        public void UnmuteRemoteUser(string userName, string channelName)
+        {
+            _mute.LocalMuteRemoteUser(userName, _channel.GetExistingChannelSession(userName, channelName), false);
         }
 
         public void MuteAllPlayers(string channelName)
@@ -751,6 +755,7 @@ namespace EasyCodeForVivox
             if (_settings.LogEasyManagerEventCallbacks)
                 Debug.Log($"Failed To Send Message From : {failedMessage.Sender}");
         }
+
 
 
 

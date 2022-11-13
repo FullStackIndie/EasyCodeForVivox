@@ -1,5 +1,6 @@
 using EasyCodeForVivox;
 using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Events.Internal;
 using Zenject;
 
 public class EasyCodeInstaller : MonoInstaller

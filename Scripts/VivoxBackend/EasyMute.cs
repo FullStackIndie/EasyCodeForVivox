@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Events.Internal;
 using EasyCodeForVivox.Extensions;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyMute : IMute
+    public class EasyMute
     {
 
         private readonly EasyEvents _events;
@@ -36,29 +37,21 @@ namespace EasyCodeForVivox
             loginSession.CrossMutedCommunications.BeforeKeyRemoved -= OnParticipantCrossUnmuted;
         }
 
-        public void LocalToggleMuteRemoteUser(string userName, IChannelSession channelSession)
+        public void LocalMuteRemoteUser(string userName, IChannelSession channelSession, bool mute)
         {
             var participants = channelSession.Participants;
             string userToMute = EasySIP.GetUserSIP(EasySession.Issuer, userName, EasySession.Domain);
-            
+
             Debug.Log($"Sip address of User to mute - {userToMute}");
             if (participants[userToMute].InAudio && !participants[userToMute].IsSelf)
             {
-                if (participants[userToMute].LocalMute)
-                {
-                    participants[userToMute].LocalMute = false;
-                }
-                else
-                {
-                    participants[userToMute].LocalMute = true;
-                }
+                participants[userToMute].LocalMute = mute;
             }
             else
             {
                 Debug.Log($"Failed to mute {participants[userToMute].Account.DisplayName}".Color(EasyDebug.Red));
             }
         }
-
 
         public void MuteAllUsers(IChannelSession channelSession)
         {
@@ -203,7 +196,7 @@ namespace EasyCodeForVivox
             });
         }
 
-        public async void OnParticipantCrossMuted(object sender, KeyEventArg<AccountId> account)
+        private async void OnParticipantCrossMuted(object sender, KeyEventArg<AccountId> account)
         {
             if (account != null)
             {
@@ -212,7 +205,7 @@ namespace EasyCodeForVivox
             }
         }
 
-        public async void OnParticipantCrossUnmuted(object sender, KeyEventArg<AccountId> account)
+        private async void OnParticipantCrossUnmuted(object sender, KeyEventArg<AccountId> account)
         {
             if (account != null)
             {

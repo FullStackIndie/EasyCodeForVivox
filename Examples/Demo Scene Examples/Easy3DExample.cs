@@ -186,12 +186,25 @@ public class Easy3DExample : EasyManager
         UnmuteSelf();
     }
 
-    public void ToggleMuteRemotePlayer()
+    public void MuteRemotePlayer()
     {
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            ToggleMuteRemoteUser(selectedUser, channelNameInput.text);
+            MuteRemoteUser(selectedUser, channelNameInput.text);
+        }
+        else
+        {
+            Debug.Log("Remote Player Name is Empty or Invalid, Cannot mute player");
+        }
+    }
+
+    public void UnmuteRemotePlayer()
+    {
+        var selectedUser = mutePlayerInChannelDropdown.GetSelected();
+        if (selectedUser != null)
+        {
+            UnmuteRemoteUser(selectedUser, channelNameInput.text);
         }
         else
         {
@@ -289,17 +302,17 @@ public class Easy3DExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelNameInput.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userNameInput.text].LoginSessionId.Name);
+        SendEventMessage(userNameInput.text, channelNameInput.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userNameInput.text].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
     {
-        SendEventMessage(channelNameInput.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
+        SendEventMessage(userNameInput.text, channelNameInput.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
     }
 
     public void SendUnmuteEventMessage()
     {
-        SendEventMessage(channelNameInput.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
+        SendEventMessage(userNameInput.text, channelNameInput.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
     }
 
 
@@ -392,6 +405,20 @@ public class Easy3DExample : EasyManager
         loginSessionsDropdown.RemoveValue(loginSession.LoginSessionId.Name);
     }
 
+    protected override void OnLoginAdded(AccountId accountId)
+    {
+        base.OnLoginAdded(accountId);
+    }
+
+    protected override void OnLoginRemoved(AccountId accountId)
+    {
+        base.OnLoginRemoved(accountId);
+    }
+
+    protected override void OnLoginUpdated(ILoginSession loginSession)
+    {
+        base.OnLoginUpdated(loginSession);
+    }
 
     // Channel Event Callbacks
 
@@ -406,6 +433,7 @@ public class Easy3DExample : EasyManager
         base.OnChannelConnected(channelSession);
         newMessage.text += $"\nChannel Connected in : {channelSession.Channel.Name}";
         channelSessionsDropdown.AddValue(channelSession.Channel.Name);
+        panelSwitcher.EnablePanel("Message");
     }
 
     protected override void OnChannelDisconnecting(IChannelSession channelSession)
@@ -582,7 +610,15 @@ public class Easy3DExample : EasyManager
         // use to toggle speaking icons
     }
 
+    protected override void OnLocalUserMuted()
+    {
+        base.OnLocalUserMuted();
+    }
 
+    protected override void OnLocalUserUnmuted()
+    {
+        base.OnLocalUserUnmuted();
+    }
 
 
     // Text-To-Speech Event Callbacks

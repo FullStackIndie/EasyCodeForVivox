@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Events.Internal;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace EasyCodeForVivox
         #region Channel - Text Methods
 
 
-        public void ToggleTextChannelActive(IChannelSession channelSession, bool join)
+        public void ToggleTextInChannel(IChannelSession channelSession, bool join)
         {
             if (join)
             {

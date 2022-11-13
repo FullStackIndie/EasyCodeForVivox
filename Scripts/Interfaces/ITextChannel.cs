@@ -7,7 +7,7 @@ namespace EasyCodeForVivox
     {
         void Subscribe(IChannelSession channelSession);
         void Unsubscribe(IChannelSession channelSession);
-        void ToggleTextChannelActive(IChannelSession channelSession, bool join);
+        void ToggleTextInChannel(IChannelSession channelSession, bool join);
         void ToggleTextChannelActive<T>(IChannelSession channelSession, bool join, T eventParameter);
         void OnChannelTextPropertyChanged(object sender, PropertyChangedEventArgs propArgs);
     }

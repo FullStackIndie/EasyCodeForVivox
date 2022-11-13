@@ -15,7 +15,7 @@ MonoBehaviour:
   VoiceGender: 1
   VivoxParticipantPropertyUpdateFrequency: 100
   LogEasyManager: 1
-  LogEasyManagerEventCallbacks: 0
+  LogEasyManagerEventCallbacks: 1
   UseDynamicEvents: 1
   OnlySearchAssemblyCSharp: 0
   LogAssemblySearches: 1

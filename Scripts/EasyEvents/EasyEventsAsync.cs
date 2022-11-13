@@ -1,12 +1,11 @@
 ﻿using EasyCodeForVivox.Extensions;
-using EasyCodeForVivox.Internal;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
 
-namespace EasyCodeForVivox.Events
+namespace EasyCodeForVivox.Events.Internal
 {
     public class EasyEventsAsync
     {

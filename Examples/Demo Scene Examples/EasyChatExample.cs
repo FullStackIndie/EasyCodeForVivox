@@ -178,12 +178,25 @@ public class EasyChatExample : EasyManager
         UnmuteSelf();
     }
 
-    public void ToggleMuteRemotePlayer()
+    public void MuteRemotePlayer()
     {
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            ToggleMuteRemoteUser(selectedUser, channelName.text);
+            MuteRemoteUser(selectedUser, channelName.text);
+        }
+        else
+        {
+            Debug.Log("Remote Player Name is Empty or Invalid, Cannot mute player");
+        }
+    }
+    
+    public void UnmuteRemotePlayer()
+    {
+        var selectedUser = mutePlayerInChannelDropdown.GetSelected();
+        if (selectedUser != null)
+        {
+            UnmuteRemoteUser(selectedUser, channelName.text);
         }
         else
         {
@@ -381,6 +394,20 @@ public class EasyChatExample : EasyManager
         loginSessionsDropdown.RemoveValue(loginSession.LoginSessionId.Name);
     }
 
+    protected override void OnLoginAdded(AccountId accountId)
+    {
+        base.OnLoginAdded(accountId);
+    }
+
+    protected override void OnLoginRemoved(AccountId accountId)
+    {
+        base.OnLoginRemoved(accountId);
+    }
+
+    protected override void OnLoginUpdated(ILoginSession loginSession)
+    {
+        base.OnLoginUpdated(loginSession);
+    }
 
     // Channel Event Callbacks
 
@@ -562,6 +589,15 @@ public class EasyChatExample : EasyManager
         // use to toggle speaking icons
     }
 
+    protected override void OnLocalUserMuted()
+    {
+        base.OnLocalUserMuted();
+    }
+
+    protected override void OnLocalUserUnmuted()
+    {
+        base.OnLocalUserUnmuted();
+    }
 
 
 

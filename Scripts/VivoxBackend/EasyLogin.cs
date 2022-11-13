@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox.Events;
+using EasyCodeForVivox.Events.Internal;
 using EasyCodeForVivox.Extensions;
 using EasyCodeForVivox.Utilities;
 using System;
