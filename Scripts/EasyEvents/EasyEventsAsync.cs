@@ -1,6 +1,7 @@
 ﻿using EasyCodeForVivox.Extensions;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 using VivoxUnity;
@@ -18,11 +19,11 @@ namespace EasyCodeForVivox.Events.Internal
 
         private async Task InvokeMethodsAsync(Enum eventKey)
         {
-            if (!DynamicEvents.Methods.ContainsKey(eventKey))
+            if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
                 return;
             }
-            foreach (var method in DynamicEvents.Methods[eventKey])
+            foreach (var method in HandleDynamicEvents.Methods[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 0)
@@ -40,11 +41,11 @@ namespace EasyCodeForVivox.Events.Internal
 
         private async Task InvokeMethodsAsync<T>(Enum eventKey, T value)
         {
-            if (!DynamicEvents.Methods.ContainsKey(eventKey))
+            if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
                 return;
             }
-            foreach (var method in DynamicEvents.Methods[eventKey])
+            foreach (var method in HandleDynamicEvents.Methods[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 1 || parameters[0].ParameterType != typeof(T))
@@ -73,11 +74,11 @@ namespace EasyCodeForVivox.Events.Internal
 
         private async Task InvokeMethodsAsync<T1, T2>(Enum eventKey, T1 value1, T2 value2)
         {
-            if (!DynamicEvents.Methods.ContainsKey(eventKey))
+            if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
                 return;
             }
-            foreach (var method in DynamicEvents.Methods[eventKey])
+            foreach (var method in HandleDynamicEvents.Methods[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 2 || parameters[0].ParameterType != typeof(T1) || parameters[1].ParameterType != typeof(T2))
@@ -944,7 +945,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserMutedAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserMutedAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -962,7 +963,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserUnmutedAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserUnmutedAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -979,7 +980,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserCrossMutedAsync, accountId);
+                    await InvokeMethodsAsync(UserStatusAsync.UserCrossMutedAsync, accountId);
                 }
             }
             catch (Exception ex)
@@ -997,7 +998,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserCrossUnmutedAsync, accountId);
+                    await InvokeMethodsAsync(UserStatusAsync.UserCrossUnmutedAsync, accountId);
                 }
             }
             catch (Exception ex)
@@ -1014,7 +1015,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserSpeakingAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserSpeakingAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -1031,7 +1032,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserNotSpeakingAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserNotSpeakingAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -1055,7 +1056,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserMutedAsync);
                 }
             }
             catch (Exception ex)
@@ -1072,7 +1073,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync, value);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserMutedAsync, value);
                 }
             }
             catch (Exception ex)
@@ -1089,7 +1090,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserUnmutedAsync);
                 }
             }
             catch (Exception ex)
@@ -1106,7 +1107,7 @@ namespace EasyCodeForVivox.Events.Internal
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync, value);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserUnmutedAsync, value);
                 }
             }
             catch (Exception ex)
@@ -1119,6 +1120,118 @@ namespace EasyCodeForVivox.Events.Internal
 
 
         #endregion
+
+
+
+        #region Audio Device Events
+
+
+        private async void OnAudioInputDeviceAddedAsync(KeyEventArg<string> keyArgs)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceAdded);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        private async void OnAudioInputDeviceRemovedAsync(KeyEventArg<string> keyArgs)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceRemoved);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        private async void OnAudioInputDeviceUpdatedAsync(ValueEventArg<string, IAudioDevice> valueArgs)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceUpdated);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        private async void OnAudioOutputDeviceAdded(KeyEventArg<string> keyArgs)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioOutputDeviceAdded);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        private async void OnAudioOutputDeviceRemoved(KeyEventArg<string> keyArgs)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioOutputDeviceRemoved);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        private async void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        {
+            try
+            {
+                if (_settings.UseDynamicEvents)
+                {
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceUpdated);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogException(ex);
+                throw;
+            }
+        }
+
+        #endregion
+
+
+
 
 
         #region Text-to-Speech Events

@@ -599,6 +599,17 @@ public class EasyChatExample : EasyManager
         base.OnLocalUserUnmuted();
     }
 
+    // Audio Device Evemts
+
+    protected override void OnCrossMuted(AccountId accountId)
+    {
+        base.OnCrossMuted(accountId);
+    }
+
+    protected override void OnCrossUnmuted(AccountId accountId)
+    {
+        base.OnCrossUnmuted(accountId);
+    }
 
 
     // Text-To-Speech Event Callbacks

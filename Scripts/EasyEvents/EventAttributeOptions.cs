@@ -56,19 +56,25 @@
     {
         UserJoinedChannel,
         UserLeftChannel,
-        UserValuesUpdated
-    }
-
-    public enum UserAudioStatus
-    {
+        UserValuesUpdated,
         UserMuted,
         UserUnmuted,
         UserCrossMuted,
         UserCrossUnmuted,
-        LocalUserMuted,
-        LocalUserUnmuted,
         UserSpeaking,
         UserNotSpeaking,
+        LocalUserMuted,
+        LocalUserUnmuted,
+    }
+
+    public enum AudioDeviceStatus
+    {
+        AudioInputDeviceAdded,
+        AudioInputDeviceRemoved,
+        AudioInputDeviceUpdated,
+        AudioOutputDeviceAdded,
+        AudioOutputDeviceRemoved,
+        AudioOutputDeviceUpdated,
     }
 
     public enum TextToSpeechStatus
@@ -137,19 +143,25 @@ namespace EasyCodeForVivox.Events.Internal
     {
         UserJoinedChannelAsync,
         UserLeftChannelAsync,
-        UserValuesUpdatedAsync
-    }
-
-    internal enum UserAudioStatusAsync
-    {
+        UserValuesUpdatedAsync,
         UserMutedAsync,
         UserUnmutedAsync,
         UserCrossMutedAsync,
         UserCrossUnmutedAsync,
-        LocalUserMutedAsync,
-        LocalUserUnmutedAsync,
         UserSpeakingAsync,
         UserNotSpeakingAsync,
+        LocalUserMutedAsync,
+        LocalUserUnmutedAsync,
+    }
+
+    internal enum AudioDeviceStatusAsync
+    {
+        AudioInputDeviceAddedAsync,
+        AudioInputDeviceRemovedAsync,
+        AudioInputDeviceUpdatedAsync,
+        AudioOutputDeviceAddedAsync,
+        AudioOutputDeviceRemovedAsync,
+        AudioOutputDeviceUpdatedAsync,
     }
 
     internal enum TextToSpeechStatusAsync

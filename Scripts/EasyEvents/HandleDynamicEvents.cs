@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace EasyCodeForVivox.Events
 {
-    public static class DynamicEvents
+    public static class HandleDynamicEvents
     {
-        private static readonly HashSet<string> internalAssemblyNames = new HashSet<string>()
+        public static readonly HashSet<string> InternalAssemblyNames = new HashSet<string>()
 {
     "Zenject-Editor",
     "Zenject-ReflectionBaking-Editor",
@@ -169,7 +169,7 @@ namespace EasyCodeForVivox.Events
                 var assemblyName = assembly.GetName().Name;
                 if (assembly.IsDynamic) { continue; }
                 if (assemblyName.StartsWith("System") || assemblyName.StartsWith("Unity") || assemblyName.StartsWith("UnityEditor") ||
-                    assemblyName.StartsWith("UnityEngine") || internalAssemblyNames.Contains(assemblyName) || assemblyName.StartsWith("Mono")
+                    assemblyName.StartsWith("UnityEngine") || InternalAssemblyNames.Contains(assemblyName) || assemblyName.StartsWith("Mono")
                     )
                 {
                     continue;
@@ -183,7 +183,7 @@ namespace EasyCodeForVivox.Events
                 BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
                 // methods do repeat some code but instead of for looping and awaiting on 1 thread
-                // this enables me to create many tasks to hopefully run at the same time and
+                // this enables me to create many tasks to (hopefully) run at the same time and
                 // take advantage of multiple cores/threads to speed up the execution time at startup
                 await Task.Run(() => RegisterLoginEvents(types, flags));
                 await Task.Run(() => RegisterChannelEvents(types, flags));
@@ -192,7 +192,7 @@ namespace EasyCodeForVivox.Events
                 await Task.Run(() => RegisterChannelMessageEvents(types, flags));
                 await Task.Run(() => RegisterDirectMessageEvents(types, flags));
                 await Task.Run(() => RegisterUserEvents(types, flags));
-                await Task.Run(() => RegisterUserAudioEvents(types, flags));
+                await Task.Run(() => RegisterUserEvents(types, flags));
                 await Task.Run(() => RegisterTextToSpeechEvents(types, flags));
             }
 
@@ -365,6 +365,67 @@ namespace EasyCodeForVivox.Events
             });
         }
 
+        public static void RegisterAudioDeviceEvents(Type[] types, BindingFlags flags)
+        {
+            Parallel.ForEach(types, type =>
+            {
+                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                {
+                    var attribute = methodInfo.GetCustomAttribute<AudioDeviceEventAttribute>();
+                    if (attribute != null)
+                    {
+                        switch (attribute.Options)
+                        {
+                            case AudioDeviceStatus.AudioInputDeviceAdded:
+                                AddDynamicEvent(AudioDeviceStatus.AudioInputDeviceAdded, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioInputDeviceRemoved:
+                                AddDynamicEvent(AudioDeviceStatus.AudioInputDeviceRemoved, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioInputDeviceUpdated:
+                                AddDynamicEvent(AudioDeviceStatus.AudioInputDeviceUpdated, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioOutputDeviceAdded:
+                                AddDynamicEvent(AudioDeviceStatus.AudioOutputDeviceAdded, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioOutputDeviceRemoved:
+                                AddDynamicEvent(AudioDeviceStatus.AudioOutputDeviceRemoved, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioOutputDeviceUpdated:
+                                AddDynamicEvent(AudioDeviceStatus.AudioOutputDeviceUpdated, methodInfo);
+                                break;
+                        }
+                        continue;
+                    }
+                    var asyncAttribute = methodInfo.GetCustomAttribute<AudioDeviceEventAsyncAttribute>();
+                    if (asyncAttribute != null)
+                    {
+                        switch (asyncAttribute.Options)
+                        {
+                            case AudioDeviceStatus.AudioInputDeviceAdded:
+                                AddDynamicEvent(AudioDeviceStatusAsync.AudioInputDeviceAddedAsync, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioInputDeviceRemoved:
+                                AddDynamicEvent(AudioDeviceStatusAsync.AudioInputDeviceAddedAsync, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioInputDeviceUpdated:
+                                AddDynamicEvent(AudioDeviceStatusAsync.AudioInputDeviceUpdatedAsync, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioOutputDeviceAdded:
+                                AddDynamicEvent(AudioDeviceStatusAsync.AudioOutputDeviceAddedAsync, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioOutputDeviceRemoved:
+                                AddDynamicEvent(AudioDeviceStatusAsync.AudioOutputDeviceRemovedAsync, methodInfo);
+                                break;
+                            case AudioDeviceStatus.AudioOutputDeviceUpdated:
+                                AddDynamicEvent(AudioDeviceStatusAsync.AudioOutputDeviceUpdatedAsync, methodInfo);
+                                break;
+                        }
+                    }
+                }
+            });
+        }
+        
         public static void RegisterAudioChannelEvents(Type[] types, BindingFlags flags)
         {
             Parallel.ForEach(types, type =>
@@ -569,6 +630,30 @@ namespace EasyCodeForVivox.Events
                             case UserStatus.UserValuesUpdated:
                                 AddDynamicEvent(UserStatus.UserValuesUpdated, methodInfo);
                                 break;
+                            case UserStatus.UserMuted:
+                                AddDynamicEvent(UserStatus.UserMuted, methodInfo);
+                                break;
+                            case UserStatus.UserUnmuted:
+                                AddDynamicEvent(UserStatus.UserUnmuted, methodInfo);
+                                break;
+                            case UserStatus.UserCrossMuted:
+                                AddDynamicEvent(UserStatus.UserCrossMuted, methodInfo);
+                                break;
+                            case UserStatus.UserCrossUnmuted:
+                                AddDynamicEvent(UserStatus.UserCrossUnmuted, methodInfo);
+                                break;
+                            case UserStatus.UserNotSpeaking:
+                                AddDynamicEvent(UserStatus.UserNotSpeaking, methodInfo);
+                                break;
+                            case UserStatus.UserSpeaking:
+                                AddDynamicEvent(UserStatus.UserSpeaking, methodInfo);
+                                break;
+                            case UserStatus.LocalUserMuted:
+                                AddDynamicEvent(UserStatus.LocalUserMuted, methodInfo);
+                                break;
+                            case UserStatus.LocalUserUnmuted:
+                                AddDynamicEvent(UserStatus.LocalUserUnmuted, methodInfo);
+                                break;
                         }
                         continue;
                     }
@@ -586,78 +671,29 @@ namespace EasyCodeForVivox.Events
                             case UserStatus.UserValuesUpdated:
                                 AddDynamicEvent(UserStatusAsync.UserValuesUpdatedAsync, methodInfo);
                                 break;
-                        }
-                    }
-                }
-            });
-        }
-
-        public static void RegisterUserAudioEvents(Type[] types, BindingFlags flags)
-        {
-            Parallel.ForEach(types, type =>
-            {
-                foreach (MethodInfo methodInfo in type.GetMethods(flags))
-                {
-                    var attribute = methodInfo.GetCustomAttribute<UserAudioEventAttribute>();
-                    if (attribute != null)
-                    {
-                        switch (attribute.Options)
-                        {
-                            case UserAudioStatus.UserMuted:
-                                AddDynamicEvent(UserAudioStatus.UserMuted, methodInfo);
+                            case UserStatus.UserMuted:
+                                AddDynamicEvent(UserStatusAsync.UserMutedAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.UserUnmuted:
-                                AddDynamicEvent(UserAudioStatus.UserUnmuted, methodInfo);
+                            case UserStatus.UserUnmuted:
+                                AddDynamicEvent(UserStatusAsync.UserUnmutedAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.UserCrossMuted:
-                                AddDynamicEvent(UserAudioStatus.UserCrossMuted, methodInfo);
+                            case UserStatus.UserCrossMuted:
+                                AddDynamicEvent(UserStatusAsync.UserCrossMutedAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.UserCrossUnmuted:
-                                AddDynamicEvent(UserAudioStatus.UserCrossUnmuted, methodInfo);
+                            case UserStatus.UserCrossUnmuted:
+                                AddDynamicEvent(UserStatusAsync.UserCrossUnmutedAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.UserNotSpeaking:
-                                AddDynamicEvent(UserAudioStatus.UserNotSpeaking, methodInfo);
+                            case UserStatus.UserNotSpeaking:
+                                AddDynamicEvent(UserStatusAsync.UserNotSpeakingAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.UserSpeaking:
-                                AddDynamicEvent(UserAudioStatus.UserSpeaking, methodInfo);
+                            case UserStatus.UserSpeaking:
+                                AddDynamicEvent(UserStatusAsync.UserSpeakingAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.LocalUserMuted:
-                                AddDynamicEvent(UserAudioStatus.LocalUserMuted, methodInfo);
+                            case UserStatus.LocalUserMuted:
+                                AddDynamicEvent(UserStatusAsync.LocalUserMutedAsync, methodInfo);
                                 break;
-                            case UserAudioStatus.LocalUserUnmuted:
-                                AddDynamicEvent(UserAudioStatus.LocalUserUnmuted, methodInfo);
-                                break;
-                        }
-                        continue;
-                    }
-                    var asyncAttribute = methodInfo.GetCustomAttribute<UserAudioEventAsyncAttribute>();
-                    if (asyncAttribute != null)
-                    {
-                        switch (asyncAttribute.Options)
-                        {
-                            case UserAudioStatus.UserMuted:
-                                AddDynamicEvent(UserAudioStatusAsync.UserMutedAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.UserUnmuted:
-                                AddDynamicEvent(UserAudioStatusAsync.UserUnmutedAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.UserCrossMuted:
-                                AddDynamicEvent(UserAudioStatusAsync.UserCrossMutedAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.UserCrossUnmuted:
-                                AddDynamicEvent(UserAudioStatusAsync.UserCrossUnmutedAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.UserNotSpeaking:
-                                AddDynamicEvent(UserAudioStatusAsync.UserNotSpeakingAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.UserSpeaking:
-                                AddDynamicEvent(UserAudioStatusAsync.UserSpeakingAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.LocalUserMuted:
-                                AddDynamicEvent(UserAudioStatusAsync.LocalUserMutedAsync, methodInfo);
-                                break;
-                            case UserAudioStatus.LocalUserUnmuted:
-                                AddDynamicEvent(UserAudioStatusAsync.LocalUserUnmutedAsync, methodInfo);
+                            case UserStatus.LocalUserUnmuted:
+                                AddDynamicEvent(UserStatusAsync.LocalUserUnmutedAsync, methodInfo);
                                 break;
                         }
                     }

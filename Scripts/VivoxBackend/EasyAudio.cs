@@ -8,7 +8,7 @@ using VivoxUnity;
 namespace EasyCodeForVivox
 {
 
-    public class EasyAudio : IAudio
+    public class EasyAudio
     {
         private readonly EasySettingsSO _settings;
 
@@ -42,8 +42,9 @@ namespace EasyCodeForVivox
 
         #region Audio Methods
 
-        public void SetAudioDeviceInput(IAudioDevice device, VivoxUnity.Client client)
+        public void SetAudioDeviceInput(string deviceName, VivoxUnity.Client client)
         {
+            IAudioDevice device = client.AudioInputDevices.AvailableDevices[deviceName];
             if (device == client.AudioInputDevices.ActiveDevice)
             {
                 Debug.Log($"{device.Name} is already active".Color(EasyDebug.Yellow));
@@ -66,8 +67,9 @@ namespace EasyCodeForVivox
             });
         }
 
-        public void SetAudioDeviceOutput(IAudioDevice device, VivoxUnity.Client client)
+        public void SetAudioDeviceOutput(string deviceName, VivoxUnity.Client client)
         {
+            IAudioDevice device = client.AudioInputDevices.AvailableDevices[deviceName];
             if (device == client.AudioOutputDevices.ActiveDevice)
             {
                 Debug.Log($"{device.Name} is already active".Color(EasyDebug.Yellow));
@@ -196,35 +198,21 @@ namespace EasyCodeForVivox
         #endregion
 
 
-        public void OnAudioInputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
+        private void OnAudioInputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
         {
-            var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             if (!_settings.LogAllAudioDevices) { return; }
+            var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             Debug.Log($"Audio Input device has been added {device?.Name}");
         }
 
-        public void OnAudioInputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
+        private void OnAudioInputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
         {
-            var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             if (!_settings.LogAllAudioDevices) { return; }
+            var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
             Debug.Log($"Audio Input device has been removed {device?.Name}");
         }
 
-        public void OnAudioOutputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
-        {
-            var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
-            if (!_settings.LogAllAudioDevices) { return; }
-            Debug.Log($"Audio Output device has been added {device?.Name}");
-        }
-
-        public void OnAudioOutputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
-        {
-            var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
-            if (!_settings.LogAllAudioDevices) { return; }
-            Debug.Log($"Audio Output device has been removed {device?.Name}");
-        }
-
-        public void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        private void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
         {
             switch (valueArgs.PropertyName)
             {
@@ -240,7 +228,21 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        private void OnAudioOutputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
+        {
+            if (!_settings.LogAllAudioDevices) { return; }
+            var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
+            Debug.Log($"Audio Output device has been added {device?.Name}");
+        }
+
+        private void OnAudioOutputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
+        {
+            if (!_settings.LogAllAudioDevices) { return; }
+            var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
+            Debug.Log($"Audio Output device has been removed {device?.Name}");
+        }
+
+        private void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
         {
             switch (valueArgs.PropertyName)
             {

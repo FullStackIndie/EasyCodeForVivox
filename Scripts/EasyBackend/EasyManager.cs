@@ -85,8 +85,8 @@ namespace EasyCodeForVivox
                         // and how many cpu's you have)
                         await Task.Run(async () =>
                         {
-                            await DynamicEvents.RegisterEvents(_settings.OnlySearchAssemblyCSharp, _settings.LogAssemblySearches, _settings.LogAllDynamicMethods);
-                            if (DynamicEvents.Methods.Count == 0)
+                            await HandleDynamicEvents.RegisterEvents(_settings.OnlySearchAssemblyCSharp, _settings.LogAssemblySearches, _settings.LogAllDynamicMethods);
+                            if (HandleDynamicEvents.Methods.Count == 0)
                             {
                                 _settings.UseDynamicEvents = false;
                             }
@@ -107,13 +107,13 @@ namespace EasyCodeForVivox
 
         public void SubscribeToVivoxEvents()
         {
-            EasySession.Client.AudioInputDevices.AvailableDevices.AfterKeyAdded += _audio.OnAudioInputDeviceAdded;
-            EasySession.Client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved += _audio.OnAudioInputDeviceRemoved;
-            EasySession.Client.AudioInputDevices.AvailableDevices.AfterValueUpdated += _audio.OnAudioInputDeviceUpdated;
+            EasySession.Client.AudioInputDevices.AvailableDevices.AfterKeyAdded += OnAudioInputDeviceAdded;
+            EasySession.Client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved += OnAudioInputDeviceRemoved;
+            EasySession.Client.AudioInputDevices.AvailableDevices.AfterValueUpdated += OnAudioInputDeviceUpdated;
 
-            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterKeyAdded += _audio.OnAudioOutputDeviceAdded;
-            EasySession.Client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved += _audio.OnAudioOutputDeviceRemoved;
-            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterValueUpdated += _audio.OnAudioOutputDeviceUpdated;
+            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterKeyAdded += OnAudioOutputDeviceAdded;
+            EasySession.Client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved += OnAudioOutputDeviceRemoved;
+            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterValueUpdated += OnAudioOutputDeviceUpdated;
 
             _events.LoggingIn += OnLoggingIn;
             _events.LoggedIn += OnLoggedIn;
@@ -146,17 +146,18 @@ namespace EasyCodeForVivox
             _events.DirectMessageRecieved += OnDirectMessageRecieved;
             _events.DirectMessageFailed += OnDirectMessageFailed;
 
-            _events.LocalUserMuted += OnLocalUserMuted;
-            _events.LocalUserUnmuted += OnLocalUserUnmuted;
-
-            _events.UserJoinedChannel += OnUserJoinedChannel;
-            _events.UserLeftChannel += OnUserLeftChannel;
-            _events.UserValuesUpdated += OnUserValuesUpdated;
-
             _events.UserMuted += OnUserMuted;
             _events.UserUnmuted += OnUserUnmuted;
             _events.UserSpeaking += OnUserSpeaking;
             _events.UserNotSpeaking += OnUserNotSpeaking;
+            _events.LocalUserMuted += OnLocalUserMuted;
+            _events.LocalUserUnmuted += OnLocalUserUnmuted;
+            _events.UserCrossMuted += OnCrossMuted;
+            _events.UserCrossUnmuted += OnCrossUnmuted;
+
+            _events.UserJoinedChannel += OnUserJoinedChannel;
+            _events.UserLeftChannel += OnUserLeftChannel;
+            _events.UserValuesUpdated += OnUserValuesUpdated;
 
             _events.TTSMessageAdded += OnTTSMessageAdded;
             _events.TTSMessageRemoved += OnTTSMessageRemoved;
@@ -166,13 +167,13 @@ namespace EasyCodeForVivox
 
         public void UnsubscribeToVivoxEvents()
         {
-            EasySession.Client.AudioInputDevices.AvailableDevices.AfterKeyAdded -= _audio.OnAudioInputDeviceAdded;
-            EasySession.Client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved -= _audio.OnAudioInputDeviceRemoved;
-            EasySession.Client.AudioInputDevices.AvailableDevices.AfterValueUpdated -= _audio.OnAudioInputDeviceUpdated;
+            EasySession.Client.AudioInputDevices.AvailableDevices.AfterKeyAdded -= OnAudioInputDeviceAdded;
+            EasySession.Client.AudioInputDevices.AvailableDevices.BeforeKeyRemoved -= OnAudioInputDeviceRemoved;
+            EasySession.Client.AudioInputDevices.AvailableDevices.AfterValueUpdated -= OnAudioInputDeviceUpdated;
 
-            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterKeyAdded -= _audio.OnAudioOutputDeviceAdded;
-            EasySession.Client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved -= _audio.OnAudioOutputDeviceRemoved;
-            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterValueUpdated -= _audio.OnAudioOutputDeviceUpdated;
+            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterKeyAdded -= OnAudioOutputDeviceAdded;
+            EasySession.Client.AudioOutputDevices.AvailableDevices.BeforeKeyRemoved -= OnAudioOutputDeviceRemoved;
+            EasySession.Client.AudioOutputDevices.AvailableDevices.AfterValueUpdated -= OnAudioOutputDeviceUpdated;
 
             _events.LoggingIn -= OnLoggingIn;
             _events.LoggedIn -= OnLoggedIn;
@@ -205,17 +206,18 @@ namespace EasyCodeForVivox
             _events.DirectMessageRecieved -= OnDirectMessageRecieved;
             _events.DirectMessageFailed -= OnDirectMessageFailed;
 
-            _events.LocalUserMuted -= OnLocalUserMuted;
-            _events.LocalUserUnmuted -= OnLocalUserUnmuted;
-
-            _events.UserJoinedChannel -= OnUserJoinedChannel;
-            _events.UserLeftChannel -= OnUserLeftChannel;
-            _events.UserValuesUpdated -= OnUserValuesUpdated;
-
             _events.UserMuted -= OnUserMuted;
             _events.UserUnmuted -= OnUserUnmuted;
             _events.UserSpeaking -= OnUserSpeaking;
             _events.UserNotSpeaking -= OnUserNotSpeaking;
+            _events.LocalUserMuted -= OnLocalUserMuted;
+            _events.LocalUserUnmuted -= OnLocalUserUnmuted;
+            _events.UserCrossMuted -= OnCrossMuted;
+            _events.UserCrossUnmuted -= OnCrossUnmuted;
+
+            _events.UserJoinedChannel -= OnUserJoinedChannel;
+            _events.UserLeftChannel -= OnUserLeftChannel;
+            _events.UserValuesUpdated -= OnUserValuesUpdated;
 
             _events.TTSMessageAdded -= OnTTSMessageAdded;
             _events.TTSMessageRemoved -= OnTTSMessageRemoved;
@@ -419,12 +421,11 @@ namespace EasyCodeForVivox
 
         public void SetAudioInputDevice(string deviceName)
         {
-            var audioDevice = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Name.Contains(deviceName)).FirstOrDefault();
-            if (audioDevice != null)
+            if (EasySession.Client.AudioInputDevices.AvailableDevices.Keys.Contains(deviceName))
             {
                 if (_settings.LogEasyManager)
-                    Debug.Log("Setting New Audio Device");
-                _audio.SetAudioDeviceInput(audioDevice, EasySession.Client);
+                    Debug.Log("Setting New Audio Input Device");
+                _audio.SetAudioDeviceInput(deviceName, EasySession.Client);
                 return;
             }
             if (_settings.LogEasyManager)
@@ -433,11 +434,15 @@ namespace EasyCodeForVivox
 
         public void SetAudioOutputDevice(string deviceName)
         {
-            var audioDevice = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Name.Contains(deviceName)).FirstOrDefault();
-            if (audioDevice != null)
+            if (EasySession.Client.AudioInputDevices.AvailableDevices.Keys.Contains(deviceName))
             {
-                _audio.SetAudioDeviceOutput(audioDevice, EasySession.Client);
+                if (_settings.LogEasyManager)
+                    Debug.Log("Setting New Audio Output Device");
+                _audio.SetAudioDeviceInput(deviceName, EasySession.Client);
+                return;
             }
+            if (_settings.LogEasyManager)
+                Debug.Log("Could not find Audio device");
         }
 
         public void EnablePushToTalk(bool enable, KeyCode keyCode)
@@ -659,7 +664,7 @@ namespace EasyCodeForVivox
         #endregion
 
 
-        #region Local User Mute Callbacks
+        #region Mute Callbacks
 
         protected virtual void OnLocalUserMuted()
         {
@@ -673,7 +678,47 @@ namespace EasyCodeForVivox
                 Debug.Log("Local User is Unmuted");
         }
 
+        protected virtual void OnCrossMuted(AccountId accountId)
+        {
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Player {accountId.DisplayName} has been Cross Muted");
+        }
+
+        protected virtual void OnCrossUnmuted(AccountId accountId)
+        {
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"Player {accountId.DisplayName} has been Cross Unmuted");
+        }
+
+        protected virtual void OnUserMuted(IParticipant participant)
+        {
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Muted : (Muted For All : {participant.IsMutedForAll})");
+        }
+
+        protected virtual void OnUserUnmuted(IParticipant participant)
+        {
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Unmuted : (Muted For All : {participant.IsMutedForAll})");
+        }
+
+        protected virtual void OnUserSpeaking(IParticipant participant)
+        {
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Speaking : Audio Energy {participant.AudioEnergy}");
+        }
+
+        protected virtual void OnUserNotSpeaking(IParticipant participant)
+        {
+            if (_settings.LogEasyManagerEventCallbacks)
+                Debug.Log($"{participant.Account.DisplayName} Is Not Speaking");
+        }
+
+
         #endregion
+
+
+
 
         #region User Callbacks
 
@@ -688,41 +733,12 @@ namespace EasyCodeForVivox
         {
             if (_settings.LogEasyManagerEventCallbacks)
                 Debug.Log($"{participant.Account.DisplayName} Has Left The Channel");
-
         }
 
         protected virtual void OnUserValuesUpdated(IParticipant participant)
         {
             if (_settings.LogEasyManagerEventCallbacks)
                 Debug.Log($"{participant.Account.DisplayName} Has updated itself in the channel");
-
-        }
-
-        protected virtual void OnUserMuted(IParticipant participant)
-        {
-            if (_settings.LogEasyManagerEventCallbacks)
-                Debug.Log($"{participant.Account.DisplayName} Is Muted : (Muted For All : {participant.IsMutedForAll})");
-
-        }
-
-        protected virtual void OnUserUnmuted(IParticipant participant)
-        {
-            if (_settings.LogEasyManagerEventCallbacks)
-                Debug.Log($"{participant.Account.DisplayName} Is Unmuted : (Muted For All : {participant.IsMutedForAll})");
-
-        }
-
-        protected virtual void OnUserSpeaking(IParticipant participant)
-        {
-            if (_settings.LogEasyManagerEventCallbacks)
-                Debug.Log($"{participant.Account.DisplayName} Is Speaking : Audio Energy {participant.AudioEnergy}");
-
-        }
-
-        protected virtual void OnUserNotSpeaking(IParticipant participant)
-        {
-            if (_settings.LogEasyManagerEventCallbacks)
-                Debug.Log($"{participant.Account.DisplayName} Is Not Speaking");
         }
 
 
@@ -757,10 +773,75 @@ namespace EasyCodeForVivox
         }
 
 
+        #endregion
 
+
+
+        #region Audio Device Events
+
+        private void OnAudioInputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
+        {
+            var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
+            if (!_settings.LogAllAudioDevices) { return; }
+            Debug.Log($"Audio Input device has been added {device?.Name}");
+        }
+
+        private void OnAudioInputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
+        {
+            var device = EasySession.Client.AudioInputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
+            if (!_settings.LogAllAudioDevices) { return; }
+            Debug.Log($"Audio Input device has been removed {device?.Name}");
+        }
+
+        private void OnAudioInputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        {
+            switch (valueArgs.PropertyName)
+            {
+                case "EventAfterDeviceAvailableAdded":
+                    Debug.Log($"Audio Input Device Added {valueArgs.Value.Name}");
+                    break;
+                case "EventBeforeAvailableDeviceRemoved":
+                    Debug.Log($"Audio Input Device Removed {valueArgs.Value.Name}");
+                    break;
+                case "EventEffectiveDeviceChanged":
+                    Debug.Log($"Audio Input Device has been changed to {valueArgs.Value.Name}");
+                    break;
+            }
+        }
+
+        private void OnAudioOutputDeviceAdded(object sender, KeyEventArg<string> keyArgs)
+        {
+            var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
+            if (!_settings.LogAllAudioDevices) { return; }
+            Debug.Log($"Audio Output device has been added {device?.Name}");
+        }
+
+        private void OnAudioOutputDeviceRemoved(object sender, KeyEventArg<string> keyArgs)
+        {
+            var device = EasySession.Client.AudioOutputDevices.AvailableDevices.Where(d => d.Key == keyArgs.Key).FirstOrDefault();
+            if (!_settings.LogAllAudioDevices) { return; }
+            Debug.Log($"Audio Output device has been removed {device?.Name}");
+        }
+
+        private void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        {
+            switch (valueArgs.PropertyName)
+            {
+                case "EventAfterDeviceAvailableAdded":
+                    Debug.Log($"Audio Output Device Added {valueArgs.Value.Name}");
+                    break;
+                case "EventBeforeAvailableDeviceRemoved":
+                    Debug.Log($"Audio Output Device Removed {valueArgs.Value.Name}");
+                    break;
+                case "EventEffectiveDeviceChanged":
+                    Debug.Log($"Audio Output Device has been changed to {valueArgs.Value.Name}");
+                    break;
+            }
+        }
 
 
         #endregion
+
 
 
         #region Text-to-Speech Callbacks

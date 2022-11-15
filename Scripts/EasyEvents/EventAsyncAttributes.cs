@@ -81,11 +81,11 @@ namespace EasyCodeForVivox
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class UserAudioEventAsyncAttribute : Attribute
+    public class AudioDeviceEventAsyncAttribute : Attribute
     {
-        public UserAudioStatus Options { get; set; }
+        public AudioDeviceStatus Options { get; set; }
 
-        public UserAudioEventAsyncAttribute(UserAudioStatus options)
+        public AudioDeviceEventAsyncAttribute(AudioDeviceStatus options)
         {
             Options = options;
         }

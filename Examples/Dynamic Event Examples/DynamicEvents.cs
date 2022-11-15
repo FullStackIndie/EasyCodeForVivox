@@ -3,7 +3,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class DynamicAttributeEvents : MonoBehaviour
+    public class DynamicEvents : MonoBehaviour
     {
         [SerializeField] private string cubeName;
         [SerializeField] private GameObject cube;
@@ -71,7 +71,7 @@ namespace EasyCodeForVivox
             Debug.Log($"User {participant.Account.Name} has joined this channel");
         }
 
-        [UserAudioEvent(UserAudioStatus.UserMuted)]
+        [UserEvent(UserStatus.UserMuted)]
         public void UserHasBeenMuted(IParticipant participant)
         {
             Debug.Log($"User {participant.Account.Name} has been muted");

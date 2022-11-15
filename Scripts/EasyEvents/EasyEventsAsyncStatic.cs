@@ -10,11 +10,11 @@ namespace EasyCodeForVivox.Events
     {
         private static async Task InvokeMethodsAsync(Enum eventKey)
         {
-            if (!DynamicEvents.Methods.ContainsKey(eventKey))
+            if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
                 return;
             }
-            foreach (var method in DynamicEvents.Methods[eventKey])
+            foreach (var method in HandleDynamicEvents.Methods[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 0)
@@ -34,11 +34,11 @@ namespace EasyCodeForVivox.Events
 
         private static async Task InvokeMethodsAsync<T>(Enum eventKey, T value)
         {
-            if (!DynamicEvents.Methods.ContainsKey(eventKey))
+            if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
                 return;
             }
-            foreach (var method in DynamicEvents.Methods[eventKey])
+            foreach (var method in HandleDynamicEvents.Methods[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 1 || parameters[0].ParameterType != typeof(T))
@@ -58,11 +58,11 @@ namespace EasyCodeForVivox.Events
 
         private static async Task InvokeMethodsAsync<T1, T2>(Enum eventKey, T1 value1, T2 value2)
         {
-            if (!DynamicEvents.Methods.ContainsKey(eventKey))
+            if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
                 return;
             }
-            foreach (var method in DynamicEvents.Methods[eventKey])
+            foreach (var method in HandleDynamicEvents.Methods[eventKey])
             {
                 var parameters = method.GetParameters();
                 if (parameters.Length != 2 || parameters[0].ParameterType != typeof(T1) || parameters[1].ParameterType != typeof(T2))
@@ -919,7 +919,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserMutedAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserMutedAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -936,7 +936,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserMutedAsync, participant, value);
+                    await InvokeMethodsAsync(UserStatusAsync.UserMutedAsync, participant, value);
                 }
             }
             catch (Exception ex)
@@ -953,7 +953,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserUnmutedAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserUnmutedAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -970,7 +970,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserUnmutedAsync, participant, value);
+                    await InvokeMethodsAsync(UserStatusAsync.UserUnmutedAsync, participant, value);
                 }
             }
             catch (Exception ex)
@@ -987,7 +987,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserSpeakingAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserSpeakingAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -1004,7 +1004,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserSpeakingAsync, participant, value);
+                    await InvokeMethodsAsync(UserStatusAsync.UserSpeakingAsync, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1021,7 +1021,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserNotSpeakingAsync, participant);
+                    await InvokeMethodsAsync(UserStatusAsync.UserNotSpeakingAsync, participant);
                 }
             }
             catch (Exception ex)
@@ -1038,7 +1038,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.UserNotSpeakingAsync, participant, value);
+                    await InvokeMethodsAsync(UserStatusAsync.UserNotSpeakingAsync, participant, value);
                 }
             }
             catch (Exception ex)
@@ -1061,7 +1061,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync, isMuted);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserMutedAsync, isMuted);
                 }
             }
             catch (Exception ex)
@@ -1078,7 +1078,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserMutedAsync, isMuted, value);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserMutedAsync, isMuted, value);
                 }
             }
             catch (Exception ex)
@@ -1095,7 +1095,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync, isMuted);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserUnmutedAsync, isMuted);
                 }
             }
             catch (Exception ex)
@@ -1112,7 +1112,7 @@ namespace EasyCodeForVivox.Events
             {
                 if (EasySession.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(UserAudioStatusAsync.LocalUserUnmutedAsync, isMuted, value);
+                    await InvokeMethodsAsync(UserStatusAsync.LocalUserUnmutedAsync, isMuted, value);
                 }
             }
             catch (Exception ex)

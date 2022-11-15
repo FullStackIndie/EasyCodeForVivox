@@ -620,6 +620,16 @@ public class Easy3DExample : EasyManager
         base.OnLocalUserUnmuted();
     }
 
+    protected override void OnCrossMuted(AccountId accountId)
+    {
+        base.OnCrossMuted(accountId);
+    }
+
+    protected override void OnCrossUnmuted(AccountId accountId)
+    {
+        base.OnCrossUnmuted(accountId);
+    }
+
 
     // Text-To-Speech Event Callbacks
 
