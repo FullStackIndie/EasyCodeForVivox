@@ -8,7 +8,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyTextToSpeech : ITextToSpeech
+    public class EasyTextToSpeech
     {
         private readonly EasyEvents _events;
         private readonly EasyEventsAsync _eventsAsync;
@@ -40,16 +40,31 @@ namespace EasyCodeForVivox
         #region Text-To-Speech Methods
 
 
-        public void TTSChooseVoice(string voiceName, ILoginSession loginSession)
+        public void ChooseVoiceGender(VoiceGender voiceGender, string userName)
         {
-            ITTSVoice voice = loginSession.TTS.AvailableVoices.FirstOrDefault(v => v.Name == voiceName);
-            if (voice != null)
+            void SetVoice(string voiceName, ILoginSession loginSession)
             {
-                loginSession.TTS.CurrentVoice = voice;
+                ITTSVoice voice = loginSession.TTS.AvailableVoices.FirstOrDefault(v => v.Name == voiceName);
+                if (voice != null)
+                {
+                    loginSession.TTS.CurrentVoice = voice;
+                }
             }
+
+            switch (voiceGender)
+            {
+                case VoiceGender.male:
+                    SetVoice(MaleVoice, EasySession.LoginSessions[userName]);
+                    break;
+
+                case VoiceGender.female:
+                    SetVoice(FemaleVoice, EasySession.LoginSessions[userName]);
+                    break;
+            }
+
         }
 
-        public void TTSSpeak(string message, TTSDestination destination, ILoginSession loginSession)
+        public void PlayTTSMessage(string message, TTSDestination destination, ILoginSession loginSession)
         {
             switch (destination)
             {
@@ -57,7 +72,7 @@ namespace EasyCodeForVivox
                     message.TTSMsgLocalPlayOverCurrent(loginSession);
                     break;
                 case TTSDestination.RemoteTransmission:
-                    message.TTSMsgLocalRemotePlayOverCurrent(loginSession);
+                    message.TTSMsgRemotePlayOverCurrent(loginSession);
                     break;
                 case TTSDestination.RemoteTransmissionWithLocalPlayback:
                     message.TTSMsgLocalRemotePlayOverCurrent(loginSession);
@@ -72,7 +87,7 @@ namespace EasyCodeForVivox
                     message.TTSMsgQueueRemoteLocal(loginSession);
                     break;
                 case TTSDestination.ScreenReader:
-                    message.TTSMsgLocalReplaceCurrentPlaying(loginSession);
+                    message.TTSMsgLocalReplaceCurrentMessagePlaying(loginSession);
                     break;
             }
         }
@@ -84,7 +99,7 @@ namespace EasyCodeForVivox
         #region Text-To-Speech Callbacks
 
 
-        public async void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        private async void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count > 9)
@@ -96,7 +111,7 @@ namespace EasyCodeForVivox
             await _eventsAsync.OnTTSMessageAddedAsync(ttsArgs);
         }
 
-        public async void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        private async void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count >= 9)
@@ -107,7 +122,7 @@ namespace EasyCodeForVivox
             await _eventsAsync.OnTTSMessageRemovedAsync(ttsArgs);
         }
 
-        public async void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
+        private async void OnTTSMessageUpdated(object sender, ITTSMessageQueueEventArgs ttsArgs)
         {
             var source = (ITTSMessageQueue)sender;
             if (source.Count >= 9)
@@ -118,7 +133,7 @@ namespace EasyCodeForVivox
             await _eventsAsync.OnTTSMessageUpdatedAsync(ttsArgs);
         }
 
-        public void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)
+        private void OnTTSPropertyChanged(object sender, PropertyChangedEventArgs ttsPropArgs)
         {
             Debug.Log($"TTS Property Name == {ttsPropArgs.PropertyName}");
             // if(ttsPropArgs.PropertyName == "")

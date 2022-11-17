@@ -73,7 +73,7 @@ namespace EasyCodeForVivox.Extensions
         /// </summary>
         /// <param name="message"></param>
         /// <param name="loginSession"></param>
-        public static void TTSMsgLocalReplaceCurrentPlaying(this string message, ILoginSession loginSession)
+        public static void TTSMsgLocalReplaceCurrentMessagePlaying(this string message, ILoginSession loginSession)
         {
             TTSMessage msg = new TTSMessage(message, TTSDestination.ScreenReader);
             if (loginSession != null && loginSession.TTS.Messages.Count < 10)

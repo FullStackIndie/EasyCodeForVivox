@@ -235,9 +235,9 @@ namespace EasyCodeForVivox
 
 
 
-        public void LoginToVivox(string userName, bool joinMuted = false)
+        public void LoginToVivox(string userName, string displayName = default, bool joinMuted = false)
         {
-            _login.LoginToVivox(userName, joinMuted);
+            _login.LoginToVivox(userName, displayName, joinMuted);
         }
 
         public void UpdateLoginProperties(string userName, ParticipantPropertyUpdateFrequency updateFrequency)
@@ -402,12 +402,12 @@ namespace EasyCodeForVivox
             _mute.ClearAllCurrentCrossMutedAccounts(loggedInUserName);
         }
 
-        public void InjectAudio(string username, string audioPath)
+        public void StartAudioInjection(string username, string audioFilePath)
         {
-            _audio.StartAudioInjection(audioPath, EasySession.LoginSessions[username]);
+            _audio.StartAudioInjection(audioFilePath, EasySession.LoginSessions[username]);
         }
 
-        public void StopInjectedAudio(string username)
+        public void StopAudioInjection(string username)
         {
             _audio.StopAudioInjection(EasySession.LoginSessions[username]);
         }
@@ -448,6 +448,16 @@ namespace EasyCodeForVivox
                 Debug.Log("Could not find Audio device");
         }
 
+        public void RefreshAudioInputDevices()
+        {
+            _audio.RefreshAudioInputDevices(EasySession.Client);
+        }
+
+        public void RefreshAudioOutputDevices()
+        {
+            _audio.RefreshAudioOutputDevices(EasySession.Client);
+        }
+
         public IEnumerable<IAudioDevice> GetAudioInputDevices()
         {
             return _audio.GetAudioInputDevices(EasySession.Client);
@@ -486,28 +496,19 @@ namespace EasyCodeForVivox
         }
 
 
-        public void SpeakTTS(string msg, string userName)
+        public void PlayTTSMessage(string msg, string userName)
         {
-            _textToSpeech.TTSSpeak(msg, TTSDestination.QueuedLocalPlayback, EasySession.LoginSessions[userName]);
+            _textToSpeech.PlayTTSMessage(msg, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback, EasySession.LoginSessions[userName]);
         }
 
-        public void SpeakTTS(string msg, string userName, TTSDestination playMode)
+        public void PlayTTSMessage(string msg, string userName, TTSDestination playMode)
         {
-            _textToSpeech.TTSSpeak(msg, playMode, EasySession.LoginSessions[userName]);
+            _textToSpeech.PlayTTSMessage(msg, playMode, EasySession.LoginSessions[userName]);
         }
 
-        public void ChooseVoiceGender(VoiceGender voiceGender, ILoginSession loginSession)
+        public void ChooseVoiceGender(VoiceGender voiceGender, string userName)
         {
-            switch (voiceGender)
-            {
-                case VoiceGender.male:
-                    _textToSpeech.TTSChooseVoice(_textToSpeech.MaleVoice, loginSession);
-                    break;
-
-                case VoiceGender.female:
-                    _textToSpeech.TTSChooseVoice(_textToSpeech.FemaleVoice, loginSession);
-                    break;
-            }
+            _textToSpeech.ChooseVoiceGender(voiceGender, userName);
         }
 
 
@@ -559,7 +560,7 @@ namespace EasyCodeForVivox
         {
             EasyVivoxUtilities.RequestAndroidMicPermission();
             EasyVivoxUtilities.RequestIOSMicrophoneAccess();
-            ChooseVoiceGender(_settings.VoiceGender, loginSession);
+            ChooseVoiceGender(_settings.VoiceGender, loginSession.LoginSessionId.Name);
         }
 
 

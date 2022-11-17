@@ -52,13 +52,13 @@ namespace EasyCodeForVivox
 
         #region Login Methods
 
-        public void LoginToVivox(string userName, bool joinMuted = false)
+        public void LoginToVivox(string userName, string displayName = default, bool joinMuted = false)
         {
             try
             {
                 if (!EasyVivoxUtilities.FilterChannelAndUserName(userName)) { return; }
 
-                EasySession.LoginSessions.Add(userName, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain)));
+                EasySession.LoginSessions.Add(userName, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain, displayName)));
                 _messages.SubscribeToDirectMessages(EasySession.LoginSessions[userName]);
                 _textToSpeech.Subscribe(EasySession.LoginSessions[userName]);
                 _mute.Subscribe(EasySession.LoginSessions[userName]);
@@ -74,13 +74,13 @@ namespace EasyCodeForVivox
             }
         }
 
-        public void LoginToVivox<T>(string userName, T value, bool joinMuted = false)
+        public void LoginToVivox<T>(string userName, T value, string displayName = default, bool joinMuted = false)
         {
             try
             {
                 if (!EasyVivoxUtilities.FilterChannelAndUserName(userName)) { return; }
 
-                EasySession.LoginSessions.Add(userName, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain)));
+                EasySession.LoginSessions.Add(userName, EasySession.Client.GetLoginSession(new AccountId(EasySession.Issuer, userName, EasySession.Domain, displayName)));
                 _messages.SubscribeToDirectMessages(EasySession.LoginSessions[userName]);
                 _textToSpeech.Subscribe(EasySession.LoginSessions[userName]);
                 _mute.Subscribe(EasySession.LoginSessions[userName]);

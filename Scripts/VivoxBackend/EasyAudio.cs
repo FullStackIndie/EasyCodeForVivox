@@ -111,6 +111,37 @@ namespace EasyCodeForVivox
         }
 
 
+        public void RefreshAudioInputDevices(VivoxUnity.Client client)
+        {
+            client.AudioInputDevices.BeginRefresh(ar =>
+            {
+                try
+                {
+                    client.AudioInputDevices.EndRefresh(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
+            });
+        }
+
+        public void RefreshAudioOutputDevices(VivoxUnity.Client client)
+        {
+            client.AudioOutputDevices.BeginRefresh(ar =>
+            {
+                try
+                {
+                    client.AudioOutputDevices.EndRefresh(ar);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
+            });
+        }
+
+
         public void AdjustLocalPlayerAudioVolume(int value, VivoxUnity.Client client)
         {
             client.AudioOutputDevices.BeginRefresh(ar =>
@@ -145,22 +176,6 @@ namespace EasyCodeForVivox
         public void StopAudioInjection(ILoginSession loginSession)
         {
             loginSession.StopAudioInjection();
-        }
-
-
-        public void RefreshAudioDevices(VivoxUnity.Client client)
-        {
-            client.AudioOutputDevices.BeginRefresh(ar =>
-            {
-                try
-                {
-                    client.AudioOutputDevices.EndRefresh(ar);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e.Message);
-                }
-            });
         }
 
         public void SetAutoVoiceActivityDetection(string userName)

@@ -10,7 +10,7 @@ namespace EasyCodeForVivox
 
         void Subscribe(ILoginSession loginSession);
         void Unsubscribe(ILoginSession loginSession);
-        void TTSChooseVoice(string voiceName, ILoginSession loginSession);
+        void ChooseVoiceGender(string voiceName, ILoginSession loginSession);
         void TTSSpeak(string message, TTSDestination destination, ILoginSession loginSession);
         void OnTTSMessageAdded(object sender, ITTSMessageQueueEventArgs ttsArgs);
         void OnTTSMessageRemoved(object sender, ITTSMessageQueueEventArgs ttsArgs);

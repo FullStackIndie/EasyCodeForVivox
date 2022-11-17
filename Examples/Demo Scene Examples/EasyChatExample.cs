@@ -249,12 +249,12 @@ public class EasyChatExample : EasyManager
 
     public void InjectAudio()
     {
-        InjectAudio(loginSessionsDropdown.GetSelected(), @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
+        StartAudioInjection(loginSessionsDropdown.GetSelected(), @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
     }
 
     public void StopInjectedAudio()
     {
-        StopInjectedAudio(loginSessionsDropdown.GetSelected());
+        StopAudioInjection(loginSessionsDropdown.GetSelected());
     }
 
     public void SetAudioInputDevice()
@@ -503,7 +503,7 @@ public class EasyChatExample : EasyManager
         newMessage.text += $"\nFrom {textMessage.Sender.DisplayName} : {textMessage.Message}";
         if (textToSpeechToggle.isOn)
         {
-            SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            PlayTTSMessage(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
         }
     }
 
@@ -513,7 +513,7 @@ public class EasyChatExample : EasyManager
         newMessage.text += $"\nFrom {directedTextMessage.Sender.DisplayName} : {directedTextMessage.Message}";
         if (textToSpeechToggle.isOn)
         {
-            SpeakTTS(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            PlayTTSMessage(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
         }
     }
 
@@ -523,7 +523,7 @@ public class EasyChatExample : EasyManager
         newMessage.text += $"\nMessage failed from {failedMessage.Sender.DisplayName} : Status Code : {failedMessage.StatusCode}";
         if (textToSpeechToggle.isOn)
         {
-            SpeakTTS("Failed to send message", userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            PlayTTSMessage("Failed to send message", userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
         }
     }
 

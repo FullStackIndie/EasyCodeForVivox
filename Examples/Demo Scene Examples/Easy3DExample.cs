@@ -78,11 +78,11 @@ public class Easy3DExample : EasyManager
 
     public void LoadAudioDevices()
     {
-        foreach (var device in EasySession.Client.AudioInputDevices.AvailableDevices)
+        foreach (var device in GetAudioInputDevices())
         {
             audioCaptureDevicesDropdown.AddValue(device.Name);
         }
-        foreach (var device in EasySession.Client.AudioOutputDevices.AvailableDevices)
+        foreach (var device in GetAudioOutputDevices())
         {
             audioRenderDevicesDropdown.AddValue(device.Name);
         }
@@ -257,12 +257,12 @@ public class Easy3DExample : EasyManager
 
     public void InjectAudio()
     {
-        InjectAudio(loginSessionsDropdown.GetSelected(), @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
+        StartAudioInjection(loginSessionsDropdown.GetSelected(), @"Assets\EasyCodeForVivox\Resources\Over_the_Horizon.wav");
     }
 
     public void StopInjectedAudio()
     {
-        StopInjectedAudio(loginSessionsDropdown.GetSelected());
+        StopAudioInjection(loginSessionsDropdown.GetSelected());
     }
 
     public void SetAudioInputDevice()
@@ -517,7 +517,7 @@ public class Easy3DExample : EasyManager
         {
             if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
             {
-                SpeakTTS(messageInput.text, userNameInput.text, destination);
+                PlayTTSMessage(messageInput.text, userNameInput.text, destination);
             }
         }
     }
@@ -530,7 +530,7 @@ public class Easy3DExample : EasyManager
         {
             if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
             {
-                SpeakTTS(messageInput.text, userNameInput.text, destination);
+                PlayTTSMessage(messageInput.text, userNameInput.text, destination);
             }
         }
     }
@@ -543,7 +543,7 @@ public class Easy3DExample : EasyManager
         {
             if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
             {
-                SpeakTTS("Failed to send message", userNameInput.text, destination);
+                PlayTTSMessage("Failed to send message", userNameInput.text, destination);
             }
         }
     }
