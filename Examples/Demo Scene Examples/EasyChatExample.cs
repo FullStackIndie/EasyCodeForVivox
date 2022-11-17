@@ -599,9 +599,7 @@ public class EasyChatExample : EasyManager
         base.OnLocalUserUnmuted();
     }
 
-    // Audio Device Evemts
-
-    protected override void OnCrossMuted(AccountId accountId)
+  protected override void OnCrossMuted(AccountId accountId)
     {
         base.OnCrossMuted(accountId);
     }
@@ -610,6 +608,48 @@ public class EasyChatExample : EasyManager
     {
         base.OnCrossUnmuted(accountId);
     }
+
+
+    // Audio Device Evemts
+
+
+
+    protected override void OnAudioInputDeviceAdded(IAudioDevice audioDevice)
+    {
+        base.OnAudioInputDeviceAdded(audioDevice);
+    }
+
+    protected override void OnAudioInputDeviceRemoved(IAudioDevice audioDevice)
+    {
+        base.OnAudioInputDeviceRemoved(audioDevice);
+    }
+
+    protected override void OnAudioInputDeviceUpdated(IAudioDevice audioDevice)
+    {
+        base.OnAudioInputDeviceUpdated(audioDevice);  
+    }
+
+    protected override void OnAudioOutputDeviceAdded(IAudioDevice audioDevice)
+    {
+        base.OnAudioOutputDeviceAdded(audioDevice);
+    }
+
+    protected override void OnAudioOutputDeviceRemoved(IAudioDevice audioDevice)
+    {
+        base.OnAudioOutputDeviceRemoved(audioDevice);
+    }
+
+    protected override void OnAudioOutputDeviceUpdated(IAudioDevice audioDevice)
+    {
+        base.OnAudioOutputDeviceUpdated(audioDevice);
+    }
+
+
+
+
+
+
+
 
 
     // Text-To-Speech Event Callbacks

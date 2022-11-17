@@ -1,0 +1,71 @@
+<EasyCode>
+	<Attributes name="Login">
+		<summary>
+			Place this on a method to subscribe to Vivox Login Events
+			<para>
+				Method will be called when chosen <see cref="LoginStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+			[LoginEvent(LoginStatus.LoggedIn)]"
+			public void UserLoggedIn(ILoginSession loginSession)
+			{
+				$"Logged In {loginSession.LoginSessionId.DisplayName}";
+			}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			** Method must only contain 1 parameter of type <see cref="T:VivoxUnity.ILoginSession"/> **
+		</remarks>
+	</Attributes>
+	<Attributes name="Channel">
+		<summary>
+			Place this on a method to subscribe to Vivox Channel Events
+			<para>
+				Method will be called when chosen <see cref="ChannelStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+					[ChannelEvent(ChannelStatus.ChannelConnected)]
+					private void OnChannelConnected(IChannelSession channelSession)
+					{
+					Debug.Log($"{channelSession.Channel.Name} Has Connected : Channel Type == {channelSession.Channel.Type}");
+					}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			** Method must only contain 1 parameter of type <see cref="T:VivoxUnity.IChannelSession"/> **
+		</remarks>
+	</Attributes>
+	<Attributes name="Channelsw">
+		<summary>
+			Place this on a method to subscribe to Vivox Channel Events
+			<para>
+				Method will be called when chosen <see cref="ChannelStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+					[ChannelEvent(ChannelStatus.ChannelConnected)]
+					private void OnChannelConnected(IChannelSession channelSession)
+					{
+					Debug.Log($"{channelSession.Channel.Name} Has Connected : Channel Type == {channelSession.Channel.Type}");
+					}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			** Method must only contain 1 parameter of type <see cref="T:VivoxUnity.IChannelSession"/> **
+		</remarks>
+	</Attributes>
+</EasyCode>

@@ -61,11 +61,20 @@ public class ValidateDynamicEvents
 
     public static readonly HashSet<string> InternalAssemblyNames = new HashSet<string>()
 {
-        "",
-        "",
+        "unityplastic",
+        "log4net",
+        "NiceIO",
+        "PlayerBuildProgramLibrary.Data",
+        "AndroidPlayerBuildProgram.Data",
+        "WebGLPlayerBuildProgram.Data",
+        "BeeBuildProgramCommon.Data",
+        "ScriptCompilationBuildProgram.Data",
+        "Microsoft.CSharp",
+        "PlayerBuildProgramLibrary.Data",
         "ParrelSync",
         "VivoxTests",
         "ChatChannelSample.Editor",
+        "ChatChannelSample",
         "Plugins.BackgroundRecompiler.Editor",
         "Bee.BeeDriver",
     "Zenject-Editor",
@@ -210,8 +219,8 @@ public class ValidateDynamicEvents
     public static Dictionary<Enum, List<MethodInfo>> Methods = new Dictionary<Enum, List<MethodInfo>>();
 
 
-    [MenuItem("EasyCode/Validate Dynamic Events")]
-    public static async Task Validate()
+    //[MenuItem("EasyCode/Validate Dynamic Events")]
+    public static async void Validate()
     {
         Debug.Log("Validating Dynamic Events".Color(EasyDebug.Yellow));
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -250,7 +259,7 @@ public class ValidateDynamicEvents
         LogRegisteredEventsCount();
 
         stopwatch.Stop();
-        Debug.Log($"Registering Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green));
+        Debug.Log($"Validating Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green));
     }
 
     public static void LogRegisteredEventsCount()

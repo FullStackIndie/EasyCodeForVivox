@@ -1126,13 +1126,13 @@ namespace EasyCodeForVivox.Events.Internal
         #region Audio Device Events
 
 
-        private async void OnAudioInputDeviceAddedAsync(KeyEventArg<string> keyArgs)
+        public async void OnAudioInputDeviceAddedAsync(IAudioDevice audioDevice)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceAdded);
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceAdded, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1143,13 +1143,13 @@ namespace EasyCodeForVivox.Events.Internal
             }
         }
 
-        private async void OnAudioInputDeviceRemovedAsync(KeyEventArg<string> keyArgs)
+        public async void OnAudioInputDeviceRemovedAsync(IAudioDevice audioDevice)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceRemoved);
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceRemoved, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1160,13 +1160,13 @@ namespace EasyCodeForVivox.Events.Internal
             }
         }
 
-        private async void OnAudioInputDeviceUpdatedAsync(ValueEventArg<string, IAudioDevice> valueArgs)
+        public async void OnAudioInputDeviceUpdatedAsync(IAudioDevice audioDevice)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceUpdated);
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceUpdated, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1177,13 +1177,13 @@ namespace EasyCodeForVivox.Events.Internal
             }
         }
 
-        private async void OnAudioOutputDeviceAdded(KeyEventArg<string> keyArgs)
+        public async void OnAudioOutputDeviceAdded(IAudioDevice audioDevice)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(AudioDeviceStatus.AudioOutputDeviceAdded);
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioOutputDeviceAdded, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1194,13 +1194,13 @@ namespace EasyCodeForVivox.Events.Internal
             }
         }
 
-        private async void OnAudioOutputDeviceRemoved(KeyEventArg<string> keyArgs)
+        public async void OnAudioOutputDeviceRemoved(IAudioDevice audioDevice)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(AudioDeviceStatus.AudioOutputDeviceRemoved);
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioOutputDeviceRemoved, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1211,13 +1211,13 @@ namespace EasyCodeForVivox.Events.Internal
             }
         }
 
-        private async void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        public async void OnAudioOutputDeviceUpdated(IAudioDevice audioDevice)
         {
             try
             {
                 if (_settings.UseDynamicEvents)
                 {
-                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceUpdated);
+                    await InvokeMethodsAsync(AudioDeviceStatus.AudioInputDeviceUpdated, audioDevice);
                 }
             }
             catch (Exception ex)

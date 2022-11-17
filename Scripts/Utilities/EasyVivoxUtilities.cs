@@ -6,6 +6,7 @@ using UnityEngine;
  using UnityEngine.iOS;
 #endif
 
+
 namespace EasyCodeForVivox.Utilities
 {
     public static class EasyVivoxUtilities
@@ -17,7 +18,6 @@ namespace EasyCodeForVivox.Utilities
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
             Permission.RequestUserPermission(Permission.Microphone);
-            
         }
 #endif
         }

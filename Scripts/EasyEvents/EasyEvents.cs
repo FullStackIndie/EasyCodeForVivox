@@ -90,16 +90,15 @@ namespace EasyCodeForVivox.Events
 
         #region Audio Device Events
 
-        public event Action<KeyEventArg<string>> AudioInputDeviceAdded;
-        public event Action<KeyEventArg<string>> AudioInputDeviceRemoved;
-        public event Action<ValueEventArg<string, IAudioDevice>> AudioInputDeviceUpdated;
-        
-        public event Action<KeyEventArg<string>> AudioOutputDeviceAdded;
-        public event Action<KeyEventArg<string>> AudioOutputDeviceRemoved;
-        public event Action<ValueEventArg<string, IAudioDevice>> AudioOutputDeviceUpdated;
+        public event Action<IAudioDevice> AudioInputDeviceAdded;
+        public event Action<IAudioDevice> AudioInputDeviceRemoved;
+        public event Action<IAudioDevice> AudioInputDeviceUpdated;
+
+        public event Action<IAudioDevice> AudioOutputDeviceAdded;
+        public event Action<IAudioDevice> AudioOutputDeviceRemoved;
+        public event Action<IAudioDevice> AudioOutputDeviceUpdated;
 
         #endregion
-
 
         #region Text-To-Speech Events
 
@@ -109,7 +108,9 @@ namespace EasyCodeForVivox.Events
 
         #endregion
 
-        private void CreateDelegateAndInvoke<T1, T2>(Enum eventKey, T1 value1, T2 value2)
+
+
+        public void CreateDelegateAndInvoke<T1, T2>(Enum eventKey, T1 value1, T2 value2)
         {
             if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
@@ -133,7 +134,7 @@ namespace EasyCodeForVivox.Events
         }
 
 
-        private void InvokeMethods(Enum eventKey)
+        public void InvokeMethods(Enum eventKey)
         {
             if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
@@ -154,7 +155,7 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void InvokeMethods<T>(Enum eventKey, T value)
+        public void InvokeMethods<T>(Enum eventKey, T value)
         {
             if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
@@ -175,7 +176,7 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void InvokeMethods<T1, T2>(Enum eventKey, T1 value1, T2 value2)
+        public void InvokeMethods<T1, T2>(Enum eventKey, T1 value1, T2 value2)
         {
             if (!HandleDynamicEvents.Methods.ContainsKey(eventKey))
             {
@@ -1295,14 +1296,14 @@ namespace EasyCodeForVivox.Events
         #region Audio Device Events
 
 
-        private void OnAudioInputDeviceAdded(KeyEventArg<string> keyArgs)
+        public void OnAudioInputDeviceAdded(IAudioDevice audioDevice)
         {
             try
             {
-                AudioInputDeviceAdded?.Invoke(keyArgs);
+                AudioInputDeviceAdded?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceAdded);
+                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceAdded, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1313,14 +1314,14 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void OnAudioInputDeviceRemoved(KeyEventArg<string> keyArgs)
+        public void OnAudioInputDeviceRemoved(IAudioDevice audioDevice)
         {
             try
             {
-                AudioInputDeviceRemoved?.Invoke(keyArgs);
+                AudioInputDeviceRemoved?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceRemoved);
+                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceRemoved, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1331,14 +1332,14 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void OnAudioInputDeviceUpdated(ValueEventArg<string, IAudioDevice> valueArgs)
+        public void OnAudioInputDeviceUpdated(IAudioDevice audioDevice)
         {
             try
             {
-                AudioInputDeviceUpdated?.Invoke(valueArgs);
+                AudioInputDeviceUpdated?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceUpdated);
+                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceUpdated, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1349,14 +1350,14 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void OnAudioOutputDeviceAdded(KeyEventArg<string> keyArgs)
+        public void OnAudioOutputDeviceAdded(IAudioDevice audioDevice)
         {
             try
             {
-                AudioOutputDeviceAdded?.Invoke(keyArgs);
+                AudioOutputDeviceAdded?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(AudioDeviceStatus.AudioOutputDeviceAdded);
+                    InvokeMethods(AudioDeviceStatus.AudioOutputDeviceAdded, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1367,14 +1368,14 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void OnAudioOutputDeviceRemoved(KeyEventArg<string> keyArgs)
+        public void OnAudioOutputDeviceRemoved(IAudioDevice audioDevice)
         {
             try
             {
-                AudioOutputDeviceRemoved?.Invoke(keyArgs);
+                AudioOutputDeviceRemoved?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(AudioDeviceStatus.AudioOutputDeviceRemoved);
+                    InvokeMethods(AudioDeviceStatus.AudioOutputDeviceRemoved, audioDevice);
                 }
             }
             catch (Exception ex)
@@ -1385,14 +1386,14 @@ namespace EasyCodeForVivox.Events
             }
         }
 
-        private void OnAudioOutputDeviceUpdated(object sender, ValueEventArg<string, IAudioDevice> valueArgs)
+        public void OnAudioOutputDeviceUpdated(IAudioDevice audioDevice)
         {
             try
             {
-                AudioInputDeviceUpdated?.Invoke(valueArgs);
+                AudioInputDeviceUpdated?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
-                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceUpdated);
+                    InvokeMethods(AudioDeviceStatus.AudioInputDeviceUpdated, audioDevice);
                 }
             }
             catch (Exception ex)

@@ -2,7 +2,7 @@
 
 namespace EasyCodeForVivox
 {
-    /// <include file='Assets\EasyCodeForVivox\Documentation\XML Documentation\Attributes.xml' path='EasyCode/Attributes[@name="Login"]'/>
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\Attributes.xml' path='EasyCode/Attributes[@name="Login"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class LoginEventAttribute : Attribute
     {
