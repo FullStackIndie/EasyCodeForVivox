@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using EasyCodeForVivox.Extensions;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using VivoxUnity;
 
@@ -26,7 +28,14 @@ namespace EasyCodeForVivox
 
         private void Start()
         {
-            StartCoroutine(Handle3DPositionUpdates(.3f, userName));
+            if (string.IsNullOrEmpty(userName))
+            {
+                Debug.Log("Could not find User Login Session. Could not enable 3d Postional Updates".Color(EasyDebug.Yellow));
+            }
+            else
+            {
+                StartCoroutine(Handle3DPositionUpdates(.3f, userName));
+            }
         }
 
         IEnumerator Handle3DPositionUpdates(float nextUpdate, string userName)
@@ -47,7 +56,7 @@ namespace EasyCodeForVivox
             StartCoroutine(Handle3DPositionUpdates(nextUpdate, userName));
         }
 
-        public bool CheckIfChannelExists()
+        public bool CheckIfChannelExists([CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
         {
             foreach (KeyValuePair<string, IChannelSession> session in EasySession.ChannelSessions)
             {
@@ -56,7 +65,7 @@ namespace EasyCodeForVivox
                     _channelName = session.Value.Channel.Name;
                     if (EasySession.ChannelSessions[_channelName].ChannelState == ConnectionState.Connected)
                     {
-                        Debug.Log($"Channel : {_channelName} is connected");
+                        Debug.Log($"3D Positional Channel : {_channelName} is connected");
                         if (EasySession.ChannelSessions[_channelName].AudioState == ConnectionState.Connected)
                         {
                             Debug.Log($"Audio is Connected in Channel : {_channelName}");
@@ -65,8 +74,14 @@ namespace EasyCodeForVivox
                     }
                     else
                     {
-                        Debug.Log($"Channel : {_channelName} is not Connected");
+                        Debug.Log($"3D Positional Channel : {_channelName} is not Connected");
                     }
+                }
+                else
+                {
+                    Debug.Log($"Did not find an active 3D Positional Channel : Cannot activate 3D Positional Voice. \n".Color(EasyDebug.Yellow) +
+                        $"Stopping Coroutine at {memberName.Color(EasyDebug.Red)} at line {lineNumber.ToString().Color(EasyDebug.Red)} in {filePath.Color(EasyDebug.Red)}");
+                    StopCoroutine(nameof(Handle3DPositionUpdates));
                 }
             }
             return false;
@@ -78,7 +93,7 @@ namespace EasyCodeForVivox
             if (listenerPosition.position != _lastListenerPosition || speakerPosition.position != _lastSpeakerPosition)
             {
                 EasySession.ChannelSessions[_channelName].Set3DPosition(speakerPosition.position, listenerPosition.position, listenerPosition.forward, listenerPosition.up);
-                Debug.Log($"{EasySession.ChannelSessions[_channelName].Channel.Name} 3D positon has been updated");
+                Debug.Log($"3D positon for {userName} has been updated in channel {EasySession.ChannelSessions[_channelName].Channel.Name}".Color(EasyDebug.Green));
             }
             _lastListenerPosition = listenerPosition.position;
             _lastSpeakerPosition = speakerPosition.position;

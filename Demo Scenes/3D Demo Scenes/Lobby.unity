@@ -13240,10 +13240,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
-  apiEndpoint: 
-  domain: 
-  issuer: 
-  secretKey: 
+  apiEndpoint: https://mt1s.www.vivox.com/api2
+  domain: mt1s.vivox.com
+  issuer: johnmu0739-vi31-dev
+  secretKey: luck408
   userNameInput: {fileID: 723993286}
   directMessageRemotePlayerNameInput: {fileID: 759126984}
   channelNameInput: {fileID: 923918021}

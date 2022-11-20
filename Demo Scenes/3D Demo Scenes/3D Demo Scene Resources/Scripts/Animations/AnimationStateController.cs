@@ -1,47 +1,51 @@
-﻿using UnityEngine;
+﻿using System.Globalization;
+using Unity.Netcode;
+using UnityEngine;
 
-public class AnimationStateController : MonoBehaviour
+public class AnimationStateController : NetworkBehaviour
 {
     // Credit :  iHeartGameDev  : https://www.youtube.com/watch?v=FF6kezDQZ7s&list=PLwyUzJb_FNeTQwyGujWRLqnfKpV-cj-eO&index=3
 
-    Animator animator;
-    int isWalkingHash;
-    int isRunningHash;
+    [SerializeField] private PlayerMovement _playerMovement;
+    Animator _animator;
+    int _isWalkingHash;
+    int _isRunningHash;
     void Start()
     {
-        animator = GetComponent<Animator>();
-        isWalkingHash = Animator.StringToHash("isWalking");
-        isRunningHash = Animator.StringToHash("isRunning");
+        _animator = GetComponent<Animator>();
+        _isWalkingHash = Animator.StringToHash("isWalking");
     }
 
     // Update is called once per frame
     void Update()
     {
-        HandleMovement();
+        if (IsOwner && IsSpawned)
+        {
+            HandleMovement();
+        }
     }
 
     public void HandleMovement()
     {
-        bool isWalking = animator.GetBool(isWalkingHash);
-        bool isRunning = animator.GetBool(isRunningHash);
+        bool isWalking = _animator.GetBool(_isWalkingHash);
         bool forwardPressed = Input.GetKey(KeyCode.W);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
-        if (!isWalking && Input.GetKey(KeyCode.W))
+        if (_playerMovement.IsGrounded)
         {
-            animator.SetBool(isWalkingHash, true);
+            if (!isWalking && Input.GetKey(KeyCode.W))
+            {
+                HandleWalkAnimationServerRpc(true);
+            }
+            if (isWalking && !forwardPressed)
+            {
+                HandleWalkAnimationServerRpc(false);
+            }
         }
-        if (isWalking && !forwardPressed)
-        {
-            animator.SetBool(isWalkingHash, false);
-        }
+    }
 
-        if (!isRunning && (forwardPressed && runPressed))
-        {
-            animator.SetBool(isRunningHash, true);
-        }
-        if (isRunning && (!forwardPressed || !runPressed))
-        {
-            animator.SetBool(isRunningHash, false);
-        }
+    [ServerRpc]
+    private void HandleWalkAnimationServerRpc(bool walk)
+    {
+        _animator.SetBool(_isWalkingHash, walk);
     }
 }

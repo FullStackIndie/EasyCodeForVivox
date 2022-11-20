@@ -1,7 +1,10 @@
 <EasyCode>
-	<Attributes name="Login">
+	<Attributes name="LoginEvent">
 		<summary>
 			Place this on a method to subscribe to Vivox Login Events
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/login-logout/login-events#dynamic-events-1">Dynamic Events - Login Events</see>)
+			</para>
 			<para>
 				Method will be called when chosen <see cref="LoginStatus"></see> event happens
 			</para>
@@ -10,21 +13,57 @@
 			</br>
 			<example>
 				<code>
-			[LoginEvent(LoginStatus.LoggedIn)]"
-			public void UserLoggedIn(ILoginSession loginSession)
-			{
+				[LoginEvent(LoginStatus.LoggedIn)]"
+				public void UserLoggedIn(ILoginSession loginSession)
+				{
 				$"Logged In {loginSession.LoginSessionId.DisplayName}";
-			}
+				}
 				</code>
 			</example>
 		</summary>
 		<remarks>
-			** Method must only contain 1 parameter of type <see cref="T:VivoxUnity.ILoginSession"/> **
+			<para>
+				<b>LoginStatus - The type of Vivox Login event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>LoginStatus.LoggingIn</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/></description>
+				</item>
+				<item>
+					<term>LoginStatus.LoggedIn</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/></description>
+				</item>
+				<item>
+					<term>LoginStatus.LoggingOut</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/></description>
+				</item>
+				<item>
+					<term>LoginStatus.LoggedOut</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/></description>
+				</item>
+				<item>
+					<term>LoginStatus.LoginAdded</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/></description>
+				</item>
+				<item>
+					<term>LoginStatus.LoginRemoved</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/></description>
+				</item>
+				<item>
+					<term>LoginStatus.LoginValuesUpdated</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/></description>
+				</item>
+			</list>
 		</remarks>
 	</Attributes>
-	<Attributes name="Channel">
+	
+	<Attributes name="ChannelEvent">
 		<summary>
-			Place this on a method to subscribe to Vivox Channel Events
+			Place this on a method to subscribe to Vivox Channel Events 
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/join-leave-channel/channel-events#dynamic-events-1">Dynamic Events - Channel Events</see>)
+			</para>
 			<para>
 				Method will be called when chosen <see cref="ChannelStatus"></see> event happens
 			</para>
@@ -33,39 +72,460 @@
 			</br>
 			<example>
 				<code>
-					[ChannelEvent(ChannelStatus.ChannelConnected)]
-					private void OnChannelConnected(IChannelSession channelSession)
-					{
-					Debug.Log($"{channelSession.Channel.Name} Has Connected : Channel Type == {channelSession.Channel.Type}");
-					}
+				[ChannelEvent(ChannelStatus.ChannelConnected)]
+				private void OnChannelConnected(IChannelSession channelSession)
+				{
+				Debug.Log($"{channelSession.Channel.Name} Has Connected : Channel Type == {channelSession.Channel.Type}");
+				}
 				</code>
 			</example>
 		</summary>
 		<remarks>
-			** Method must only contain 1 parameter of type <see cref="T:VivoxUnity.IChannelSession"/> **
+			<para>
+				<b>ChannelStatus - The type of Vivox Channel event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>ChannelStatus.ChannelConnecting</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/></description>
+				</item>
+				<item>
+					<term>ChannelStatus.ChannelConnected</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/></description>
+				</item>
+				<item>
+					<term>ChannelStatus.ChannelDisconnecting</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/></description>
+				</item>
+				<item>
+					<term>ChannelStatus.ChannelDisconnected</term>
+					<description>Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/></description>
+				</item>
+			</list>
 		</remarks>
 	</Attributes>
-	<Attributes name="Channelsw">
+	
+	<Attributes name="AudioChannelEvent">
 		<summary>
-			Place this on a method to subscribe to Vivox Channel Events
+			Place this on a method to subscribe to Vivox Audio Channel Events 
 			<para>
-				Method will be called when chosen <see cref="ChannelStatus"></see> event happens
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/join-leave-channel/audio-channel/audio-channel-events#dynamic-events-1">Dynamic Events - Audio Channel Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="AudioChannelStatus"></see> event happens
 			</para>
 			<br>
 				Example Method
 			</br>
 			<example>
 				<code>
-					[ChannelEvent(ChannelStatus.ChannelConnected)]
-					private void OnChannelConnected(IChannelSession channelSession)
-					{
-					Debug.Log($"{channelSession.Channel.Name} Has Connected : Channel Type == {channelSession.Channel.Type}");
-					}
+			    [AudioChannelEvent(AudioChannelStatus.AudioChannelConnecting)]
+				private void OnAudioChannelConnecting(IChannelSession channelSession)
+				{
+					Debug.Log($"{channelSession.Channel.Name} Is Connecting");
+				}
 				</code>
 			</example>
 		</summary>
 		<remarks>
-			** Method must only contain 1 parameter of type <see cref="T:VivoxUnity.IChannelSession"/> **
+			<para>
+				<b>AudioChannelStatus - The type of Vivox Audio Channel event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>AudioChannelStatus.AudioChannelConnecting</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioChannelStatus.AudioChannelConnected</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioChannelStatus.AudioChannelDisconnecting</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioChannelStatus.AudioChannelDisconnected</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</Attributes>
+	
+	<Attributes name="TextChannelEvent">
+		<summary>
+			Place this on a method to subscribe to Vivox Text Channel Events 
+			<para>
+				Online Docs - (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/join-leave-channel/text-channel/text-channel-events#dynamic-events-1">Dynamic Events - Text Channel Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="TextChannelStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+			    [TextChannelEvent(TextChannelStatus.TextChannelConnecting)]
+				private void OnTextChannelConnecting(IChannelSession channelSession)
+				{
+					Debug.Log($"{channelSession.Channel.Name} Is Connecting");
+				}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>TextChannelStatus - The type of Vivox Channel event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>TextChannelStatus.TextChannelConnecting</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+				<item>
+					<term>TextChannelStatus.TextChannelConnected</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+				<item>
+					<term>TextChannelStatus.TextChannelDisconnecting</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+				<item>
+					<term>TextChannelStatus.TextChannelDisconnected</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</Attributes>
+	
+	<Attributes name="ChannelMessageEvent">
+		<summary>
+			Place this on a method to subscribe to Vivox Channel Message Events
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/send-messages/message-events#dynamic-events-1">Dynamic Events - Channel Message Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="ChannelMessageStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+				[ChannelMessageEvent(ChannelMessageStatus.ChannelMessageRecieved)]
+				private void OnChannelMessageRecieved(IChannelTextMessage textMessage)
+				{
+				Debug.Log($"From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.Message}");
+				}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>ChannelMessageStatus - The type of Vivox Channel Message event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>ChannelMessageStatus.ChannelMessageRecieved</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelTextMessage"/>
+					</description>
+				</item>
+				<item>
+					<term>ChannelMessageStatus.ChannelMessageSent</term>
+					<description>
+						Method must have <b>0</b> parameters
+					</description>
+				</item>
+				<item>
+					<term>ChannelMessageStatus.EventMessageRecieved</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelTextMessage"/>
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</Attributes>
+	
+	<Attributes name="DirectMessageEvent">
+		<summary>
+			Place this on a method to subscribe to Vivox Direct Message Events 
+			<para>
+				Online Docs - (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/send-messages/message-events#dynamic-events-1">Dynamic Events - Direct Message Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="DirectMessageStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+				[DirectMessageEvent(DirectMessageStatus.DirectMessageRecieved)]
+				private void OnDirectMessageRecieved(IDirectedTextMessage directedTextMessage)
+				{
+				Debug.Log($"Recived Message From : {directedTextMessage.Sender.DisplayName} : {directedTextMessage.ReceivedTime} : {directedTextMessage.Message}");
+				}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>DirectMessageStatus - The type of Vivox Direct Message event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>DirectMessageStatus.DirectMessageRecieved</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IDirectedTextMessage"/>
+					</description>
+				</item>
+				<item>
+					<term>DirectMessageStatus.DirectMessageSent</term>
+					<description>
+						Method must have <b>0</b> parameters
+					</description>
+				</item>
+				<item>
+					<term>DirectMessageStatus.DirectMessageFailed</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IFailedDirectedTextMessage"/>
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</Attributes>
+	
+	<Attributes name="UserEvents">
+		<summary>
+			Place this on a method to subscribe to Vivox User Events 
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/mute-unmute/mute-unmute-events#dynamic-events-1">Dynamic Events - User Mute Events</see>)
+			</para>
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/subscribe-to-user-events#dynamic-events-1">Dynamic Events - User Participant Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="UserStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+				[UserEvents(UserStatus.UserMuted)]
+				private void OnUserMuted(IParticipant participant)
+				{
+				Debug.Log($"{participant.Account.DisplayName} Is Muted : (Muted For All : {participant.IsMutedForAll})");
+				}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>UserStatus - The type of Vivox User event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>UserStatus.UserJoinedChannel</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserLeftChannel</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserValuesUpdated</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserMuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserUnmuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserCrossMuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserCrossUnmuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserSpeaking</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserNotSpeaking</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.LocalUserMuted</term>
+					<description>
+						Method must have <b>0</b> parameters
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.LocalUserUnmuted</term>
+					<description>
+						Method must have <b>0</b> parameters
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</Attributes>
+
+	<Attributes name="AudioDeviceEvent">
+		<summary>
+			Place this on a method to subscribe to Vivox Audio Device Events
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/volume-audio-settings/voice-text#dynamic-events-1">Dynamic Events - Audio Device Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="AudioDeviceStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+				[AudioDeviceEvent(AudioDeviceStatus.AudioInputDeviceAdded)]
+				private void OnAudioInputDeviceAdded(IAudioDevice audioDevice)
+				{
+				Debug.Log($"Audio Input device has been added {audioDevice?.Name}");
+				}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>AudioDeviceStatus - The type of Vivox User event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>AudioDeviceStatus.AudioInputDeviceAdded</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioDeviceStatus.AudioInputDeviceRemoved</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioDeviceStatus.AudioInputDeviceUpdated</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioDeviceStatus.AudioOutputDeviceAdded</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioDeviceStatus.AudioOutputDeviceRemoved</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+					</description>
+				</item>
+				<item>
+					<term>AudioDeviceStatus.AudioOutputDeviceUpdated</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</Attributes>
+	
+	<Attributes name="TextToSpeechEvent">
+		<summary>
+			Place this on a method to subscribe to Vivox Text-To-Speech Events
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/text-to-speech-tts/tts-events#dynamic-events-1">Dynamic Events - Text-To-Speech Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="TextToSpeechStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+				[TextToSpeechEvent(TextToSpeechStatus.TTSMessageAdded)]
+				private void OnTTSMessageAdded(ITTSMessageQueueEventArgs ttsArgs)
+				{
+				Debug.Log($"TTS Message Has Been Added : {ttsArgs.Message.Text}");
+				}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>TextToSpeechStatus - The type of Vivox User event to subscribe to</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>TextToSpeechStatus.TTSMessageAdded</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ITTSMessageQueueEventArgs"/>
+					</description>
+				</item>
+				<item>
+					<term>TextToSpeechStatus.TTSMessageRemoved</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ITTSMessageQueueEventArgs"/>
+					</description>
+				</item>
+				<item>
+					<term>TextToSpeechStatus.TTSMessageUpdated</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ITTSMessageQueueEventArgs"/>
+					</description>
+				</item>
+			</list>
 		</remarks>
 	</Attributes>
 </EasyCode>

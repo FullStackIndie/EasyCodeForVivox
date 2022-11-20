@@ -1,6 +1,7 @@
 ﻿using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,10 +16,10 @@ public class EasyChatExample : EasyManager
     [SerializeField] string secretKey;
 
 
-    [SerializeField] InputField userName;
-    [SerializeField] InputField directMessageRemotePlayerName;
-    [SerializeField] InputField channelName;
-    [SerializeField] InputField message;
+    [SerializeField] InputField userNameInput;
+    [SerializeField] InputField directMessageRemotePlayerNameInput;
+    [SerializeField] InputField channelNameInput;
+    [SerializeField] InputField messageInput;
     [SerializeField] Toggle voiceToggle;
     [SerializeField] Toggle textToggle;
     [SerializeField] Toggle textToSpeechToggle;
@@ -34,6 +35,7 @@ public class EasyChatExample : EasyManager
     [SerializeField] TMP_Dropdown mutePlayerInChannelDropdown;
     [SerializeField] TMP_Dropdown audioCaptureDevicesDropdown;
     [SerializeField] TMP_Dropdown audioRenderDevicesDropdown;
+    [SerializeField] TMP_Dropdown textToSpeechOptionsDropdown;
 
     private PanelSwitcher panelSwitcher;
 
@@ -46,7 +48,7 @@ public class EasyChatExample : EasyManager
 
     private void Awake()
     {
-        // todo Implement Unity Remote Config to store sensitive information in the cloud. It's free
+        // todo Implement Unity Remote Config or Unity Cloud Code to store sensitive information in the cloud. It's free
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
         // inside of the Unity Editor because hackers can decompile there game and steal the secrets/keys
         // Unity decompiler https://devxdevelopment.com/
@@ -67,14 +69,10 @@ public class EasyChatExample : EasyManager
         DontDestroyOnLoad(this);
 
         LoadAudioDevices();
-
+        LoadTextToSpeechOptions();
+        LoadExistingPlayerData();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
 
 
@@ -98,19 +96,40 @@ public class EasyChatExample : EasyManager
         }
     }
 
-    public void JoinGame()
+    public void LoadTextToSpeechOptions()
     {
-        if (EasySession.LoginSessions.Count == 0 || EasySession.ChannelSessions.Count == 0)
+        foreach (var tts in Enum.GetValues(typeof(TTSDestination)))
         {
-            Debug.Log("Login or Join Channel before joining the game".Color(EasyDebug.Yellow));
-            return;
+            textToSpeechOptionsDropdown.AddValue(tts.ToString());
         }
-        SceneManager.LoadScene("3D Demo Scene");
     }
+
+    public void LoadExistingPlayerData()
+    {
+        if (!EasySession.Client.Initialized) { return; }
+        if(EasySession.LoginSessions.Count > 0)
+        {
+            foreach(var session in EasySession.LoginSessions)
+            {
+                loginSessionsDropdown.AddValue(session.Value.LoginSessionId.Name);
+            }
+            userNameInput.text = loginSessionsDropdown.GetSelected();
+        }
+        if(EasySession.ChannelSessions.Count > 0)
+        {
+            foreach(var session in EasySession.ChannelSessions)
+            {
+                channelSessionsDropdown.AddValue(session.Value.Channel.Name);
+            }
+            channelNameInput.text = channelSessionsDropdown.GetSelected();
+        }
+    }
+
 
     public void Login()
     {
-        LoginToVivox(userName.text);
+        LoginToVivox(userNameInput.text);
+        ClearMessages();
     }
 
     public void Logout()
@@ -120,32 +139,39 @@ public class EasyChatExample : EasyManager
 
     public void JoinChannel()
     {
-        //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
-        JoinChannel(loginSessionsDropdown.GetSelected(), channelName.text, true, true, true, ChannelType.NonPositional);
+        JoinChannel(userNameInput.text, channelNameInput.text, true, true, false, ChannelType.NonPositional);
+    }
+
+    public void Join3DPositionalChannel()
+    {
+        JoinChannel(userNameInput.text, "3D", true, false, false, ChannelType.Positional);
+    }
+
+    public void JoinEchoChannel()
+    {
+        JoinChannel(userNameInput.text, channelNameInput.text, true, true, true, ChannelType.Echo);
     }
 
     public void SwitchChannel()
     {
-        //JoinChannel(userName.text, "3D", true, false, true, ChannelType.Positional);
-        // figure ot how settransmission works
-        JoinChannel(loginSessionsDropdown.GetSelected(), channelName.text, true, true, true, ChannelType.NonPositional);
+        SetPlayerTransmissionMode(loginSessionsDropdown.GetSelected(), TransmissionMode.Single, GetChannelId(loginSessionsDropdown.GetSelected(), channelSessionsDropdown.GetSelected()));
     }
 
-    public void SendMessage()
+    public void SendChannelMessage()
     {
-        if (string.IsNullOrEmpty(channelName.text) || string.IsNullOrEmpty(message.text))
+        if (string.IsNullOrEmpty(channelNameInput.text) || string.IsNullOrEmpty(messageInput.text))
         {
             Debug.Log("Channel name or message is empty");
             return;
         }
-        SendChannelMessage(loginSessionsDropdown.GetSelected(), channelName.text, message.text);
+        SendChannelMessage(loginSessionsDropdown.GetSelected(), channelNameInput.text, messageInput.text);
     }
 
     public void SendDirectMessageToPlayer()
     {
-        if (!string.IsNullOrEmpty(directMessageRemotePlayerName.text))
+        if (!string.IsNullOrEmpty(directMessageRemotePlayerNameInput.text))
         {
-            SendDirectMessage(loginSessionsDropdown.GetSelected(), directMessageRemotePlayerName.text, message.text);
+            SendDirectMessage(loginSessionsDropdown.GetSelected(), directMessageRemotePlayerNameInput.text, messageInput.text);
         }
         else
         {
@@ -155,17 +181,17 @@ public class EasyChatExample : EasyManager
 
     public void LeaveChannel()
     {
-        LeaveChannel(channelName.text, loginSessionsDropdown.GetSelected());
+        LeaveChannel(channelNameInput.text, loginSessionsDropdown.GetSelected());
     }
 
     public void ToggleAudioInChannel()
     {
-        ToggleAudioInChannel(channelName.text, voiceToggle.isOn);
+        ToggleAudioInChannel(channelNameInput.text, voiceToggle.isOn);
     }
 
     public void ToggleTextInChannel()
     {
-        ToggleTextInChannel(channelName.text, textToggle.isOn);
+        ToggleTextInChannel(channelNameInput.text, textToggle.isOn);
     }
 
     public void MuteLocalPlayer()
@@ -183,7 +209,7 @@ public class EasyChatExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            LocalMuteRemoteUser(selectedUser, channelName.text);
+            LocalMuteRemoteUser(selectedUser, channelNameInput.text);
         }
         else
         {
@@ -196,7 +222,7 @@ public class EasyChatExample : EasyManager
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
         if (selectedUser != null)
         {
-            LocalUnmuteRemoteUser(selectedUser, channelName.text);
+            LocalUnmuteRemoteUser(selectedUser, channelNameInput.text);
         }
         else
         {
@@ -206,12 +232,12 @@ public class EasyChatExample : EasyManager
 
     public void MuteAllPlayers()
     {
-        LocalMuteAllPlayers(channelName.text);
+        LocalMuteAllPlayers(channelNameInput.text);
     }
 
     public void UnmuteAllPlayers()
     {
-        LocalUnmuteAllPlayers(channelName.text);
+        LocalUnmuteAllPlayers(channelNameInput.text);
     }
 
     public void AdjustLocalSelfVolume()
@@ -224,7 +250,7 @@ public class EasyChatExample : EasyManager
         var selectedUser = remotePlayerVolumeDropdown.GetSelected();
         if (selectedUser != null)
         {
-            AdjustRemoteUserVolume(selectedUser, channelName.text, Mathf.RoundToInt(remotePlayerSlider.value));
+            AdjustRemoteUserVolume(selectedUser, channelNameInput.text, Mathf.RoundToInt(remotePlayerSlider.value));
         }
         else
         {
@@ -294,17 +320,17 @@ public class EasyChatExample : EasyManager
 
     public void SendRaiseHandEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userName.text].LoginSessionId.Name);
+        SendEventMessage(channelNameInput.text, "event", "Event:RaiseHand", EasySession.LoginSessions[userNameInput.text].LoginSessionId.Name);
     }
 
     public void SendMuteEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
+        SendEventMessage(channelNameInput.text, "event", "Event:Mute", remotePlayerinChannelDropdown.GetSelected());
     }
 
     public void SendUnmuteEventMessage()
     {
-        SendEventMessage(channelName.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
+        SendEventMessage(channelNameInput.text, "event", "Event:Unmute", remotePlayerinChannelDropdown.GetSelected());
     }
 
 
@@ -317,11 +343,11 @@ public class EasyChatExample : EasyManager
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Mute"))
         {
-            HandleMuteEvent(textMessage, userName.text);
+            HandleMuteEvent(textMessage, userNameInput.text);
         }
         else if (textMessage.ApplicationStanzaNamespace.Contains("Unmute"))
         {
-            HandleUnmuteEvent(textMessage, userName.text);
+            HandleUnmuteEvent(textMessage, userNameInput.text);
         }
     }
 
@@ -503,7 +529,10 @@ public class EasyChatExample : EasyManager
         newMessage.text += $"\nFrom {textMessage.Sender.DisplayName} : {textMessage.Message}";
         if (textToSpeechToggle.isOn)
         {
-            PlayTTSMessage(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
+            {
+                PlayTTSMessage(messageInput.text, userNameInput.text, destination);
+            }
         }
     }
 
@@ -513,7 +542,10 @@ public class EasyChatExample : EasyManager
         newMessage.text += $"\nFrom {directedTextMessage.Sender.DisplayName} : {directedTextMessage.Message}";
         if (textToSpeechToggle.isOn)
         {
-            PlayTTSMessage(message.text, userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
+            {
+                PlayTTSMessage(messageInput.text, userNameInput.text, destination);
+            }
         }
     }
 
@@ -523,7 +555,10 @@ public class EasyChatExample : EasyManager
         newMessage.text += $"\nMessage failed from {failedMessage.Sender.DisplayName} : Status Code : {failedMessage.StatusCode}";
         if (textToSpeechToggle.isOn)
         {
-            PlayTTSMessage("Failed to send message", userName.text, TTSDestination.QueuedRemoteTransmissionWithLocalPlayback);
+            if (Enum.TryParse(textToSpeechOptionsDropdown.GetSelected(), out TTSDestination destination))
+            {
+                PlayTTSMessage("Failed to send message", userNameInput.text, destination);
+            }
         }
     }
 

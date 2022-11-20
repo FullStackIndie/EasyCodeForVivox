@@ -55,11 +55,11 @@ MonoBehaviour:
   _buildsReflectionBakingCoverageMode: 2
   _settings:
     _ensureDeterministicDestructionOrderOnApplicationQuit: 0
-    _displayWarningWhenResolvingDuringInstall: 1
+    _displayWarningWhenResolvingDuringInstall: 0
     _validationRootResolveMethod: 0
     _validationErrorResponse: 0
     _signalSettings:
-      _defaultSyncMode: 0
+      _defaultSyncMode: 1
       _missingHandlerDefaultResponse: 2
       _requireStrictUnsubscribe: 0
       _defaultAsyncTickPriority: 1

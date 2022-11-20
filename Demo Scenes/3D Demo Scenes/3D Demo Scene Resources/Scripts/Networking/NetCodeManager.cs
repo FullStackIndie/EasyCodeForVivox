@@ -26,6 +26,8 @@ public class NetCodeManager : MonoBehaviour
             NetworkManager.Singleton.LogLevel = LogLevel.Developer;
         else
             NetworkManager.Singleton.LogLevel = LogLevel.Nothing;
+
+        SubscribeToNetworkManagerEvents();
     }
 
     private void OnApplicationQuit()

@@ -13,18 +13,14 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundMask;
 
-    private NetworkAnimator _networkAnimator;
     private CharacterController _characterController;
     private Vector3 _velocity;
-    private int _isJumpingHash;
     private Vector3 _lastPosition;
 
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
-        _networkAnimator = GetComponentInChildren<NetworkAnimator>();
-        _isJumpingHash = Animator.StringToHash("IsJumping");
         _lastPosition = transform.position;
     }
 
@@ -73,7 +69,6 @@ public class PlayerMovement : NetworkBehaviour
     [ServerRpc]
     private void HandleJumpAnimationServerRpc(Vector3 velocity)
     {
-        _networkAnimator.SetTrigger(_isJumpingHash);
         _characterController.Move(velocity);
     }
 

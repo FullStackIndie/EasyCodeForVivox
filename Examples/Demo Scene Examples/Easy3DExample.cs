@@ -53,7 +53,7 @@ public class Easy3DExample : EasyManager
         EasySession.Domain = domain;
         EasySession.Issuer = issuer;
         EasySession.SecretKey = secretKey;
-        panelSwitcher = FindObjectOfType<PanelSwitcher>();
+
     }
 
     async void Start()
@@ -63,8 +63,11 @@ public class Easy3DExample : EasyManager
 
         await InitializeClient(vivoxConfig);
 
+        panelSwitcher = FindObjectOfType<PanelSwitcher>();
+
         LoadAudioDevices();
         LoadTextToSpeechOptions();
+        LoadExistingPlayerData();
     }
 
 
@@ -96,20 +99,39 @@ public class Easy3DExample : EasyManager
         }
     }
 
-    public void LoadExistingData()
+    public void LoadExistingPlayerData()
     {
-        var userName = EasySession.LoginSessions?.FirstOrDefault().Value.LoginSessionId.DisplayName;
-        var channelName = EasySession.ChannelSessions?.FirstOrDefault().Value.Channel.Name;
-        userNameInput.text = userName;
-        channelNameInput.text = channelName;
-        // todo finsish loading data for when you leave network 
-        // todo finish doing if checks for Log settings
-
+        if (!EasySession.Client.Initialized) { return; }
+        if (EasySession.LoginSessions.Count > 0)
+        {
+            foreach (var session in EasySession.LoginSessions)
+            {
+                loginSessionsDropdown.AddValue(session.Value.LoginSessionId.Name);
+            }
+            userNameInput.text = loginSessionsDropdown.GetSelected();
+        }
+        if (EasySession.ChannelSessions.Count > 0)
+        {
+            foreach (var session in EasySession.ChannelSessions)
+            {
+                channelSessionsDropdown.AddValue(session.Value.Channel.Name);
+                foreach (var player in session.Value.Participants)
+                {
+                    if (!player.IsSelf)
+                    {
+                        remotePlayerinChannelDropdown.AddValue(player.Account.Name);
+                        remotePlayerVolumeDropdown.AddValue(player.Account.Name);
+                    }
+                }
+            }
+            channelNameInput.text = channelSessionsDropdown.GetSelected();
+        }
     }
 
     public void Login()
     {
         LoginToVivox(userNameInput.text);
+        ClearMessages();
     }
 
     public void Logout()

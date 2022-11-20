@@ -1,0 +1,47 @@
+﻿<EasyCode>
+	<Options name="LoginStatus">
+		<summary>
+			Login Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="ChannelStatus">
+		<summary>
+			Channel Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="AudioChannelStatus">
+		<summary>
+			Audio Channel Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="TextChannelStatus">
+		<summary>
+			Text Channel Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="ChannelMessageStatus">
+		<summary>
+			Channel Message Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="DirectMessageStatus">
+		<summary>
+			Direct Message Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="UserStatus">
+		<summary>
+			User Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="AudioDeviceStatus">
+		<summary>
+			Audio Device Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+	<Options name="TextToSpeechStatus">
+		<summary>
+			Audio Device Event that you want this method to be called/subscribed to
+		</summary>
+	</Options>
+</EasyCode>

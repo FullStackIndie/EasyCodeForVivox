@@ -172,6 +172,7 @@ namespace EasyCodeForVivox
         public void SetPlayerTransmissionMode(string userName, TransmissionMode transmissionMode, ChannelId channelId = default)
         {
             EasySession.LoginSessions[userName].SetTransmissionMode(transmissionMode, channelId);
+            Debug.Log($"Switching Transmission to {transmissionMode} {(channelId != null ? $"for channel {channelId.Name}" : "")}");
         }
 
         public ChannelId GetChannelId(string userName, string channelName)

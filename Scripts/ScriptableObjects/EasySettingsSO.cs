@@ -1,4 +1,5 @@
 ﻿using EasyCodeForVivox;
+using System.Collections.Generic;
 using UnityEngine;
 using VivoxUnity;
 
@@ -11,10 +12,12 @@ public class EasySettingsSO : ScriptableObject
     public ParticipantPropertyUpdateFrequency VivoxParticipantPropertyUpdateFrequency = ParticipantPropertyUpdateFrequency.StateChange;
     public bool LogEasyManager;
     public bool LogEasyManagerEventCallbacks;
+    [Tooltip("Allows you to use [Attributes] on methods to subscribe to Vivox Events")]
     public bool UseDynamicEvents;
-    public bool OnlySearchAssemblyCSharp;
+    [Tooltip("Forces EasyCode to use only Assembelies specified in this list. If list is empty all assemblies will be searched")]
+    public List<string> OnlySearchTheseAssemblies = new List<string>();
     public bool LogAssemblySearches;
-    public bool LogAllDynamicMethods;
+    public bool LogAllFoundDynamicMethods;
     public bool LogAllAudioDevices;
     public bool LogVoiceActivityDetection;
     public bool LogEasyNetCode;

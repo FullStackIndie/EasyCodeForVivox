@@ -15,7 +15,6 @@ namespace EasyCodeForVivox
     [RequireComponent(typeof(SceneContext))]
     public class EasyManager : MonoBehaviour
     {
-        [SerializeField] private bool dontDestroyOnLoad = true;
         private EasyLogin _login;
         private EasyChannel _channel;
         private EasyAudioChannel _voiceChannel;
@@ -47,13 +46,6 @@ namespace EasyCodeForVivox
             _events = events ?? throw new ArgumentNullException(nameof(events));
         }
 
-        private void OnEnable()
-        {
-            if (dontDestroyOnLoad)
-            {
-                DontDestroyOnLoad(this);
-            }
-        }
 
         // guarantees to only Initialize client once
         public async Task InitializeClient(VivoxConfig vivoxConfig = default)
@@ -88,7 +80,7 @@ namespace EasyCodeForVivox
                         // and how many cpu's you have)
                         await Task.Run(async () =>
                         {
-                            await HandleDynamicEvents.RegisterEvents(_settings.OnlySearchAssemblyCSharp, _settings.LogAssemblySearches, _settings.LogAllDynamicMethods);
+                            await HandleDynamicEvents.RegisterEvents(_settings.OnlySearchTheseAssemblies, _settings.LogAssemblySearches, _settings.LogAllFoundDynamicMethods);
                             if (HandleDynamicEvents.Methods.Count == 0)
                             {
                                 _settings.UseDynamicEvents = false;

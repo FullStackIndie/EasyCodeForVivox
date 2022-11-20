@@ -1,66 +1,21 @@
 using EasyCodeForVivox;
-using EasyCodeForVivox.Events;
 using EasyCodeForVivox.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using VivoxUnity;
 
-public class ValidateDynamicEvents
+public static class ValidateDynamicEvents
 {
-    //[InitializeOnLoadMethod]
-    private static async void ValidateAllDynamicEvents()
-    {
-        Debug.Log("Validating Dynamic Events".Color(EasyDebug.Yellow));
-        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        await Task.Run(() =>
-        {
-            foreach (var assembly in assemblies)
-            {
-                var assemblyName = assembly.GetName().Name;
-                if (HandleDynamicEvents.InternalAssemblyNames.Contains(assemblyName))
-                {
-                    continue;
-                }
-                Type[] types = assembly.GetTypes();
-                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-                foreach (var type in types)
-                {
-                    foreach (var methodInfo in type.GetMethods(flags))
-                    {
-                        var attribute = methodInfo.GetCustomAttribute<LoginEventAttribute>();
-                        if (attribute != null)
-                        {
-                            Debug.Log($" [{attribute.GetType().Name}({attribute.Options})] {methodInfo.GetBaseDefinition().Name}\n"
-                                + $"{methodInfo.ReturnType} {methodInfo.Name}({string.Join(", ", methodInfo.GetParameters().Select(p => $"{p.ParameterType} {p.Name}"))})");
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    private static string GetCachedEvents()
-    {
-        if (PlayerPrefs.HasKey("ValidatedDynamicEvents"))
-        {
-            Debug.Log("found key ValidatedDynamicEvents");
-            Debug.Log(PlayerPrefs.GetString("ValidatedDynamicEvents"));
-        }
-        else
-        {
-            PlayerPrefs.SetString("ValidatedDynamicEvents", string.Join(", ", InternalAssemblyNames));
-        }
-        return "";
-    }
 
     public static readonly HashSet<string> InternalAssemblyNames = new HashSet<string>()
 {
+        "EasyCodeDevelopment",
         "unityplastic",
         "log4net",
         "NiceIO",
@@ -219,11 +174,12 @@ public class ValidateDynamicEvents
     public static Dictionary<Enum, List<MethodInfo>> Methods = new Dictionary<Enum, List<MethodInfo>>();
 
 
-    //[MenuItem("EasyCode/Validate Dynamic Events")]
+    [MenuItem("EasyCode/Validate Dynamic Events")]
     public static async void Validate()
     {
         Debug.Log("Validating Dynamic Events".Color(EasyDebug.Yellow));
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         foreach (Assembly assembly in assemblies)
@@ -231,13 +187,12 @@ public class ValidateDynamicEvents
             var assemblyName = assembly.GetName().Name;
             if (assembly.IsDynamic) { continue; }
             if (assemblyName.StartsWith("System") || assemblyName.StartsWith("Unity") || assemblyName.StartsWith("UnityEditor") ||
-                assemblyName.StartsWith("UnityEngine") || InternalAssemblyNames.Contains(assemblyName.Trim()) || assemblyName.StartsWith("Mono")
+                assemblyName.StartsWith("UnityEngine") || InternalAssemblyNames.Contains(assemblyName) || assemblyName.StartsWith("Mono")
                 )
             {
                 continue;
             }
             Debug.Log($"Searching Assembly [ {assembly.GetName().Name} ] for Dynamic Events".Color(EasyDebug.Teal));
-
 
             Type[] types = assembly.GetTypes();
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
@@ -246,56 +201,30 @@ public class ValidateDynamicEvents
             // this enables me to create many tasks to (hopefully) run at the same time and
             // take advantage of multiple cores/threads to speed up the execution time at startup
             await Task.Run(() => ValidateLoginEvents(types, flags));
-            await Task.Run(() => RegisterChannelEvents(types, flags));
-            await Task.Run(() => RegisterAudioChannelEvents(types, flags));
-            await Task.Run(() => RegisterTextChannelEvents(types, flags));
-            await Task.Run(() => RegisterChannelMessageEvents(types, flags));
-            await Task.Run(() => RegisterDirectMessageEvents(types, flags));
-            await Task.Run(() => RegisterUserEvents(types, flags));
-            await Task.Run(() => RegisterUserEvents(types, flags));
-            await Task.Run(() => RegisterTextToSpeechEvents(types, flags));
+            await Task.Run(() => ValidateChannelEvents(types, flags));
+            await Task.Run(() => ValidateAudioChannelEvents(types, flags));
+            await Task.Run(() => ValidateTextChannelEvents(types, flags));
+            await Task.Run(() => ValidateChannelMessageEvents(types, flags));
+            await Task.Run(() => ValidateDirectMessageEvents(types, flags));
+            await Task.Run(() => ValidateUserEvents(types, flags));
+            await Task.Run(() => ValidateUserEvents(types, flags));
+            await Task.Run(() => ValidateTextToSpeechEvents(types, flags));
         }
 
-        LogRegisteredEventsCount();
 
         stopwatch.Stop();
         Debug.Log($"Validating Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green));
     }
 
-    public static void LogRegisteredEventsCount()
+    private static void CheckType(this MethodInfo methodInfo, Type parameterType)
     {
-        foreach (var events in Methods)
+        var parameters = methodInfo.GetParameters();
+        if (parameters.Length == 0) { return; }
+        if (methodInfo.GetParameters()[0].ParameterType != parameterType)
         {
-            foreach (var method in events.Value)
-            {
-                Debug.Log($"Dynamic Event = {events.Key} : MethodName = {method.Name} : From Class {method.DeclaringType}");
-            }
+            Debug.Log($"Located in Class {methodInfo.DeclaringType.Name.Color(EasyDebug.Yellow)} : Method {methodInfo.Name.Color(EasyDebug.Yellow).Bold()} does not have valid event parameter of type {parameterType.Name.Color(EasyDebug.Yellow)} \n" +
+     $"{methodInfo.ReturnType}   {methodInfo.Name}({string.Join(", ", methodInfo.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"))})".Color(EasyDebug.Orange));
         }
-
-        var loginEvents = Methods.Where(e => e.Key.ToString().StartsWith("Logg")).Select(m => m.Value.Count);
-        Debug.Log($"Found {loginEvents.Count()} Login Event Methods".Color(EasyDebug.Lightblue));
-
-        var channelEvents = Methods.Where(e => e.Key.ToString().StartsWith("Channel")).Select(m => m.Value.Count);
-        Debug.Log($"Found {channelEvents.Count()} Channel Event Methods".Color(EasyDebug.Lightblue));
-
-        var audioChannelEvents = Methods.Where(e => e.Key.ToString().StartsWith("Audio")).Select(m => m.Value.Count);
-        Debug.Log($"Found {audioChannelEvents.Count()} Audio Channel Event Methods".Color(EasyDebug.Lightblue));
-
-        var textChannelEvents = Methods.Where(e => e.Key.ToString().StartsWith("Text")).Select(m => m.Value.Count);
-        Debug.Log($"Found {textChannelEvents.Count()} Text Channel Event Methods".Color(EasyDebug.Lightblue));
-
-        var channelMessageEvents = Methods.Where(e => e.Key.ToString().StartsWith("ChannelMessage") || e.Key.ToString().StartsWith("EventMessage")).Select(m => m.Value.Count);
-        Debug.Log($"Found {channelMessageEvents.Count()} Channel Message Event Methods".Color(EasyDebug.Lightblue));
-
-        var directMessageEvents = Methods.Where(e => e.Key.ToString().StartsWith("Direct")).Select(m => m.Value.Count);
-        Debug.Log($"Found {directMessageEvents.Count()} Direct Message Event Methods".Color(EasyDebug.Lightblue));
-
-        var userEvents = Methods.Where(e => e.Key.ToString().Contains("User") || e.Key.ToString().Contains("LocalUser")).Select(m => m.Value.Count);
-        Debug.Log($"Found {userEvents.Count()} User Events/User Audio Event Methods".Color(EasyDebug.Lightblue));
-
-        var ttsEvents = Methods.Where(e => e.Key.ToString().Contains("TTS")).Select(m => m.Value.Count);
-        Debug.Log($"Found {ttsEvents.Count()} Text To Speech Event Methods".Color(EasyDebug.Lightblue));
-
     }
 
     public static void ValidateLoginEvents(Type[] types, BindingFlags flags)
@@ -310,28 +239,25 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case LoginStatus.LoggingIn:
-                            if (methodInfo.GetParameters()[0].ParameterType != typeof(ILoginSession))
-                            {
-                                Debug.Log($"Method [{type.Name}] {methodInfo.Name} does not have valid event parameter of type {typeof(ILoginSession).Name}");
-                            }
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoggedIn:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoggingOut:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoggedOut:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoginAdded:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case LoginStatus.LoginRemoved:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case LoginStatus.LoginValuesUpdated:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                     }
                     continue;
@@ -342,25 +268,25 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case LoginStatus.LoggingIn:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoggedIn:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoggingOut:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoggedOut:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                         case LoginStatus.LoginAdded:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case LoginStatus.LoginRemoved:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case LoginStatus.LoginValuesUpdated:
-
+                            methodInfo.CheckType(typeof(ILoginSession));
                             break;
                     }
                 }
@@ -368,7 +294,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterChannelEvents(Type[] types, BindingFlags flags)
+    public static void ValidateChannelEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -380,16 +306,16 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case ChannelStatus.ChannelConnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case ChannelStatus.ChannelConnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case ChannelStatus.ChannelDisconnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case ChannelStatus.ChannelDisconnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                     }
                     continue;
@@ -400,16 +326,16 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case ChannelStatus.ChannelConnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case ChannelStatus.ChannelConnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case ChannelStatus.ChannelDisconnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case ChannelStatus.ChannelDisconnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                     }
                 }
@@ -417,7 +343,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterAudioDeviceEvents(Type[] types, BindingFlags flags)
+    public static void ValidateAudioDeviceEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -429,22 +355,22 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case AudioDeviceStatus.AudioInputDeviceAdded:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioInputDeviceRemoved:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioInputDeviceUpdated:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioOutputDeviceAdded:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioOutputDeviceRemoved:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioOutputDeviceUpdated:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                     }
                     continue;
@@ -455,22 +381,22 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case AudioDeviceStatus.AudioInputDeviceAdded:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioInputDeviceRemoved:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioInputDeviceUpdated:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioOutputDeviceAdded:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioOutputDeviceRemoved:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                         case AudioDeviceStatus.AudioOutputDeviceUpdated:
-
+                            methodInfo.CheckType(typeof(IAudioDevice));
                             break;
                     }
                 }
@@ -478,7 +404,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterAudioChannelEvents(Type[] types, BindingFlags flags)
+    public static void ValidateAudioChannelEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -490,16 +416,16 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case AudioChannelStatus.AudioChannelConnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case AudioChannelStatus.AudioChannelConnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case AudioChannelStatus.AudioChannelDisconnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case AudioChannelStatus.AudioChannelDisconnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                     }
                     continue;
@@ -510,16 +436,16 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case AudioChannelStatus.AudioChannelConnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case AudioChannelStatus.AudioChannelConnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case AudioChannelStatus.AudioChannelDisconnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case AudioChannelStatus.AudioChannelDisconnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                     }
                 }
@@ -527,7 +453,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterTextChannelEvents(Type[] types, BindingFlags flags)
+    public static void ValidateTextChannelEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -539,16 +465,16 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case TextChannelStatus.TextChannelConnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case TextChannelStatus.TextChannelConnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case TextChannelStatus.TextChannelDisconnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case TextChannelStatus.TextChannelDisconnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                     }
                     continue;
@@ -559,16 +485,16 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case TextChannelStatus.TextChannelConnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case TextChannelStatus.TextChannelConnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case TextChannelStatus.TextChannelDisconnecting:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                         case TextChannelStatus.TextChannelDisconnected:
-
+                            methodInfo.CheckType(typeof(IChannelSession));
                             break;
                     }
                 }
@@ -576,7 +502,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterChannelMessageEvents(Type[] types, BindingFlags flags)
+    public static void ValidateChannelMessageEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -588,13 +514,13 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case ChannelMessageStatus.ChannelMessageSent:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                         case ChannelMessageStatus.ChannelMessageRecieved:
-
+                            methodInfo.CheckType(typeof(IChannelTextMessage));
                             break;
                         case ChannelMessageStatus.EventMessageRecieved:
-
+                            methodInfo.CheckType(typeof(IChannelTextMessage));
                             break;
                     }
                     continue;
@@ -605,13 +531,13 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case ChannelMessageStatus.ChannelMessageSent:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                         case ChannelMessageStatus.ChannelMessageRecieved:
-
+                            methodInfo.CheckType(typeof(IChannelTextMessage));
                             break;
                         case ChannelMessageStatus.EventMessageRecieved:
-
+                            methodInfo.CheckType(typeof(IChannelTextMessage));
                             break;
                     }
                 }
@@ -619,7 +545,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterDirectMessageEvents(Type[] types, BindingFlags flags)
+    public static void ValidateDirectMessageEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -631,13 +557,13 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case DirectMessageStatus.DirectMessageSent:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                         case DirectMessageStatus.DirectMessageRecieved:
-
+                            methodInfo.CheckType(typeof(IDirectedTextMessage));
                             break;
                         case DirectMessageStatus.DirectMessageFailed:
-
+                            methodInfo.CheckType(typeof(IFailedDirectedTextMessage));
                             break;
                     }
                     continue;
@@ -648,13 +574,13 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case DirectMessageStatus.DirectMessageSent:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                         case DirectMessageStatus.DirectMessageRecieved:
-
+                            methodInfo.CheckType(typeof(IDirectedTextMessage));
                             break;
                         case DirectMessageStatus.DirectMessageFailed:
-
+                            methodInfo.CheckType(typeof(IFailedDirectedTextMessage));
                             break;
                     }
                 }
@@ -662,89 +588,90 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterUserEvents(Type[] types, BindingFlags flags)
+    public static void ValidateUserEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
             foreach (MethodInfo methodInfo in type.GetMethods(flags))
             {
-                var attribute = methodInfo.GetCustomAttribute<UserEventAttribute>();
+                var attribute = methodInfo.GetCustomAttribute<UserEventsAttribute>();
                 if (attribute != null)
                 {
                     switch (attribute.Options)
                     {
                         case UserStatus.UserLeftChannel:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserJoinedChannel:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserValuesUpdated:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserMuted:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserUnmuted:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserCrossMuted:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case UserStatus.UserCrossUnmuted:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case UserStatus.UserNotSpeaking:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserSpeaking:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.LocalUserMuted:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                         case UserStatus.LocalUserUnmuted:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                     }
                     continue;
                 }
-                var asyncAttribute = methodInfo.GetCustomAttribute<UserEventAsyncAttribute>();
+                var asyncAttribute = methodInfo.GetCustomAttribute<UserEventsAsyncAttribute>();
                 if (asyncAttribute != null)
                 {
                     switch (asyncAttribute.Options)
                     {
                         case UserStatus.UserLeftChannel:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserJoinedChannel:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserValuesUpdated:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserMuted:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserUnmuted:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
-
+                        case UserStatus.UserCrossMuted:
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case UserStatus.UserCrossUnmuted:
-
+                            methodInfo.CheckType(typeof(AccountId));
                             break;
                         case UserStatus.UserNotSpeaking:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.UserSpeaking:
-
+                            methodInfo.CheckType(typeof(IParticipant));
                             break;
                         case UserStatus.LocalUserMuted:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                         case UserStatus.LocalUserUnmuted:
-
+                            methodInfo.CheckType(typeof(void)); // todo test
                             break;
                     }
                 }
@@ -752,7 +679,7 @@ public class ValidateDynamicEvents
         });
     }
 
-    public static void RegisterTextToSpeechEvents(Type[] types, BindingFlags flags)
+    public static void ValidateTextToSpeechEvents(Type[] types, BindingFlags flags)
     {
         Parallel.ForEach(types, type =>
         {
@@ -764,13 +691,13 @@ public class ValidateDynamicEvents
                     switch (attribute.Options)
                     {
                         case TextToSpeechStatus.TTSMessageAdded:
-
+                            methodInfo.CheckType(typeof(ITTSMessageQueueEventArgs));
                             break;
                         case TextToSpeechStatus.TTSMessageRemoved:
-
+                            methodInfo.CheckType(typeof(ITTSMessageQueueEventArgs));
                             break;
                         case TextToSpeechStatus.TTSMessageUpdated:
-
+                            methodInfo.CheckType(typeof(ITTSMessageQueueEventArgs));
                             break;
                     }
                     continue;
@@ -781,13 +708,13 @@ public class ValidateDynamicEvents
                     switch (asyncAttribute.Options)
                     {
                         case TextToSpeechStatus.TTSMessageAdded:
-
+                            methodInfo.CheckType(typeof(ITTSMessageQueueEventArgs));
                             break;
                         case TextToSpeechStatus.TTSMessageRemoved:
-
+                            methodInfo.CheckType(typeof(ITTSMessageQueueEventArgs));
                             break;
                         case TextToSpeechStatus.TTSMessageUpdated:
-
+                            methodInfo.CheckType(typeof(ITTSMessageQueueEventArgs));
                             break;
                     }
                 }

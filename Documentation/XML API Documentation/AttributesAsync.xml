@@ -1,0 +1,589 @@
+﻿<EasyCode>
+	<AttributesAsync name="LoginEventAsync">
+	<summary>
+		Place this on an <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Login Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/login-logout/login-events#dynamic-async-events">Dynamic Async Events - Login Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="LoginStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+	[LoginEventAsync(LoginStatus.LoggingIn)]
+	private async void OnPlayerLoggingInAsync(ILoginSession loginSession)
+	{
+		Debug.Log($"Logging In : {loginSession.LoginSessionId.DisplayName}");
+		await GetJoinedLobbies();
+	}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>LoginStatus - The type of Vivox Login event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>LoginStatus.LoggingIn</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/>
+				</description>
+			</item>
+			<item>
+				<term>LoginStatus.LoggedIn</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/>
+				</description>
+			</item>
+			<item>
+				<term>LoginStatus.LoggingOut</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/>
+				</description>
+			</item>
+			<item>
+				<term>LoginStatus.LoggedOut</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/>
+				</description>
+			</item>
+			<item>
+				<term>LoginStatus.LoginAdded</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/>
+				</description>
+			</item>
+			<item>
+				<term>LoginStatus.LoginRemoved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/>
+				</description>
+			</item>
+			<item>
+				<term>LoginStatus.LoginValuesUpdated</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ILoginSession"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+	
+	<AttributesAsync name="ChannelEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Channel Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/join-leave-channel/channel-events#dynamic-async-events">Dynamic Async Events - Channel Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="ChannelStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[ChannelEventAsync(ChannelStatus.ChannelConnecting)]
+		private async void OnChannelConnectingAsync(IChannelSession channelSession)
+		{
+			Debug.Log($"{channelSession.Channel.Name} Is Connecting");
+			await LoadPlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>ChannelStatus - The type of Vivox Channel event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>ChannelStatus.ChannelConnecting</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>ChannelStatus.ChannelConnected</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>ChannelStatus.ChannelDisconnecting</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>ChannelStatus.ChannelDisconnected</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="AudioChannelEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Audio Channel Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/join-leave-channel/audio-channel/audio-channel-events#dynamic-async-events">Dynamic Async Events - Audio Channel Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="AudioChannelStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[AudioChannelEventAsync(AudioChannelStatus.AudioChannelConnecting)]
+		private async void OnAudioChannelConnectingAsync(IChannelSession channelSession)
+		{
+			Debug.Log($"{channelSession.Channel.Name} Is Connecting");
+			await LoadPlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>AudioChannelStatus - The type of Vivox Audio Channel event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>AudioChannelStatus.AudioChannelConnecting</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioChannelStatus.AudioChannelConnected</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioChannelStatus.AudioChannelDisconnecting</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioChannelStatus.AudioChannelDisconnected</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="TextChannelEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Text Channel Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs - (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/join-leave-channel/text-channel/text-channel-events#dynamic-async-events">Dynamic Async Events - Text Channel Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="TextChannelStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[TextChannelEventAsync(TextChannelStatus.TextChannelConnecting)]
+		private async void OnTextChannelConnectingAsync(IChannelSession channelSession)
+		{
+			Debug.Log($"{channelSession.Channel.Name} Is Connecting");
+			await LoadPlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>TextChannelStatus - The type of Vivox Channel event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>TextChannelStatus.TextChannelConnecting</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>TextChannelStatus.TextChannelConnected</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>TextChannelStatus.TextChannelDisconnecting</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+			<item>
+				<term>TextChannelStatus.TextChannelDisconnected</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelSession"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="ChannelMessageEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Channel Message Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/send-messages/message-events#dynamic-async-events">Dynamic Async Events - Channel Message Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="ChannelMessageStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[ChannelMessageEventAsync(ChannelMessageStatus.ChannelMessageRecieved)]
+		private async void OnChannelMessageRecievedAsync(IChannelTextMessage textMessage)
+		{
+			Debug.Log($"From {textMessage.Sender.DisplayName} : {textMessage.ReceivedTime} : {textMessage.Message}");
+			await SavePlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>ChannelMessageStatus - The type of Vivox Channel Message event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>ChannelMessageStatus.ChannelMessageRecieved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelTextMessage"/>
+				</description>
+			</item>
+			<item>
+				<term>ChannelMessageStatus.ChannelMessageSent</term>
+				<description>
+					Method must have <b>0</b> parameters
+				</description>
+			</item>
+			<item>
+				<term>ChannelMessageStatus.EventMessageRecieved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IChannelTextMessage"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="DirectMessageEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Direct Message Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs - (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/send-messages/message-events#dynamic-async-events">Dynamic Async Events - Direct Message Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="DirectMessageStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[DirectMessageEventAsync(DirectMessageStatus.DirectMessageRecieved)]
+		private async void OnDirectMessageRecievedAsync(IDirectedTextMessage directedTextMessage)
+		{
+			Debug.Log($"Recived Message From : {directedTextMessage.Sender.DisplayName} : {directedTextMessage.ReceivedTime} : {directedTextMessage.Message}");
+			await SavePlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>DirectMessageStatus - The type of Vivox Direct Message event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>DirectMessageStatus.DirectMessageRecieved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IDirectedTextMessage"/>
+				</description>
+			</item>
+			<item>
+				<term>DirectMessageStatus.DirectMessageSent</term>
+				<description>
+					Method must have <b>0</b> parameters
+				</description>
+			</item>
+			<item>
+				<term>DirectMessageStatus.DirectMessageFailed</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IFailedDirectedTextMessage"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="UserEvents">
+		<summary>
+			Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox User Events asynchronously
+			<para>
+				<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+			</para>
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/mute-unmute/mute-unmute-events#dynamic-async-events">Dynamic Async Events - User Mute Events</see>)
+			</para>
+			<para>
+				Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/subscribe-to-user-events#dynamic-async-events">Dynamic Async Events - User Participant Events</see>)
+			</para>
+			<para>
+				Method will be called when chosen <see cref="UserStatus"></see> event happens
+			</para>
+			<br>
+				Example Method
+			</br>
+			<example>
+				<code>
+		[UserEventsAsync(UserStatus.LocalUserMuted)]
+		private async void OnLocalUserMutedAsync()
+		{
+			Debug.Log("Local User is Muted");
+			await SavePlayerData();
+		}
+				</code>
+			</example>
+		</summary>
+		<remarks>
+			<para>
+				<b>UserStatus - The type of Vivox User event to subscribe to asynchronously</b>
+			</para>
+			<list type="bullet">
+				<item>
+					<term>UserStatus.UserJoinedChannel</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserLeftChannel</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserValuesUpdated</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserMuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserUnmuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserCrossMuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserCrossUnmuted</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.AccountId"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserSpeaking</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.UserNotSpeaking</term>
+					<description>
+						Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IParticipant"/>
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.LocalUserMuted</term>
+					<description>
+						Method must have <b>0</b> parameters
+					</description>
+				</item>
+				<item>
+					<term>UserStatus.LocalUserUnmuted</term>
+					<description>
+						Method must have <b>0</b> parameters
+					</description>
+				</item>
+			</list>
+		</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="AudioDeviceEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Audio Device Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/volume-audio-settings/voice-text#dynamic-async-events">Dynamic Async Events - Audio Device Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="AudioDeviceStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[AudioDeviceEventAsync(AudioDeviceStatus.AudioInputDeviceAdded)]
+		private async void OnAudioInputDeviceAddedAsync(IAudioDevice audioDevice)
+		{
+			Debug.Log($"Audio Input device has been added {audioDevice?.Name}");
+			await SavePlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>AudioDeviceStatus - The type of Vivox User event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>AudioDeviceStatus.AudioInputDeviceAdded</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioDeviceStatus.AudioInputDeviceRemoved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioDeviceStatus.AudioInputDeviceUpdated</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioDeviceStatus.AudioOutputDeviceAdded</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioDeviceStatus.AudioOutputDeviceRemoved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+				</description>
+			</item>
+			<item>
+				<term>AudioDeviceStatus.AudioOutputDeviceUpdated</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.IAudioDevice"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+
+	<AttributesAsync name="TextToSpeechEventAsync">
+	<summary>
+		Place this on a <see langword="async void"></see> or <see langword="async Task"></see> method to subscribe to Vivox Text-To-Speech Events asynchronously
+		<para>
+			<b>Do not modify any GameObjects, UI, or anything that relies/runs on Unity's main thread</b>
+		</para>
+		<para>
+			Online Docs (<see href="https://fullstackindie.gitbook.io/easy-code-for-vivox/easy-code-for-vivox/how-do-i-do-this-in-easycode/text-to-speech-tts/tts-events#dynamic-async-events">Dynamic Async Events - Text-To-Speech Events</see>)
+		</para>
+		<para>
+			Method will be called when chosen <see cref="TextToSpeechStatus"></see> event happens
+		</para>
+		<br>
+			Example Method
+		</br>
+		<example>
+			<code>
+		[TextToSpeechEventAsync(TextToSpeechStatus.TTSMessageAdded)]
+		private async void  OnTTSMessageAddedAsync(ITTSMessageQueueEventArgs ttsArgs)
+		{
+			Debug.Log($"TTS Message Has Been Added : {ttsArgs.Message.Text}");
+			await SavePlayerData();
+		}
+			</code>
+		</example>
+	</summary>
+	<remarks>
+		<para>
+			<b>TextToSpeechStatus - The type of Vivox User event to subscribe to asynchronously</b>
+		</para>
+		<list type="bullet">
+			<item>
+				<term>TextToSpeechStatus.TTSMessageAdded</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ITTSMessageQueueEventArgs"/>
+				</description>
+			</item>
+			<item>
+				<term>TextToSpeechStatus.TTSMessageRemoved</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ITTSMessageQueueEventArgs"/>
+				</description>
+			</item>
+			<item>
+				<term>TextToSpeechStatus.TTSMessageUpdated</term>
+				<description>
+					Method must only contain <b>1</b> parameter of type <see cref="T:VivoxUnity.ITTSMessageQueueEventArgs"/>
+				</description>
+			</item>
+		</list>
+	</remarks>
+	</AttributesAsync>
+</EasyCode>

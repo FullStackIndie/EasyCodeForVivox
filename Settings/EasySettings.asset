@@ -17,9 +17,11 @@ MonoBehaviour:
   LogEasyManager: 1
   LogEasyManagerEventCallbacks: 1
   UseDynamicEvents: 1
-  OnlySearchAssemblyCSharp: 0
+  OnlySearchTheseAssemblies:
+  - EasyCodeForVivox
+  - Assembly-CSharp
   LogAssemblySearches: 1
-  LogAllDynamicMethods: 0
+  LogAllFoundDynamicMethods: 0
   LogAllAudioDevices: 0
   LogVoiceActivityDetection: 1
   LogEasyNetCode: 1

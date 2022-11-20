@@ -1,0 +1,281 @@
+﻿<EasyCode>
+	<Events name="LoggingIn">
+		<summary>
+			Event is invoked/fired when player begins logging into Vivox
+		</summary>
+	</Events>
+	<Events name="LoggedIn">
+		<summary>
+			Event is invoked/fired when player is successfully logged into Vivox
+		</summary>
+	</Events>
+	<Events name="LoggingOut">
+		<summary>
+			Event is invoked/fired when player begins logging out of Vivox
+		</summary>
+	</Events>
+	<Events name="LoggedOut">
+		<summary>
+			Event is invoked/fired when player is successfully logged out of Vivox
+		</summary>
+	</Events>
+	<Events name="LoginAdded">
+		<summary>
+			Event is invoked/fired when player is successfully logged into Vivox
+			<para>A player can log in multiple times under different usernames. Each time a new LoginSession is created EasyCode will keep track of the newly added LoginSessions</para>
+
+			<br>
+				You can access all current LoginSessions with EasySession
+			</br>
+			<example>
+				<code>
+			EasySession.LoginSessions["userName"]
+				</code>
+			</example>
+		</summary>
+	</Events>
+	<Events name="LoginRemoved">
+		<summary>
+			Event is invoked/fired when player is successfully logged out of Vivox
+			<para>EasyCode will keep track of LoginSessions and automatically remove the LoginSession of the logged out player</para>
+
+			<br>
+				You can attempt to access a current LoginSession with EasySession to see if it exists. If it does <b>loginSession</b> will not be null
+			</br>
+			<example>
+				<code>
+					EasySession.LoginSessions.TryGetValue("userName", out ILoginSession loginSession);
+				</code>
+			</example>
+		</summary>
+	</Events>
+	<Events name="LoginValuesUpdated">
+		<summary>
+			Event is invoked/fired when player LoginSession has changed such as player has changed their name
+			<para>EasyCode will keep track of LoginSessions automatically</para>
+
+			<br>
+				You can attempt to access a current LoginSession with EasySession to see if it exists. If it does <b>loginSession</b> will not be null
+			</br>
+			<example>
+				<code>
+					EasySession.LoginSessions.TryGetValue("userName", out ILoginSession loginSession);
+				</code>
+			</example>
+		</summary>
+	</Events>
+
+	<Events name="ChannelConnecting">
+		<summary>
+			Event is invoked/fired when player begins joining a Vivox Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="ChannelConnected">
+		<summary>
+			Event is invoked/fired when player has successfully joined a Vivox Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="ChannelDisconnecting">
+		<summary>
+			Event is invoked/fired when player begins disconnecting from a Vivox Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="ChannelDisconnected">
+		<summary>
+			Event is invoked/fired when player has successfully disconnected from a Vivox Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+
+	<Events name="AudioChannelConnecting">
+		<summary>
+			Event is invoked/fired when player begins joining a Vivox Audio Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="AudioChannelConnected">
+		<summary>
+			Event is invoked/fired when player has successfully joined a Vivox Audio Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="AudioChannelDisconnecting">
+		<summary>
+			Event is invoked/fired when player begins disconnecting from a Vivox Audio Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="AudioChannelDisconnected">
+		<summary>
+			Event is invoked/fired when player has successfully disconnected from a Vivox Audio Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+
+	<Events name="TextChannelConnecting">
+		<summary>
+			Event is invoked/fired when player begins joining a Vivox Text Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="TextChannelConnected">
+		<summary>
+			Event is invoked/fired when player has successfully joined a Vivox Text Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="TextChannelDisconnecting">
+		<summary>
+			Event is invoked/fired when player begins disconnecting from a Vivox Text Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="TextChannelDisconnected">
+		<summary>
+			Event is invoked/fired when player has successfully disconnected from a Vivox Text Channel
+			<para>Will be fired for Echo, Non-Positional, and 3D Positional channels</para>
+		</summary>
+	</Events>
+	
+	<Events name="ChannelMessageRecieved">
+		<summary>
+			Event is invoked/fired when player recieves a message from a connected Vivox Text Channel
+			<para>Will be fired for Non-Positional and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="ChannelMessageSent">
+		<summary>
+			Event is invoked/fired when player sends a message from a connected Vivox Text Channel
+			<para>Will be fired for Non-Positional and 3D Positional channels</para>
+		</summary>
+	</Events>
+	<Events name="EventMessageRecieved">
+		<summary>
+			Event is invoked/fired when developer wants to send a secret message in a coonected Vivox Text Channel that players wont see
+			<para>Will be fired for Non-Positional and 3D Positional channels</para>
+		</summary>
+	</Events>
+	
+	<Events name="DirectMessageRecieved">
+		<summary>
+			Event is invoked/fired when player recieves a direct message (DM) from another Vivox user who is logged in
+		</summary>
+	</Events>
+	<Events name="DirectMessageSent">
+		<summary>
+			Event is invoked/fired when player sends a direct message (DM) to another Vivox user who is logged in
+		</summary>
+	</Events>
+	<Events name="DirectMessageFailed">
+		<summary>
+			Event is invoked/fired when player sends a direct message (DM) to another Vivox user who is <b>not logged in</b>
+		</summary>
+	</Events>
+	
+	<Events name="UserJoinedChannel">
+		<summary>
+			Event is invoked/fired when a player joins a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserLeftChannel">
+		<summary>
+			Event is invoked/fired when a player leaves a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserValuesUpdated">
+		<summary>
+			Event is invoked/fired when a players values get updated in a Vivox Channel such as being muted/unmuted
+		</summary>
+	</Events>
+	<Events name="UserMuted">
+		<summary>
+			Event is invoked/fired when a player gets muted in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserUnmuted">
+		<summary>
+			Event is invoked/fired when a player gets unmuted in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserCrossMuted">
+		<summary>
+			Event is invoked/fired when a player gets cross muted in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserCrossUnmuted">
+		<summary>
+			Event is invoked/fired when a player gets cross unmuted in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserSpeaking">
+		<summary>
+			Event is invoked/fired when a player is speaking in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="UserNotSpeaking">
+		<summary>
+			Event is invoked/fired when a player stops speaking in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="LocalUserMuted">
+		<summary>
+			Event is invoked/fired when the local player mutes themselves in a Vivox Channel
+		</summary>
+	</Events>
+	<Events name="LocalUserUnmuted">
+		<summary>
+			Event is invoked/fired when the local player unmutes themselves in a Vivox Channel
+		</summary>
+	</Events>
+	
+	<Events name="AudioInputDeviceAdded">
+		<summary>
+			Event is invoked/fired when Vivox detects a new Audio Input Device (Microphone) is connected to your pc/console/device
+		</summary>
+	</Events>
+	<Events name="AudioInputDeviceRemoved">
+		<summary>
+			Event is invoked/fired when Vivox detects a new Audio Input Device (Microphone) is disconnected from your pc/console/device
+		</summary>
+	</Events>
+	<Events name="AudioInputDeviceUpdated">
+		<summary>
+			Event is invoked/fired when Vivox detects a new Audio Input Device (Microphone) is updated on your pc/console/device
+		</summary>
+	</Events>
+	<Events name="AudioOutputDeviceAdded">
+		<summary>
+			Event is invoked/fired when Vivox detects a new Audio Output Device (Speaker/Headphones) is connected to your pc/console/device
+		</summary>
+	</Events>
+	<Events name="AudioOutputDeviceRemoved">
+		<summary>
+			Event is invoked/fired when Vivox detects a new Audio Output Device (Speaker/Headphones) is disconnected from your pc/console/device
+		</summary>
+	</Events>
+	<Events name="AudioOutputDeviceUpdated">
+		<summary>
+			Event is invoked/fired when Vivox detects a new Audio Output Device (Speaker/Headphones) is updated on your pc/console/device
+		</summary>
+	</Events>
+	
+	<Events name="TTSMessageAdded">
+		<summary>
+			Event is invoked/fired when a Text-To-Speech is added to the queue to are is spoken
+		</summary>
+	</Events>
+	<Events name="TTSMessageRemoved">
+		<summary>
+			Event is invoked/fired when a Text-To-Speech is removed from the queue and is disposed of/canceled
+		</summary>
+	</Events>
+	<Events name="TTSMessageUpdated">
+		<summary>
+			Event is invoked/fired when a Text-To-Speech is removed from queue and begins to play
+		</summary>
+	</Events>
+	
+</EasyCode>

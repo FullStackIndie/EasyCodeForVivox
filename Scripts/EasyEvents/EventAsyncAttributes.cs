@@ -2,7 +2,7 @@
 
 namespace EasyCodeForVivox
 {
-    ///// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\Attributes.xml' path='EasyCode/Attributes[@name="Login"]'/>
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="LoginEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class LoginEventAsyncAttribute : Attribute
     {
@@ -14,6 +14,7 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="ChannelEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class ChannelEventAsyncAttribute : Attribute
     {
@@ -25,6 +26,7 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="AudioChannelEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class AudioChannelEventAsyncAttribute : Attribute
     {
@@ -36,6 +38,7 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="TextChannelEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class TextChannelEventAsyncAttribute : Attribute
     {
@@ -47,6 +50,7 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="ChannelMessageEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class ChannelMessageEventAsyncAttribute : Attribute
     {
@@ -58,6 +62,7 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="DirectMessageEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class DirectMessageEventAsyncAttribute : Attribute
     {
@@ -69,17 +74,19 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="UserEvents"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class UserEventAsyncAttribute : Attribute
+    public class UserEventsAsyncAttribute : Attribute
     {
         public UserStatus Options { get; set; }
 
-        public UserEventAsyncAttribute(UserStatus options)
+        public UserEventsAsyncAttribute(UserStatus options)
         {
             Options = options;
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="AudioDeviceEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class AudioDeviceEventAsyncAttribute : Attribute
     {
@@ -91,6 +98,7 @@ namespace EasyCodeForVivox
         }
     }
 
+    /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributesAsync.xml' path='EasyCode/AttributesAsync[@name="TextToSpeechEventAsync"]'/>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class TextToSpeechEventAsyncAttribute : Attribute
     {

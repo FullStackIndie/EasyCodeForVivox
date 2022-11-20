@@ -205,7 +205,6 @@ namespace EasyCodeForVivox.Events
         {
             try
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
                 LoggingIn?.Invoke(loginSession);
                 if (_settings.UseDynamicEvents)
                 {
@@ -214,7 +213,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -231,7 +230,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -249,7 +248,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -266,7 +265,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -286,7 +285,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -303,7 +302,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -321,7 +320,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -338,7 +337,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -353,7 +352,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -368,7 +367,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -382,7 +381,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -408,7 +407,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -425,7 +424,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -443,7 +442,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -460,7 +459,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -478,7 +477,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -495,7 +494,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -513,7 +512,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -530,7 +529,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -555,7 +554,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -572,7 +571,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -591,7 +590,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -608,7 +607,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -626,7 +625,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -643,7 +642,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -661,7 +660,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -678,7 +677,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -703,7 +702,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -720,7 +719,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -738,7 +737,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -755,7 +754,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -773,7 +772,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -790,7 +789,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -808,7 +807,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -825,7 +824,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -850,7 +849,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -867,7 +866,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -885,7 +884,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -902,7 +901,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -916,7 +915,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -933,7 +932,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -947,7 +946,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -964,7 +963,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -982,7 +981,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -999,7 +998,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1017,7 +1016,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1034,7 +1033,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1059,7 +1058,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1077,7 +1076,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1095,7 +1094,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1115,7 +1114,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1133,7 +1132,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1153,7 +1152,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1171,7 +1170,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1189,7 +1188,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1207,7 +1206,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1231,7 +1230,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1248,7 +1247,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1266,7 +1265,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1283,7 +1282,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1308,7 +1307,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1326,7 +1325,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1344,7 +1343,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1362,7 +1361,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1380,7 +1379,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1398,7 +1397,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod()}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodBase.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1425,7 +1424,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1443,7 +1442,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }
@@ -1461,7 +1460,7 @@ namespace EasyCodeForVivox.Events
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name}");
+                Debug.LogError($"Error Invoking events for {nameof(EasyEvents)}.{MethodInfo.GetCurrentMethod().Name} : {ex.StackTrace}");
                 Debug.LogException(ex);
                 throw;
             }

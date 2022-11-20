@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
+using VivoxUnity;
 
 namespace EasyCodeForVivox.Events
 {
@@ -13,6 +14,22 @@ namespace EasyCodeForVivox.Events
     {
         public static readonly HashSet<string> InternalAssemblyNames = new HashSet<string>()
 {
+        "unityplastic",
+        "log4net",
+        "NiceIO",
+        "PlayerBuildProgramLibrary.Data",
+        "AndroidPlayerBuildProgram.Data",
+        "WebGLPlayerBuildProgram.Data",
+        "BeeBuildProgramCommon.Data",
+        "ScriptCompilationBuildProgram.Data",
+        "Microsoft.CSharp",
+        "PlayerBuildProgramLibrary.Data",
+        "ParrelSync",
+        "VivoxTests",
+        "ChatChannelSample.Editor",
+        "ChatChannelSample",
+        "Plugins.BackgroundRecompiler.Editor",
+        "Bee.BeeDriver",
     "Zenject-Editor",
     "Zenject-ReflectionBaking-Editor",
     "Zenject",
@@ -154,14 +171,14 @@ namespace EasyCodeForVivox.Events
 
         public static Dictionary<Enum, List<MethodInfo>> Methods = new Dictionary<Enum, List<MethodInfo>>();
 
-        public static async Task RegisterEvents(bool onlySearchAssemblyCSharp = true, bool logAssemblySearches = true, bool logAllDynamicMethods = false)
+        public static async Task RegisterEvents(List<string> onlySearchTheseAssemblies, bool logAssemblySearches = true, bool logAllDynamicMethods = false)
         {
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            if (onlySearchAssemblyCSharp)
+            
+            if (onlySearchTheseAssemblies.Count > 0)
             {
-                assemblies = assemblies.Where(x => x.GetName().Name == "Assembly-CSharp").ToArray();
+                assemblies = assemblies.Where(x => onlySearchTheseAssemblies.Contains(x.GetName().Name)).ToArray();
             }
 
             foreach (Assembly assembly in assemblies)
@@ -185,6 +202,7 @@ namespace EasyCodeForVivox.Events
                 // methods do repeat some code but instead of for looping and awaiting on 1 thread
                 // this enables me to create many tasks to (hopefully) run at the same time and
                 // take advantage of multiple cores/threads to speed up the execution time at startup
+
                 await Task.Run(() => RegisterLoginEvents(types, flags));
                 await Task.Run(() => RegisterChannelEvents(types, flags));
                 await Task.Run(() => RegisterAudioChannelEvents(types, flags));
@@ -425,7 +443,7 @@ namespace EasyCodeForVivox.Events
                 }
             });
         }
-        
+
         public static void RegisterAudioChannelEvents(Type[] types, BindingFlags flags)
         {
             Parallel.ForEach(types, type =>
@@ -616,7 +634,7 @@ namespace EasyCodeForVivox.Events
             {
                 foreach (MethodInfo methodInfo in type.GetMethods(flags))
                 {
-                    var attribute = methodInfo.GetCustomAttribute<UserEventAttribute>();
+                    var attribute = methodInfo.GetCustomAttribute<UserEventsAttribute>();
                     if (attribute != null)
                     {
                         switch (attribute.Options)
@@ -657,7 +675,7 @@ namespace EasyCodeForVivox.Events
                         }
                         continue;
                     }
-                    var asyncAttribute = methodInfo.GetCustomAttribute<UserEventAsyncAttribute>();
+                    var asyncAttribute = methodInfo.GetCustomAttribute<UserEventsAsyncAttribute>();
                     if (asyncAttribute != null)
                     {
                         switch (asyncAttribute.Options)
