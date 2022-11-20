@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using VivoxUnity;
 
@@ -57,7 +56,7 @@ namespace EasyCodeForVivox
             StartCoroutine(Handle3DPositionUpdates(nextUpdate, userName));
         }
 
-        public bool CheckIfChannelExists([CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
+        public bool CheckIfChannelExists()
         {
             foreach (KeyValuePair<string, IChannelSession> session in EasySession.ChannelSessions)
             {
@@ -80,9 +79,7 @@ namespace EasyCodeForVivox
                 }
                 else
                 {
-                    Debug.Log($"Did not find an active 3D Positional Channel : Cannot activate 3D Positional Voice. \n".Color(EasyDebug.Yellow) +
-                        $"Stopping Coroutine at {memberName.Color(EasyDebug.Red)} at line {lineNumber.ToString().Color(EasyDebug.Red)} in {filePath.Color(EasyDebug.Red)}");
-                    StopCoroutine(nameof(Handle3DPositionUpdates));
+                    Debug.Log($"Did not find an active 3D Positional Channel : Cannot activate 3D Positional Voice.".Color(EasyDebug.Yellow));
                 }
             }
             return false;

@@ -12850,7 +12850,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9819218099320dd4aa818b4aedf0e30e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
   apiEndpoint: 
   domain: 
   issuer: 
@@ -18242,14 +18241,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 856a62c8a0d46d242a3f9753db9ccc04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _panels:
-  - {fileID: 2145476088}
-  - {fileID: 987474958}
-  - {fileID: 899820458}
-  - {fileID: 61330947}
-  - {fileID: 699626045}
-  - {fileID: 1153146601}
-  - {fileID: 1847945686}
 --- !u!1 &1520684785
 GameObject:
   m_ObjectHideFlags: 0

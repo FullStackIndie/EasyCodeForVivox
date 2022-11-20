@@ -1,4 +1,3 @@
-using EasyCodeForVivox;
 using EasyCodeForVivox.DemoScene;
 using EasyCodeForVivox.Extensions;
 using TMPro;

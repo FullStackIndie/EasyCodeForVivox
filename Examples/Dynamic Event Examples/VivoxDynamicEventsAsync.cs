@@ -1,13 +1,8 @@
-using EasyCodeForVivox;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 //using Unity.Services.Authentication;
 //using Unity.Services.CloudSave;
 //using Unity.Services.Lobbies;
 //using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using VivoxUnity;
 
 public class VivoxDynamicEventsAsync : MonoBehaviour
 {

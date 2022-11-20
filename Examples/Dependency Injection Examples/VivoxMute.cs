@@ -63,7 +63,7 @@ namespace EasyCodeDevelopment
         {
             _mute.CrossMuteUser("userName", "channelName", "usernameToMute", true);
         }
-        
+
         public void CrossUnmuteUser()
         {
             _mute.CrossMuteUser("userName", "channelName", "usernameToMute", true);

@@ -9,7 +9,7 @@ using VivoxUnity;
 namespace EasyCodeForVivox
 {
 
-    public class EasyAudioChannel 
+    public class EasyAudioChannel
     {
 
         private readonly EasyEvents _events;

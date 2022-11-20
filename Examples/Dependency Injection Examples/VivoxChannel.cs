@@ -25,7 +25,7 @@ public class VivoxChannel : MonoBehaviour
     {
         _channel.JoinChannel("username", "chat", true, true, false, ChannelType.NonPositional, joinMuted: false);
     }
-    
+
     public void Join3DChannel()
     {
         var channelProperties = new Channel3DProperties(32, 1, 1.0f, AudioFadeModel.InverseByDistance);

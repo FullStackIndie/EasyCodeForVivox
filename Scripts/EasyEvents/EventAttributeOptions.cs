@@ -34,7 +34,7 @@
 
     /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributeOptions.xml' path='EasyCode/Options[@name="AudioChannelStatus"]'/>
     public enum AudioChannelStatus
-    {        
+    {
         /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributeOptionEvents.xml' path='EasyCode/Events[@name="AudioChannelConnecting"]'/>
         AudioChannelConnecting,
         /// <include file='Assets\EasyCodeForVivox\Documentation\XML API Documentation\AttributeOptionEvents.xml' path='EasyCode/Events[@name="AudioChannelConnected"]'/>

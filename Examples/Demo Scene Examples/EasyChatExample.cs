@@ -1,10 +1,8 @@
 ﻿using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
 using System;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VivoxUnity;
 
@@ -56,7 +54,6 @@ public class EasyChatExample : EasyManager
         EasySession.Domain = domain;
         EasySession.Issuer = issuer;
         EasySession.SecretKey = secretKey;
-        panelSwitcher = FindObjectOfType<PanelSwitcher>();
     }
 
     async void Start()
@@ -67,6 +64,7 @@ public class EasyChatExample : EasyManager
         await InitializeClient(vivoxConfig);
 
         DontDestroyOnLoad(this);
+        panelSwitcher = FindObjectOfType<PanelSwitcher>();
 
         LoadAudioDevices();
         LoadTextToSpeechOptions();
@@ -107,17 +105,17 @@ public class EasyChatExample : EasyManager
     public void LoadExistingPlayerData()
     {
         if (!EasySession.Client.Initialized) { return; }
-        if(EasySession.LoginSessions.Count > 0)
+        if (EasySession.LoginSessions.Count > 0)
         {
-            foreach(var session in EasySession.LoginSessions)
+            foreach (var session in EasySession.LoginSessions)
             {
                 loginSessionsDropdown.AddValue(session.Value.LoginSessionId.Name);
             }
             userNameInput.text = loginSessionsDropdown.GetSelected();
         }
-        if(EasySession.ChannelSessions.Count > 0)
+        if (EasySession.ChannelSessions.Count > 0)
         {
-            foreach(var session in EasySession.ChannelSessions)
+            foreach (var session in EasySession.ChannelSessions)
             {
                 channelSessionsDropdown.AddValue(session.Value.Channel.Name);
             }
@@ -216,7 +214,7 @@ public class EasyChatExample : EasyManager
             Debug.Log("Remote Player Name is Empty or Invalid, Cannot mute player");
         }
     }
-    
+
     public void UnmuteRemotePlayer()
     {
         var selectedUser = mutePlayerInChannelDropdown.GetSelected();
@@ -634,7 +632,7 @@ public class EasyChatExample : EasyManager
         base.OnLocalUserUnmuted();
     }
 
-  protected override void OnCrossMuted(AccountId accountId)
+    protected override void OnCrossMuted(AccountId accountId)
     {
         base.OnCrossMuted(accountId);
     }
@@ -661,7 +659,7 @@ public class EasyChatExample : EasyManager
 
     protected override void OnAudioInputDeviceUpdated(IAudioDevice audioDevice)
     {
-        base.OnAudioInputDeviceUpdated(audioDevice);  
+        base.OnAudioInputDeviceUpdated(audioDevice);
     }
 
     protected override void OnAudioOutputDeviceAdded(IAudioDevice audioDevice)

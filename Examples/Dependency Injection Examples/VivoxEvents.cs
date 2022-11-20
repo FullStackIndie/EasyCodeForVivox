@@ -131,7 +131,7 @@ public class VivoxEvents : MonoBehaviour
         _events.UserJoinedChannel += OnUserJoinedChannel;
         _events.UserLeftChannel += OnUserLeftChannel;
         _events.UserValuesUpdated += OnUserValuesUpdated;
-}
+    }
 
     public void UnsubscribeFromUserEvents()
     {
@@ -139,7 +139,7 @@ public class VivoxEvents : MonoBehaviour
         _events.UserLeftChannel -= OnUserLeftChannel;
         _events.UserValuesUpdated -= OnUserValuesUpdated;
     }
-    
+
 
     public void SubscribeToAudioDeviceEvents()
     {

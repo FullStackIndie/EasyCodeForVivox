@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 
 public class AnimationStateController : NetworkBehaviour

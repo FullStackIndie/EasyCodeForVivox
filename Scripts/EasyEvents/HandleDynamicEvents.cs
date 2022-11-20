@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
-using VivoxUnity;
 
 namespace EasyCodeForVivox.Events
 {
@@ -175,7 +174,7 @@ namespace EasyCodeForVivox.Events
         {
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            
+
             if (onlySearchTheseAssemblies.Count > 0)
             {
                 assemblies = assemblies.Where(x => onlySearchTheseAssemblies.Contains(x.GetName().Name)).ToArray();

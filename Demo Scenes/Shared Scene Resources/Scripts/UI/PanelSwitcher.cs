@@ -7,16 +7,7 @@ public class PanelSwitcher : MonoBehaviour
 {
     public void EnablePanel(string panelName)
     {
-        Canvas canvas = FindObjectOfType<Canvas>();
-        List<GameObject> panels = new List<GameObject>();
-
-        panels.Add(canvas.transform.Find("Login Panel").gameObject);
-        panels.Add(canvas.transform.Find("Channel Panel").gameObject);
-        panels.Add(canvas.transform.Find("Message Panel").gameObject);
-        panels.Add(canvas.transform.Find("Audio Panel").gameObject);
-        panels.Add(canvas.transform.Find("Mute Panel").gameObject);
-        panels.Add(canvas.transform.Find("Admin Panel").gameObject);
-        panels.Add(canvas.transform.Find("Join Game Panel").gameObject);
+        List<GameObject> panels = FindPanels();
 
         if (!panels.Any(g => g.name.Contains(panelName)))
         {
@@ -39,6 +30,30 @@ public class PanelSwitcher : MonoBehaviour
         {
             Debug.Log($"Could not find panel that contained '{panelName}' in the UI Canvas");
         }
+    }
+
+    private List<GameObject> FindPanels()
+    {
+        Canvas canvas = FindObjectOfType<Canvas>();
+        List<GameObject> panels = new List<GameObject>();
+
+        void AddPanel(GameObject obj)
+        {
+            if (obj != null)
+            {
+                panels.Add(obj);
+            }
+        }
+
+        AddPanel(canvas.transform.Find("Login Panel").gameObject);
+        AddPanel(canvas.transform.Find("Channel Panel").gameObject);
+        AddPanel(canvas.transform.Find("Message Panel").gameObject);
+        AddPanel(canvas.transform.Find("Audio Panel").gameObject);
+        AddPanel(canvas.transform.Find("Mute Panel").gameObject);
+        AddPanel(canvas.transform.Find("Admin Panel").gameObject);
+        AddPanel(canvas.transform.Find("Join Game Panel")?.gameObject);
+
+        return panels;
     }
 
 

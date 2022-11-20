@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 293616196124231754}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5688, z: 0.127}
+  m_LocalPosition: {x: 0, y: 1.651, z: 0.082}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,7 +79,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   listenerPosition: {fileID: 3532296446399313466}
   speakerPosition: {fileID: 387876536169078235}
-  _settings: {fileID: 11400000, guid: 1bc959b5e82dd7f46a6a73e59b85b19f, type: 2}
 --- !u!1 &1616116689709153563
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,7 +304,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5094180073474501766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6262, z: 0}
+  m_LocalPosition: {x: 0, y: 1.774, z: -0.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

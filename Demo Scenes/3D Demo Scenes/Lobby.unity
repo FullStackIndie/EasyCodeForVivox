@@ -13239,11 +13239,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 290ee27029cf8f04c9b7691d103cf940, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  apiEndpoint: https://mt1s.www.vivox.com/api2
-  domain: mt1s.vivox.com
-  issuer: johnmu0739-vi31-dev
-  secretKey: luck408
+  apiEndpoint: 
+  domain: 
+  issuer: 
+  secretKey: 
   userNameInput: {fileID: 723993286}
   directMessageRemotePlayerNameInput: {fileID: 759126984}
   channelNameInput: {fileID: 923918021}
@@ -18893,15 +18892,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 856a62c8a0d46d242a3f9753db9ccc04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _panels:
-  - {fileID: 2145476088}
-  - {fileID: 987474958}
-  - {fileID: 899820458}
-  - {fileID: 61330947}
-  - {fileID: 699626045}
-  - {fileID: 1153146601}
-  - {fileID: 1847945686}
-  - {fileID: 1345165590}
 --- !u!1 &1520684785
 GameObject:
   m_ObjectHideFlags: 0
