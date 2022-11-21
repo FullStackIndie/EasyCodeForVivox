@@ -1,6 +1,6 @@
 using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
-//using Unity.Services.Lobbies;
+//using Unity.Services.Lobbies; //if using Unity's Lobby Service
 //using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using VivoxUnity;
@@ -33,7 +33,7 @@ public class VivoxChannel : MonoBehaviour
         _channel.JoinChannel("username", "3D", true, false, false, ChannelType.Positional, joinMuted: false, channel3DProperties: channelProperties);
     }
 
-    public async void Join3DRegionChannel()
+    public void Join3DRegionChannel()
     {
         var channelProperties = new Channel3DProperties(32, 1, 1.0f, AudioFadeModel.InverseByDistance);
 
@@ -41,12 +41,12 @@ public class VivoxChannel : MonoBehaviour
         var matchHash = "lobby name".GetMD5Hash();
         _channel.JoinChannelRegion("userName", "3D", "NA", matchHash, true, false, false, ChannelType.Positional, joinMuted: false, channel3DProperties: channelProperties);
 
-        ////using Unity's Lobby Service
+        ////using Unity's Lobby Service - make method async if you use LobbyService
         //Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName: "lobby name", maxPlayers: 4);
         //_channel.JoinChannelRegion("userName", "3D", "NA", lobby.Id, true, false, false, ChannelType.Positional, joinMuted: false, channel3DProperties: channelProperties);
     }
 
-    public async void JoinSquadRegionChannel()
+    public void JoinSquadRegionChannel()
     {
         var channelProperties = new Channel3DProperties(32, 1, 1.0f, AudioFadeModel.InverseByDistance);
 
@@ -54,7 +54,7 @@ public class VivoxChannel : MonoBehaviour
         var matchHash = "lobby name".GetMD5Hash();
         _channel.JoinChannelRegion("userName", "sqaud1", "NA", matchHash, true, false, false, ChannelType.Positional, joinMuted: false, channel3DProperties: channelProperties);
 
-        ////using Unity's Lobby Service
+        ////using Unity's Lobby Service - make method async if you use LobbyService
         //Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName: "lobby name", maxPlayers: 4);
         //_channel.JoinChannelRegion("userName", "sqaud1", "NA", lobby.Id, true, false, false, ChannelType.Positional, joinMuted: false, channel3DProperties: channelProperties);
     }

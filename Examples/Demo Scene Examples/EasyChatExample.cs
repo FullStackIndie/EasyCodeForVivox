@@ -1,7 +1,11 @@
 ﻿using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
+using ModestTree;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using VivoxUnity;
@@ -70,8 +74,6 @@ public class EasyChatExample : EasyManager
         LoadTextToSpeechOptions();
         LoadExistingPlayerData();
     }
-
-
 
 
     // Clears Text messages where event logs show up in demo scene

@@ -1389,7 +1389,7 @@ namespace EasyCodeForVivox.Events
         {
             try
             {
-                AudioInputDeviceUpdated?.Invoke(audioDevice);
+                AudioOutputDeviceUpdated?.Invoke(audioDevice);
                 if (_settings.UseDynamicEvents)
                 {
                     InvokeMethods(AudioDeviceStatus.AudioInputDeviceUpdated, audioDevice);

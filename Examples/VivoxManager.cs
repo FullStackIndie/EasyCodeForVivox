@@ -72,7 +72,7 @@ public class VivoxManager : EasyManager
     }
 
 
-    public async void Join3DRegionChannel()
+    public void Join3DRegionChannel()
     {
         var channelProperties = new Channel3DProperties(32, 1, 1.0f, AudioFadeModel.InverseByDistance);
 
@@ -81,7 +81,7 @@ public class VivoxManager : EasyManager
         JoinChannelRegion("userName", "3D", "NA", matchHash, true, false, false, ChannelType.Positional, joinMuted: false, channel3DProperties: channelProperties);
     }
 
-    public async void JoinSquadRegionChannel()
+    public void JoinSquadRegionChannel()
     {
         var channelProperties = new Channel3DProperties(32, 1, 1.0f, AudioFadeModel.InverseByDistance);
 

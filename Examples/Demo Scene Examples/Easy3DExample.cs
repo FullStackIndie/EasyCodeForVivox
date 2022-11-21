@@ -69,7 +69,6 @@ public class Easy3DExample : EasyManager
         LoadExistingPlayerData();
     }
 
-
     // Clears Text messages where event logs show up in demo scene
     // hooked up to ClearMessages Button in demo scene
     public void ClearMessages()

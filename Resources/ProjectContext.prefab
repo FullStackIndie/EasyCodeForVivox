@@ -51,8 +51,8 @@ MonoBehaviour:
   - {fileID: 2719863309462503325}
   _installerPrefabs: []
   _parentNewObjectsUnderContext: 1
-  _editorReflectionBakingCoverageMode: 2
-  _buildsReflectionBakingCoverageMode: 2
+  _editorReflectionBakingCoverageMode: 0
+  _buildsReflectionBakingCoverageMode: 0
   _settings:
     _ensureDeterministicDestructionOrderOnApplicationQuit: 0
     _displayWarningWhenResolvingDuringInstall: 0
