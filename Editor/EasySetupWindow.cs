@@ -6,9 +6,15 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+#endif
 
 public class EasySetupWindow : EditorWindow
 {
+#if UNITY_EDITOR
+    static ReorderableList reorderableList = null;
+    static EasySetupWindow Window;
+#endif
+
     static string[] demoSceneList = new string[]
         {
             "Assets/EasyCodeForVivox/Demo Scenes/3D Demo Scenes/3D Demo Scene.unity",
@@ -17,14 +23,13 @@ public class EasySetupWindow : EditorWindow
         };
 
     List<SceneAsset> _sceneAssets = new List<SceneAsset>();
-    static ReorderableList reorderableList = null;
     public static string key = "EasyCodeForVivox:Setup";
-    static bool dontShowAgain = false;
 
+#if UNITY_EDITOR
     [MenuItem("EasyCode/Add Demo Scenes To Build Settings")]
     public static void ShowWindow()
     {
-        GetWindow<EasySetupWindow>(false, title: "EasyCode Demo Scenes", focus: true);
+       Window = GetWindow<EasySetupWindow>(false, title: "EasyCode Demo Scenes", focus: true);
     }
 
     [InitializeOnLoadMethod]
@@ -68,14 +73,11 @@ public class EasySetupWindow : EditorWindow
         reorderableList.DoList(new Rect(Vector2.zero, Vector2.one * 500));
         GUILayout.Space(50f);
 
-        dontShowAgain = DontShowWindowAgain();
-        dontShowAgain = EditorGUILayout.BeginToggleGroup("Don't Show Again", dontShowAgain);
-        EditorGUILayout.EndToggleGroup();
-
         if (GUILayout.Button("Add Demo Scenes To Build Settings"))
         {
             AddDemoScenes();
-            SaveSettings(dontShowAgain);
+            SaveSettings();
+            Window.Close();
         }
     }
 
@@ -86,8 +88,6 @@ public class EasySetupWindow : EditorWindow
 
     public static void AddDemoScenes()
     {
-        if (CheckIfDemoScenesExist()) { return; }
-
         List<EditorBuildSettingsScene> editorBuildSettingsScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         var path = $"{Directory.GetCurrentDirectory()}/Assets/EasyCodeForVivox/Demo Scenes/";
         DirectoryInfo directories = new DirectoryInfo(path);
@@ -112,6 +112,7 @@ public class EasySetupWindow : EditorWindow
         if (editorBuildSettingsScenes.Count > 0)
         {
             EditorBuildSettings.scenes = editorBuildSettingsScenes.Distinct().ToArray();
+            Debug.Log($"Added Demo Scenes to Build Settings".Color(EasyDebug.Green));
         }
     }
 
@@ -123,7 +124,7 @@ public class EasySetupWindow : EditorWindow
             if (EditorBuildSettings.scenes.Any(s => s.path.Contains(demoScene))) { allScenes++; }
         }
 
-        if (allScenes == 3)
+        if (allScenes > 0)
         {
             return true;
         }
@@ -131,13 +132,10 @@ public class EasySetupWindow : EditorWindow
         return false;
     }
 
-    private static void SaveSettings(bool save)
+    private static void SaveSettings()
     {
-        if (save)
-        {
-            PlayerPrefs.SetInt(key, 1);
-            PlayerPrefs.Save();
-        }
+        PlayerPrefs.SetInt(key, 1);
+        PlayerPrefs.Save();
     }
 
     private static bool DontShowWindowAgain()
@@ -149,5 +147,6 @@ public class EasySetupWindow : EditorWindow
         }
         return false;
     }
-}
+
 #endif
+}

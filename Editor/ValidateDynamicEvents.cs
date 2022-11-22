@@ -17,7 +17,7 @@ namespace EasyCodeForVivox.Editor
 
         public static readonly HashSet<string> InternalAssemblyNames = new HashSet<string>()
 {
-        "EasyCodeDevelopment",
+        //"EasyCodeDevelopment",
         "unityplastic",
         "log4net",
         "NiceIO",
@@ -221,8 +221,29 @@ namespace EasyCodeForVivox.Editor
         private static void CheckType(this MethodInfo methodInfo, Type parameterType)
         {
             var parameters = methodInfo.GetParameters();
-            if (parameters.Length == 0) { return; }
-            if (methodInfo.GetParameters()[0].ParameterType != parameterType)
+
+            if (parameters.Length == 0 && parameterType != null)
+            {
+                Debug.Log($"Located in Class {methodInfo.DeclaringType.Name.Color(EasyDebug.Yellow)} : Method {methodInfo.Name.Color(EasyDebug.Yellow).Bold()} does not have valid event parameter of type {parameterType.Name.Color(EasyDebug.Yellow)} \n" +
+         $"{methodInfo.ReturnType}   {methodInfo.Name}({string.Join(", ", methodInfo.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"))})".Color(EasyDebug.Orange));
+                return;
+            }
+
+            if (parameters.Length > 1 && parameterType == null)
+            {
+                Debug.Log($"Located in Class {methodInfo.DeclaringType.Name.Color(EasyDebug.Yellow)} : Method {methodInfo.Name.Color(EasyDebug.Yellow).Bold()} should not have 0 parameters \n" +
+        $"{methodInfo.ReturnType}   {methodInfo.Name}({string.Join(", ", methodInfo?.GetParameters()?.Select(p => $"{p.ParameterType.Name} {p.Name}"))})".Color(EasyDebug.Orange));
+                return;
+            }
+
+            if (parameters.Length > 1)
+            {
+                Debug.Log($"Located in Class {methodInfo.DeclaringType.Name.Color(EasyDebug.Yellow)} : Method {methodInfo.Name.Color(EasyDebug.Yellow).Bold()} should only have event parameter of type {parameterType.Name.Color(EasyDebug.Yellow)} \n" +
+        $"{methodInfo.ReturnType}   {methodInfo.Name}({string.Join(", ", methodInfo?.GetParameters()?.Select(p => $"{p.ParameterType.Name} {p.Name}"))})".Color(EasyDebug.Orange));
+                return;
+            }
+
+            if (parameters.Length > 0 && parameters[0].ParameterType != parameterType)
             {
                 Debug.Log($"Located in Class {methodInfo.DeclaringType.Name.Color(EasyDebug.Yellow)} : Method {methodInfo.Name.Color(EasyDebug.Yellow).Bold()} does not have valid event parameter of type {parameterType.Name.Color(EasyDebug.Yellow)} \n" +
          $"{methodInfo.ReturnType}   {methodInfo.Name}({string.Join(", ", methodInfo.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"))})".Color(EasyDebug.Orange));
@@ -516,7 +537,7 @@ namespace EasyCodeForVivox.Editor
                         switch (attribute.Options)
                         {
                             case ChannelMessageStatus.ChannelMessageSent:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                             case ChannelMessageStatus.ChannelMessageRecieved:
                                 methodInfo.CheckType(typeof(IChannelTextMessage));
@@ -533,7 +554,7 @@ namespace EasyCodeForVivox.Editor
                         switch (asyncAttribute.Options)
                         {
                             case ChannelMessageStatus.ChannelMessageSent:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                             case ChannelMessageStatus.ChannelMessageRecieved:
                                 methodInfo.CheckType(typeof(IChannelTextMessage));
@@ -559,7 +580,7 @@ namespace EasyCodeForVivox.Editor
                         switch (attribute.Options)
                         {
                             case DirectMessageStatus.DirectMessageSent:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                             case DirectMessageStatus.DirectMessageRecieved:
                                 methodInfo.CheckType(typeof(IDirectedTextMessage));
@@ -576,7 +597,7 @@ namespace EasyCodeForVivox.Editor
                         switch (asyncAttribute.Options)
                         {
                             case DirectMessageStatus.DirectMessageSent:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                             case DirectMessageStatus.DirectMessageRecieved:
                                 methodInfo.CheckType(typeof(IDirectedTextMessage));
@@ -629,10 +650,10 @@ namespace EasyCodeForVivox.Editor
                                 methodInfo.CheckType(typeof(IParticipant));
                                 break;
                             case UserStatus.LocalUserMuted:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                             case UserStatus.LocalUserUnmuted:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                         }
                         continue;
@@ -670,10 +691,10 @@ namespace EasyCodeForVivox.Editor
                                 methodInfo.CheckType(typeof(IParticipant));
                                 break;
                             case UserStatus.LocalUserMuted:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                             case UserStatus.LocalUserUnmuted:
-                                methodInfo.CheckType(typeof(void)); // todo test
+                                methodInfo.CheckType(null); // todo test
                                 break;
                         }
                     }
