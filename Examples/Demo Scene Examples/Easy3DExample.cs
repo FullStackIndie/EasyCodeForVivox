@@ -44,10 +44,12 @@ public class Easy3DExample : EasyManager
 
     private void Awake()
     {
-        // todo Implement Unity Remote Config to store sensitive information in the cloud. It's free
+        // todo Implement Unity Remote Config or Unity Cloud Code to store sensitive information in the cloud. It's free
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
         // inside of the Unity Editor because hackers can decompile there game and steal the secrets/keys
         // Unity decompiler https://devxdevelopment.com/
+        // ILSPY decompiler https://github.com/icsharpcode/ILSpy
+        
         EasySession.APIEndpoint = new Uri(apiEndpoint);
         EasySession.Domain = domain;
         EasySession.Issuer = issuer;

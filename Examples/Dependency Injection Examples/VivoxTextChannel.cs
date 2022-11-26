@@ -2,20 +2,22 @@ using EasyCodeForVivox;
 using UnityEngine;
 using Zenject;
 
-public class VivoxTextChannel : MonoBehaviour
+namespace EasyCodeForVivox.Examples
 {
-    EasyTextChannel _textChannel;
-
-    [Inject]
-    public void Initialize(EasyTextChannel textChannel)
+    public class VivoxTextChannel : MonoBehaviour
     {
-        _textChannel = textChannel;
-    }
+        EasyTextChannel _textChannel;
 
-    public void ToggleTextInChannel()
-    {
-        _textChannel.ToggleTextInChannel(EasySession.ChannelSessions["chat"], true);
-    }
+        [Inject]
+        public void Initialize(EasyTextChannel textChannel)
+        {
+            _textChannel = textChannel;
+        }
 
+        public void ToggleTextInChannel()
+        {
+            _textChannel.ToggleTextInChannel(EasySession.ChannelSessions["chat"], true);
+        }
+
+    }
 }
-

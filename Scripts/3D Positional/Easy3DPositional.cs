@@ -22,7 +22,7 @@ namespace EasyCodeForVivox
 
         private void Awake()
         {
-            userName = EasySession.LoginSessions.FirstOrDefault().Value.LoginSessionId.DisplayName;
+            userName = EasySession.LoginSessions.FirstOrDefault().Value.LoginSessionId.Name;
         }
 
         private void Start()

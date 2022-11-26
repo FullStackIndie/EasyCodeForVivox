@@ -1,11 +1,7 @@
 ﻿using EasyCodeForVivox;
 using EasyCodeForVivox.Extensions;
-using ModestTree;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using VivoxUnity;
@@ -40,8 +36,12 @@ public class EasyChatExample : EasyManager
     [SerializeField] TMP_Dropdown textToSpeechOptionsDropdown;
 
     private PanelSwitcher panelSwitcher;
+    private EasySettingsSO _easySettings;
 
-
+    private void Init(EasySettingsSO easySettings)
+    {
+        _easySettings = easySettings;
+    }
 
     private void OnApplicationQuit()
     {
@@ -54,10 +54,18 @@ public class EasyChatExample : EasyManager
         // if users dont want to use Remote Config then advise users to use environment variables instead of hardcoding secrets/api keys
         // inside of the Unity Editor because hackers can decompile there game and steal the secrets/keys
         // Unity decompiler https://devxdevelopment.com/
-        EasySession.APIEndpoint = new Uri(apiEndpoint);
-        EasySession.Domain = domain;
-        EasySession.Issuer = issuer;
-        EasySession.SecretKey = secretKey;
+        // ILSPY decompiler https://github.com/icsharpcode/ILSpy
+        //if (_easySettings.UseUnityVivoxService)
+        //{
+        //    // todo add Unity Vivox 
+        //}
+        //else
+        //{
+            EasySession.APIEndpoint = new Uri(apiEndpoint);
+            EasySession.Domain = domain;
+            EasySession.Issuer = issuer;
+            EasySession.SecretKey = secretKey;
+        //}
     }
 
     async void Start()

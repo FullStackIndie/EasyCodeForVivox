@@ -6,7 +6,6 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using UnityEngine;
-using VivoxAccessToken;
 using VivoxUnity;
 
 namespace EasyCodeForVivox
@@ -100,8 +99,8 @@ namespace EasyCodeForVivox
             Uri serverUri, string userName, bool joinMuted = false)
         {
             Subscribe(loginSession);
-            var accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), "login", EasySession.UniqueCounter, null, EasySIP.GetUserSIP(
+            var accessToken = EasyAccessToken.CreateToken(EasySession.SecretKey, EasySession.Issuer,
+                EasyAccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), "login", EasySession.UniqueCounter, null, EasySIP.GetUserSIP(
                     EasySession.Issuer, userName, EasySession.Domain), null);
 
             loginSession.ParticipantPropertyFrequency = _settings.VivoxParticipantPropertyUpdateFrequency;
@@ -128,8 +127,8 @@ namespace EasyCodeForVivox
             Uri serverUri, string userName, bool joinMuted = false)
         {
             Subscribe(loginSession);
-            var accessToken = AccessToken.Token_f(EasySession.SecretKey, EasySession.Issuer,
-                AccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), "login", EasySession.UniqueCounter, null, EasySIP.GetUserSIP(
+            var accessToken = EasyAccessToken.CreateToken(EasySession.SecretKey, EasySession.Issuer,
+                EasyAccessToken.SecondsSinceUnixEpochPlusDuration(TimeSpan.FromSeconds(90)), "login", EasySession.UniqueCounter, null, EasySIP.GetUserSIP(
                     EasySession.Issuer, userName, EasySession.Domain), null);
 
             loginSession.ParticipantPropertyFrequency = _settings.VivoxParticipantPropertyUpdateFrequency;

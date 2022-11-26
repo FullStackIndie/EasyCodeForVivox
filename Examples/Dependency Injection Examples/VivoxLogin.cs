@@ -3,47 +3,50 @@ using UnityEngine;
 using VivoxUnity;
 using Zenject;
 
-public class VivoxLogin : MonoBehaviour
+namespace EasyCodeForVivox.Examples
 {
-    private EasyLogin _login;
-
-    [Inject]
-    private void Initialize(EasyLogin login)
+    public class VivoxLogin : MonoBehaviour
     {
-        _login = login;
+        private EasyLogin _login;
+
+        [Inject]
+        private void Initialize(EasyLogin login)
+        {
+            _login = login;
+        }
+
+        public void Login()
+        {
+            _login.LoginToVivox("username");
+        }
+
+        public void LoginAsMuted()
+        {
+            _login.LoginToVivox("username", true);
+        }
+
+        public void Logout()
+        {
+            _login.LogoutOfVivox("username");
+        }
+
+        public void UpdateLoginProperties()
+        {
+            _login.UpdateLoginProperties("username", VivoxUnity.ParticipantPropertyUpdateFrequency.StateChange);
+        }
+
+
+        public void SetPlayerTransmissionModeAll()
+        {
+            _login.SetPlayerTransmissionMode("username", TransmissionMode.All);
+        }
+
+        public void SetPlayerTransmissionModeSingle()
+        {
+            var channelId = _login.GetChannelId("username", "channelName");
+            _login.SetPlayerTransmissionMode("username", TransmissionMode.Single, channelId);
+        }
+
+
     }
-
-    public void Login()
-    {
-        _login.LoginToVivox("username");
-    }
-
-    public void LoginAsMuted()
-    {
-        _login.LoginToVivox("username", true);
-    }
-
-    public void Logout()
-    {
-        _login.LogoutOfVivox("username");
-    }
-
-    public void UpdateLoginProperties()
-    {
-        _login.UpdateLoginProperties("username", VivoxUnity.ParticipantPropertyUpdateFrequency.StateChange);
-    }
-
-
-    public void SetPlayerTransmissionModeAll()
-    {
-        _login.SetPlayerTransmissionMode("username", TransmissionMode.All);
-    }
-
-    public void SetPlayerTransmissionModeSingle()
-    {
-        var channelId = _login.GetChannelId("username", "channelName");
-        _login.SetPlayerTransmissionMode("username", TransmissionMode.Single, channelId);
-    }
-
-
 }

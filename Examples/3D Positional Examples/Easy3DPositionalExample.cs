@@ -2,7 +2,8 @@
 using UnityEngine;
 using VivoxUnity;
 
-namespace EasyCodeForVivox
+
+namespace EasyCodeForVivox.Examples
 {
     public class Easy3DPositionalExample : MonoBehaviour
     {

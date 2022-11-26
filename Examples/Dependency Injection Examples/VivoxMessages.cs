@@ -2,25 +2,28 @@ using EasyCodeForVivox;
 using UnityEngine;
 using Zenject;
 
-public class VivoxMessages : MonoBehaviour
+namespace EasyCodeForVivox.Examples
 {
-    EasyMessages _messages;
-
-    [Inject]
-    private void Initialize(EasyMessages messages)
+    public class VivoxMessages : MonoBehaviour
     {
-        _messages = messages;
-    }
+        EasyMessages _messages;
 
-    public void SendChannelMessage()
-    {
-        _messages.SendChannelMessage(EasySession.ChannelSessions["chat"], "my message to everyone");
-        _messages.SendChannelMessage(EasySession.ChannelSessions["chat"], "my message to everyone", header: "squad", body: "1");
-    }
+        [Inject]
+        private void Initialize(EasyMessages messages)
+        {
+            _messages = messages;
+        }
 
-    public void SendDirectMessage()
-    {
-        _messages.SendDirectMessage(EasySession.LoginSessions["userName"], "myFriendsName", "my message to everyone");
-        _messages.SendDirectMessage(EasySession.LoginSessions["userName"], "myFriendsName", "my message to everyone", header: "squad", body: "1");
+        public void SendChannelMessage()
+        {
+            _messages.SendChannelMessage(EasySession.ChannelSessions["chat"], "my message to everyone");
+            _messages.SendChannelMessage(EasySession.ChannelSessions["chat"], "my message to everyone", header: "squad", body: "1");
+        }
+
+        public void SendDirectMessage()
+        {
+            _messages.SendDirectMessage(EasySession.LoginSessions["userName"], "myFriendsName", "my message to everyone");
+            _messages.SendDirectMessage(EasySession.LoginSessions["userName"], "myFriendsName", "my message to everyone", header: "squad", body: "1");
+        }
     }
 }

@@ -29,7 +29,7 @@ public class EasySetupWindow : EditorWindow
     [MenuItem("EasyCode/Add Demo Scenes To Build Settings")]
     public static void ShowWindow()
     {
-       Window = GetWindow<EasySetupWindow>(false, title: "EasyCode Demo Scenes", focus: true);
+        Window = GetWindow<EasySetupWindow>(false, title: "EasyCode Demo Scenes", focus: true);
     }
 
     [InitializeOnLoadMethod]

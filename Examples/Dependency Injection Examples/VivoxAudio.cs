@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace EasyCodeDevelopment
+namespace EasyCodeForVivox.Examples
 {
     public class VivoxAudio : MonoBehaviour
     {

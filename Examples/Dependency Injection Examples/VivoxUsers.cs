@@ -3,7 +3,7 @@ using UnityEngine;
 using VivoxUnity;
 using Zenject;
 
-namespace EasyCodeDevelopment
+namespace EasyCodeForVivox.Examples
 {
     public class VivoxUsers
     {
