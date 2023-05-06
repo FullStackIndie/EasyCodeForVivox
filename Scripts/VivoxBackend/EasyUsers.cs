@@ -5,7 +5,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyUsers : IUsers
+    public class EasyUsers
     {
         private readonly EasyEvents _events;
         private readonly EasyEventsAsync _eventsAsync;

@@ -2,47 +2,48 @@ using EasyCodeForVivox.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
-#endif
+using UnityEngine.UIElements;
 
-public class EasySetupWindow : EditorWindow
+
+public class AddDemoSceneWindow : EditorWindow
 {
-#if UNITY_EDITOR
-    static ReorderableList reorderableList = null;
-    static EasySetupWindow Window;
-#endif
-
-    static string[] demoSceneList = new string[]
-        {
+    private static string key = "EasyCodeForVivox:Setup";
+    private static string[] demoSceneList = new string[]
+         {
             "Assets/EasyCodeForVivox/Demo Scenes/3D Demo Scenes/3D Demo Scene.unity",
             "Assets/EasyCodeForVivox/Demo Scenes/3D Demo Scenes/Lobby.unity",
             "Assets/EasyCodeForVivox/Demo Scenes/Chat Demo Scenes/Chat Scene.unity"
-        };
+         };
 
-    List<SceneAsset> _sceneAssets = new List<SceneAsset>();
-    public static string key = "EasyCodeForVivox:Setup";
 
-#if UNITY_EDITOR
-    [MenuItem("EasyCode/Add Demo Scenes To Build Settings")]
-    public static void ShowWindow()
-    {
-        Window = GetWindow<EasySetupWindow>(false, title: "EasyCode Demo Scenes", focus: true);
-    }
+    private List<SceneAsset> _sceneAssets = new List<SceneAsset>();
+    private Button addDemoScenesButton;
+    private Button closeWindowButton;
+    private Toggle dontShowToggle;
 
     [InitializeOnLoadMethod]
-    private static void OnValidate()
+    private static void Validate()
     {
         if (DontShowWindowAgain()) { return; }
         if (!CheckIfDemoScenesExist())
         {
-            var window = GetWindow<EasySetupWindow>(false, title: "EasyCode Demo Scenes", focus: true);
-            window.maxSize = new Vector2(500f, 500f);
-            window.Repaint();
-            window.Show();
+            ShowExample();
         }
+    }
+
+    [MenuItem("EasyCode/Add Demo Scenes To Build Settings")]
+    public static void ShowExample()
+    {
+        if (CheckIfDemoScenesExist())
+        {
+            Debug.Log("Demo scenes are already in build settings".Color(EasyDebug.Yellow));
+        }
+        AddDemoSceneWindow window = GetWindow<AddDemoSceneWindow>();
+        window.titleContent = new GUIContent("AddDemoScenes");
+        window.maxSize = new Vector2(1000f, 500f);
+        window.Repaint();
     }
 
     private void OnEnable()
@@ -52,38 +53,39 @@ public class EasySetupWindow : EditorWindow
             SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(demoSceneList[i]);
             _sceneAssets.Add(sceneAsset);
         }
-
-        reorderableList = new ReorderableList(_sceneAssets, typeof(List<SceneAsset>), draggable: true, displayHeader: true, displayAddButton: true, displayRemoveButton: true);
-        reorderableList.drawHeaderCallback = (rect) =>
-        {
-            EditorGUI.LabelField(rect, "Welcome to EasyCodeForVivox - Add Demo Scenes To Build Settings");
-            EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
-        };
-        reorderableList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-        {
-            rect.y += 2f;
-            rect.height = EditorGUIUtility.singleLineHeight;
-            GUIContent objectabel = new GUIContent($"Demo Scene {index}");
-            EditorGUILayout.ObjectField(objectabel, _sceneAssets[index], typeof(SceneAsset), true);
-        };
     }
 
-    private void OnGUI()
+    public void CreateGUI()
     {
-        reorderableList.DoList(new Rect(Vector2.zero, Vector2.one * 500));
-        GUILayout.Space(50f);
+        // Each editor window contains a root VisualElement object
+        VisualElement root = rootVisualElement;
 
-        if (GUILayout.Button("Add Demo Scenes To Build Settings"))
+        // Import UXML
+        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/EasyCodeForVivox/Editor/UI Toolkit/AddDemoSceneWindow.uxml");
+        VisualElement labelFromUXML = visualTree.Instantiate();
+        root.Add(labelFromUXML);
+
+        // A stylesheet can be added to a VisualElement.
+        // The style will be applied to the VisualElement and all of its children.
+        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/EasyCodeForVivox/Editor/UI Toolkit/AddDemoSceneWindow.uss");
+
+        addDemoScenesButton = root.Q<Button>("add-demo-scenes");
+        closeWindowButton = root.Q<Button>("close-window");
+        dontShowToggle = root.Q<Toggle>("dont-show-again");
+        dontShowToggle.value = DontShowWindowAgain();
+
+        addDemoScenesButton.clicked += AddDemoScenesToBuildSettings;
+        closeWindowButton.clicked += () => { Close(); };
+    }
+
+    void AddDemoScenesToBuildSettings()
+    {
+        AddDemoScenes();
+        if(dontShowToggle.value == true)
         {
-            AddDemoScenes();
             SaveSettings();
-            Window.Close();
         }
-    }
-
-    private void OnInspectorUpdate()
-    {
-        Repaint();
+        Close();
     }
 
     public static void AddDemoScenes()
@@ -124,7 +126,7 @@ public class EasySetupWindow : EditorWindow
             if (EditorBuildSettings.scenes.Any(s => s.path.Contains(demoScene))) { allScenes++; }
         }
 
-        if (allScenes > 0)
+        if (allScenes == demoSceneList.Length)
         {
             return true;
         }
@@ -145,8 +147,7 @@ public class EasySetupWindow : EditorWindow
         {
             return true;
         }
+
         return false;
     }
-
-#endif
 }

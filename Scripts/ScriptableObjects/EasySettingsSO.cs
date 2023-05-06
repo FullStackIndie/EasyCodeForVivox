@@ -6,10 +6,10 @@ using VivoxUnity;
 [CreateAssetMenu(fileName = "EasySettings", menuName = "EasyCodeForVivox/Create EasySettings", order = 1)]
 public class EasySettingsSO : ScriptableObject
 {
-    [Tooltip("Tells EasyCode to use Unity Authentication Service to handle Player credentials")]
-    public bool UseUnityAuthenticationService;
-    [Tooltip("Tells EasyCode to use Unity Vivox Service to handle Vivox credentials")]
-    public bool UseUnityVivoxService;
+    //[Tooltip("Tells EasyCode to use Unity Authentication Service to handle Player credentials")]
+    //public bool UseUnityAuthenticationService;
+    //[Tooltip("Tells EasyCode to use Unity Vivox Service to handle Vivox credentials")]
+    //public bool UseUnityVivoxService;
     [Tooltip("Choose which gender Vivox will use when using Text-To-Speech")]
     public VoiceGender VoiceGender = VoiceGender.female;
     [Tooltip("Hz is how many times per second you want to update Participant Properties")]

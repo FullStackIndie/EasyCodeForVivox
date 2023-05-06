@@ -215,7 +215,7 @@ namespace EasyCodeForVivox.Editor
 
 
             stopwatch.Stop();
-            Debug.Log($"Validating Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green));
+            Debug.Log($"Validating Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green).Bold());
         }
 
         private static void CheckType(this MethodInfo methodInfo, Type parameterType)

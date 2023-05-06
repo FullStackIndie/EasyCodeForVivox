@@ -7,7 +7,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyMessages : IMessages
+    public class EasyMessages 
     {
         private readonly EasyEvents _events;
         private readonly EasyEventsAsync _eventsAsync;

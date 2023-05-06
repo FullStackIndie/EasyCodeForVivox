@@ -57,7 +57,7 @@ public class EasyChatExample : EasyManager
         // ILSPY decompiler https://github.com/icsharpcode/ILSpy
         //if (_easySettings.UseUnityVivoxService)
         //{
-        //    // todo add Unity Vivox 
+        //    /// todo add Unity Vivox service
         //}
         //else
         //{

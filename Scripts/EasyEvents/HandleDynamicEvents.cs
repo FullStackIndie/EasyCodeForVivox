@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace EasyCodeForVivox.Events
 {
@@ -216,7 +217,7 @@ namespace EasyCodeForVivox.Events
             LogRegisteredEventsCount(logAllDynamicMethods);
 
             stopwatch.Stop();
-            Debug.Log($"Registering Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green));
+            Debug.Log($"Registering Dynamic Events took [hour:min:sec.ms] {stopwatch.Elapsed}".Color(EasyDebug.Green).Bold());
         }
 
         public static void LogRegisteredEventsCount(bool logAllDynamicMethods)

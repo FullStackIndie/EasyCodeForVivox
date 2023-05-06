@@ -8,7 +8,7 @@ using VivoxUnity;
 
 namespace EasyCodeForVivox
 {
-    public class EasyTextChannel : ITextChannel
+    public class EasyTextChannel 
     {
         private readonly EasyEvents _events;
         private readonly EasyEventsAsync _eventsAsync;

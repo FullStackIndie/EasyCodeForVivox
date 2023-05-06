@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/EasyCodeForVivox/Editor/UI%20Toolkit/button-style.uss?fileID=7433441132597879392&amp;guid=ef6c296f154d8ed4d84ee1445c615f27&amp;type=3#button-style" />
+    <ui:VisualElement name="Background" style="flex-grow: 1; align-items: center; justify-content: center; min-width: 900px; min-height: 500px;">
+        <ui:VisualElement name="options" style="width: 676px; height: 760px; align-items: center; justify-content: center;">
+            <ui:Label text="Add Demo Scenes to Build Settings" display-tooltip-when-elided="true" name="welcome" style="font-size: 40px; position: absolute; top: 20px;" />
+            <ui:Toggle label="Don&apos;t Show Again" name="dont-show-again" style="width: 363px; font-size: 16px; margin-bottom: 15px; -unity-font-style: bold;" />
+            <ui:Button text="Add Demo Scenes" display-tooltip-when-elided="true" name="add-demo-scenes" class="button-style" style="margin-bottom: 15px;" />
+            <ui:Button text="Close Window" display-tooltip-when-elided="true" name="close-window" class="button-style" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
