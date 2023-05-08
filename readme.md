@@ -64,7 +64,7 @@ EasyCode uses Zenject Plugin for dependency injection and is included automatica
 
 ## Contribute
 
-If you would like to contribute to this project reach out to me at fullstackindie@protonmail.com or create a pull request and I will see if your contribution is worthy of being added :grin: :stuck_out_tongue_winking_eye:
+If you would like to contribute to this project reach out to me at on Twitter, LinkedIn, (links in Bio/profile) or create a pull request and I will see if your contribution is worthy of being added :grin: :stuck_out_tongue_winking_eye:
 
 ## Fork Me
 
