@@ -31,11 +31,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          lfs: true
         
+
+      # Cache
+      - uses: actions/cache@v3.3.1
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
       - name: Dotnet Setup
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.x
+
+        # Build
+      - name: Build project
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+          
+      # Output
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Build
+          path: build
 
       - name: Update DocFx
         run: dotnet tool update -g docfx
