@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Wheres The Code | EasyCodeForVivox Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Wheres The Code | EasyCodeForVivox Documentation ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../..//images/Full Stack Indie Logo.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    <meta property="docfx:newtab" content="true">
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../..//images/fsi.webp" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="wheres-the-code">Wheres The Code</h1>
+
+<h2 id="want-to-see-the-code">Want to See the Code?</h2>
+<p>Example scripts are located <strong>Assets/EasyCodeForVivox/Examples/Demo Scene Examples/</strong> and are the highest abstraction away from the <strong>Vivox Unity SDK</strong> and the easiest scripts to get started with. They are meant to be example scripts to show you how to inherit from <code>EasyManager.cs</code>.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p><code>EasyManager.cs</code> is a mid-level abstraction containing variable instances for the core Vivox Functionality scripts located in Assets/EasyCodeForVivox/Scripts/EasyBackend</p>
+</div>
+<p>Feel free to modify the code, redistribute, or sell. Check out the License here. This asset is meant for the community and small teams and there will always be a free version that implements most if not all <strong>Vivox functionality</strong>.</p>
+<h2 id="want-to-customize-this-asset">Want To Customize This Asset</h2>
+<p>Assets/EasyCodeForVivox/EasyScripts/EasyBackend folder contains all the scripts you need to implement Vivox Voice and Text Chat functionality. If you want to start learning Vivox from scratch or implement your own code look at the scripts in the Vivox Backend folder. The code they contain are very similar to the Vivox Documentation and it will be easier to implement Vivox from scratch after having working code examples to compare to the Vivox Documentation.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>EasyCode uses dependency injection under the hood. It's basically injecting existing Singleton instances of classes instead of using the new keyword (to create new classes/objects in every class where I need a specific class) or having a static instance of the class.</p>
+</div>
+<p>It is recommended to inherit from EasyManager.cs or create your own version using the scripts in EasyBackend/ because all the boilerplate code has been written for you, you can just create custom wrapper methods around the default methods.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>** Don’t change the name of EasyManager.cs or you risk breaking this asset and any future updates. It's better to create a copy and rename it. Also change the namespace to a namespace that fits your project and just import EasyCode with a using statement
+using EasyCodeForVivox;</p>
+</div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/FullStackIndie/EasyCodeForVivox/blob/main/docfx_project/Getting Started/getting_started/wheres_the_code.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            EasyCodeForVivox Documentation
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

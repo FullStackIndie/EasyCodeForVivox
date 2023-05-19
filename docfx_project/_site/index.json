@@ -1,0 +1,87 @@
+{
+  "Api Docs/index.html": {
+    "href": "Api Docs/index.html",
+    "title": "PLACEHOLDER | EasyCodeForVivox Documentation",
+    "keywords": "PLACEHOLDER TODO: Add .NET projects to the src folder and run docfx to generate REAL API Documentation !"
+  },
+  "Documentation/dynamic_events/dynamic_events.html": {
+    "href": "Documentation/dynamic_events/dynamic_events.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Documentation/events_async/channel_events_async.html": {
+    "href": "Documentation/events_async/channel_events_async.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Documentation/events_async/login_events_async.html": {
+    "href": "Documentation/events_async/login_events_async.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Documentation/intro.html": {
+    "href": "Documentation/intro.html",
+    "title": "Add your introductions here! | EasyCodeForVivox Documentation",
+    "keywords": "Add your introductions here!"
+  },
+  "Documentation/login/login_events.html": {
+    "href": "Documentation/login/login_events.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Documentation/login/login_logout.html": {
+    "href": "Documentation/login/login_logout.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Documentation/login/login_properties.html": {
+    "href": "Documentation/login/login_properties.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Documentation/login/set_transmission_mode.html": {
+    "href": "Documentation/login/set_transmission_mode.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Getting Started/getting_started.html": {
+    "href": "Getting Started/getting_started.html",
+    "title": "Getting Started | EasyCodeForVivox Documentation",
+    "keywords": "Getting Started Bridging the gap between Solo/Indie developer teams and AAA games that implement Vivox Voice and Text Chat Supports This asset only supports Unity Game Engine . System Versions Windows Android Note This asset may work with IOS, Mac, Linux, or Consoles. Implement at your own discretion. Since the source is included you can modify it. Dependencies This asset is a simple API to interact with the Vivox Unity SDK which is available in the Unity Package Manager as Vivox (You may have to enable preview packages or add it manually). This asset is built on top of Vivox Voice and Text Chat and will not work without it (You can also download the SDK through Vivox’s website, and this asset will still work if that is your preferred method). You must create an account with Vivox at Login - Vivox Developer Portal and agree to Vivox’s Terms or sign up with Unity Gaming Services (Recommended) and accept their Terms of Use before you can use their services. Unity Gaming Services(UGS) may require a credit/debit card to sign up and use their services. Note Check out Assets/EasyCodeForVivox/Demo Scenes/ to test Vivox quickly and see if this is the right communications choice for your game/app or to see if this is the right asset for you"
+  },
+  "Getting Started/getting_started/setup.html": {
+    "href": "Getting Started/getting_started/setup.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Getting Started/getting_started/wheres_the_code.html": {
+    "href": "Getting Started/getting_started/wheres_the_code.html",
+    "title": "Wheres The Code | EasyCodeForVivox Documentation",
+    "keywords": "Wheres The Code Want to See the Code? Example scripts are located Assets/EasyCodeForVivox/Examples/Demo Scene Examples/ and are the highest abstraction away from the Vivox Unity SDK and the easiest scripts to get started with. They are meant to be example scripts to show you how to inherit from EasyManager.cs . Note EasyManager.cs is a mid-level abstraction containing variable instances for the core Vivox Functionality scripts located in Assets/EasyCodeForVivox/Scripts/EasyBackend Feel free to modify the code, redistribute, or sell. Check out the License here. This asset is meant for the community and small teams and there will always be a free version that implements most if not all Vivox functionality . Want To Customize This Asset Assets/EasyCodeForVivox/EasyScripts/EasyBackend folder contains all the scripts you need to implement Vivox Voice and Text Chat functionality. If you want to start learning Vivox from scratch or implement your own code look at the scripts in the Vivox Backend folder. The code they contain are very similar to the Vivox Documentation and it will be easier to implement Vivox from scratch after having working code examples to compare to the Vivox Documentation. Note EasyCode uses dependency injection under the hood. It's basically injecting existing Singleton instances of classes instead of using the new keyword (to create new classes/objects in every class where I need a specific class) or having a static instance of the class. It is recommended to inherit from EasyManager.cs or create your own version using the scripts in EasyBackend/ because all the boilerplate code has been written for you, you can just create custom wrapper methods around the default methods. Warning ** Don’t change the name of EasyManager.cs or you risk breaking this asset and any future updates. It's better to create a copy and rename it. Also change the namespace to a namespace that fits your project and just import EasyCode with a using statement using EasyCodeForVivox;"
+  },
+  "Getting Started/official_links.html": {
+    "href": "Getting Started/official_links.html",
+    "title": "Official Links | EasyCodeForVivox Documentation",
+    "keywords": "Official Links Full Stack Indie Official Links Youtube Channel - FullStackIndie Blog - FullStackIndie Blog GitHub - GitHub Profile Portfolio - Portfolio Contribute To EasyCode Open a Pull Request on Github . I am using the Unlicense license, but I will credit you in release versions if your pull request is approved Want to Improve EasyCodeforVivox If you notice any bug/issues, want to request a feature, or have any questions, please let me know on GithHub Issues . Fork EasyCodeForVivox I wasn't able to copy a Fork link because I own the repository but feel free to fork and create your own version at - EasyCodeForVivox"
+  },
+  "index.html": {
+    "href": "index.html",
+    "title": "This is the HOMEPAGE. | EasyCodeForVivox Documentation",
+    "keywords": "This is the HOMEPAGE . Refer to Markdown for how to write markdown files. Quick Start Notes: Add images to the images folder if the file is referencing an image."
+  },
+  "Release Notes/2.x.x/release_notes.html": {
+    "href": "Release Notes/2.x.x/release_notes.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Release Notes/3.x.x/release_notes.html": {
+    "href": "Release Notes/3.x.x/release_notes.html",
+    "title": "| EasyCodeForVivox Documentation",
+    "keywords": ""
+  },
+  "Release Notes/index.html": {
+    "href": "Release Notes/index.html",
+    "title": "Release Notes | EasyCodeForVivox Documentation",
+    "keywords": "Release Notes"
+  }
+}

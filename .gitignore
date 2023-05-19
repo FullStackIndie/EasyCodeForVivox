@@ -81,7 +81,10 @@ crashlytics-build.properties
 Assets/EasyCodeForVivox/Documentation/Assets
 Assets/EasyCodeForVivox/Documentation/appendices
 Assets/EasyCodeForVivox/Documentation/*json
-
+**/obj/xdoc/cache/*.*
+**/obj/xdoc/cache/obj/*.*
+**/obj/xdoc/cache/obj/.*
+**/**/obj/xdoc/cache/obj/*
 
 # Unity
 /ProjectSettings/
