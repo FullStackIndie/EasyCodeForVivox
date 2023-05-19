@@ -1,0 +1,8 @@
+- name: Release Notes
+  href: index.md
+
+- name: Release 2.x.x
+  href: 2.x.x/release_notes.md
+
+- name: Release 3.x.x
+  href: 3.x.x/release_notes.md

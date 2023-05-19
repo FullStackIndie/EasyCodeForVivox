@@ -1,0 +1,14 @@
+- name: EasyCodeForVivox
+  href: Getting Started/
+  homepage: Getting Started/getting_started.md
+
+- name: Documentation
+  href: Documentation/
+
+- name: API Docs
+  href: API Docs/
+  homepage: API Docs/index.md
+
+- name: Release Notes
+  href: Release Notes/
+  homepage: Release Notes/index.md

@@ -1,0 +1,25 @@
+{
+    "name": "EasyCodeDevelopment",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:d0acddb179989574c8355991596bd3e6",
+        "GUID:e258914e0c826804293b01bcd3e153d5",
+        "GUID:5540e30183c82e84b954c033c388e06c",
+        "GUID:4c3f49d89436d478ea78315c03159dcc",
+        "GUID:fe25561d224ed4743af4c60938a59d0b",
+        "GUID:6087a74f6015aae4daed9a2577a7596c",
+        "GUID:4ebbcb26024b547159a86c39de1a8fa5",
+        "GUID:be0d2672886cc45b2bcea5a5053a5347",
+        "GUID:f220a277eefae4d3aa9e31c2b43bb307"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

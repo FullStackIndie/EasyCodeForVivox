@@ -1,0 +1,104 @@
+{
+    "metadata": [
+        {
+            "src": [
+                {
+                    "files": [
+                        "assembly/bin/**/*.dll",
+                        "project/**/*.csproj",
+                        "solution/**/*.sln",
+                        "csharp/**/*.cs",
+                        "vb/**/*.vb"
+                    ],
+                    "exclude": [
+                        "project/Project.Core/**"
+                    ],
+                    "src": "dotnet"
+                }
+            ],
+            "namespaceLayout": "nested",
+            "dest": "obj/api"
+        }
+    ],
+    "build": {
+        "content": [
+            {
+                "files": [
+                    "**/*.yml"
+                ],
+                "src": "obj/api",
+                "dest": "api"
+            },
+            {
+                "files": [
+                    "articles/**/*.{md,yml}",
+                    "*.md",
+                    "toc.yml",
+                    "restapi/**"
+                ]
+            }
+        ],
+        "resource": [
+            {
+                "files": [
+                    "articles/images/**"
+                ]
+            }
+        ],
+        "overwrite": "specs/*.md",
+        "globalMetadata": {
+            "_appTitle": "docfx seed website",
+            "_appName": "Seed",
+            "_enableSearch": true
+        },
+        "output": "_site",
+        "exportViewModel": true,
+        "template": [
+            "default",
+            "modern",
+            "template"
+        ],
+        "markdownEngineProperties": {
+            "alerts": {
+                "TODO": "alert alert-secondary"
+            }
+        }
+    },
+    "pdf": {
+        "content": [
+            {
+                "files": [
+                    "obj/api/*.yml"
+                ],
+                "exclude": [
+                    "**/toc.yml"
+                ]
+            },
+            {
+                "files": [
+                    "articles/**/*.md",
+                    "*.md",
+                    "restapi/**"
+                ]
+            },
+            {
+                "files": [
+                    "pdf/toc.yml"
+                ]
+            }
+        ],
+        "resource": [
+            {
+                "files": [
+                    "articles/images/**"
+                ]
+            }
+        ],
+        "overwrite": "specs/*.md",
+        "wkhtmltopdf": {
+            "filePath": "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe",
+            "additionalArguments": "--enable-local-file-access"
+        },
+        "output": "_site_pdf"
+    }
+}

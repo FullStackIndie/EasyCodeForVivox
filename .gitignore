@@ -73,13 +73,21 @@ crashlytics-build.properties
 
 # EasyCodeForVivox
 /Assets/Vivox
+/Assets/Plugins
 /Assets/TextMesh Pro
 /Assets/AssetStoreTools
 *_clone_[0-9]*/
+/Assets/com.teamon.buildmanager/
+Assets/EasyCodeForVivox/Documentation/Assets
+Assets/EasyCodeForVivox/Documentation/appendices
+Assets/EasyCodeForVivox/Documentation/*json
+
 
 # Unity
 /ProjectSettings/
 /Packages/
+/AssetStoreTools
+/UIElementsSchema
 
 #Visual Studio
 .vsconfig

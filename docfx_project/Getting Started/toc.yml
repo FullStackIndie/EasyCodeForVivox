@@ -1,0 +1,10 @@
+- name: Getting Started
+  href: getting_started.md
+  items:
+  - name: Wheres The Code
+    href: getting_started/wheres_the_code.md
+  - name: Setup EasyCode
+    href: getting_started/setup.md
+
+- name: Official Links
+  href: official_links.md
