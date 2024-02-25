@@ -1,6 +1,6 @@
 # EasyCodeForVivox
 
-# Warning -- This package no longer works with Vivox from Unity Package Manager if you upgrade Vivox to Version 16.0.0-pre.1. Due to thier Major API changes that made almost every class internal prevent me from accessing the Vivox C# Library. This Repo will most likely become deprecated or deleted in the future
+# Warning -- This package no longer works with Vivox from Unity Package Manager if you upgrade Vivox to Version 16.0.0-pre.1. Due to thier Major API changes that made almost every class internal prevent me from accessing the Vivox C# Library. This Repo is now going to be archived for public reference material and as a portfolio/progress piece so myself and others can look back on this repo.
 
 This is an Extension Asset for **Vivox Voice Chat SDK** with the goal of helping indie devs and small teams and even new programmers get setup with Vivox as fast as possible. Vivox can be hard to implement and understand and this asset provides ease of use without learning how to use Vivox from scratch.
 
